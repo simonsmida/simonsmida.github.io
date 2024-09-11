@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ľúbiš ma Klára?</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400&display=swap');
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            overflow: hidden;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+        }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #ff6b6b;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        button {
+            font-size: 1.2rem;
+            margin: 10px;
+            padding: 10px 25px;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+        #yesButton {
+            background-color: #4ecdc4;
+            color: white;
+        }
+        #yesButton:hover {
+            background-color: #45b7aa;
+            transform: scale(1.05);
+        }
+        #noButton {
+            position: absolute;
+            background-color: #ff6b6b;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        #noButton:hover {
+            background-color: #ff5252;
+        }
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            button {
+                font-size: 1rem;
+                padding: 8px 20px;
+            }
+            .container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ľúbiš ma?</h1>
+        <button id="yesButton">Anooo!</button>
+        <button id="noButton">Nope</button>
+    </div>
+
+    <script>
+        const noButton = document.getElementById('noButton');
+        const yesButton = document.getElementById('yesButton');
+        const container = document.querySelector('.container');
+        let mouseX = 0, mouseY = 0;
+        let isMobile = window.innerWidth <= 768;
+
+        // Create floating hearts
+        for (let i = 0; i < 20; i++) {
+            createHeart();
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = Math.random() * 100 + 'vh';
+            heart.style.fontSize = Math.random() * (30 - 10) + 10 + 'px';
+            heart.style.animationDuration = Math.random() * (6 - 3) + 3 + 's';
+            heart.innerHTML = '❤️';
+            document.body.appendChild(heart);
+        }
+
+        function moveButton(x, y) {
+            const buttonRect = noButton.getBoundingClientRect();
+            const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+            const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+
+            const deltaX = x - buttonCenterX;
+            const deltaY = y - buttonCenterY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            if (distance < (isMobile ? 50 : 100)) {
+                const angle = Math.atan2(deltaY, deltaX);
+                let newX = buttonCenterX - Math.cos(angle) * (isMobile ? 75 : 150);
+                let newY = buttonCenterY - Math.sin(angle) * (isMobile ? 75 : 150);
+
+                // Ensure the button stays within the screen
+                newX = Math.max(buttonRect.width / 2, Math.min(newX, window.innerWidth - buttonRect.width / 2));
+                newY = Math.max(buttonRect.height / 2, Math.min(newY, window.innerHeight - buttonRect.height / 2));
+
+                noButton.style.left = `${newX - buttonRect.width / 2}px`;
+                noButton.style.top = `${newY - buttonRect.height / 2}px`;
+                noButton.style.transform = 'scale(0.9)';
+            } else {
+                noButton.style.transform = 'scale(1)';
+            }
+        }
+
+        if (isMobile) {
+            document.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                moveButton(touch.clientX, touch.clientY);
+            }, { passive: false });
+        } else {
+            document.addEventListener('mousemove', (e) => {
+                moveButton(e.clientX, e.clientY);
+            });
+        }
+
+        yesButton.addEventListener('click', () => {
+            container.innerHTML = '<h1 style="font-size: 3rem; color: #ff6b6b;">Ja Teba tiež! ❤️</h1>';
+            document.body.style.background = 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)';
+            
+            // Create a heart burst effect
+            for (let i = 0; i < 50; i++) {
+                setTimeout(createHeart, i * 50);
+            }
+        });
+
+        // Initial positioning of the "No" button
+        function positionNoButton() {
+            const containerRect = container.getBoundingClientRect();
+            noButton.style.left = `${containerRect.left + containerRect.width / 2}px`;
+            noButton.style.top = `${containerRect.bottom + 20}px`;
+            noButton.style.transform = 'translate(-50%, 0)';
+        }
+
+        positionNoButton();
+        window.addEventListener('resize', () => {
+            isMobile = window.innerWidth <= 768;
+            positionNoButton();
+        });
+    </script>
+</body>
+</html>
