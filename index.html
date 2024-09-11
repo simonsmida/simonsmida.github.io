@@ -7,23 +7,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400&display=swap');
         
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             font-family: 'Roboto', sans-serif;
             background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            overflow: hidden;
-            margin: 0;
         }
         .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
             text-align: center;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
         }
         h1 {
             font-family: 'Pacifico', cursive;
@@ -49,10 +49,10 @@
         #yesButton {
             background-color: #27ae60;
             color: white;
+            animation: pulse 1.5s infinite, glow 2s infinite alternate;
         }
         #yesButton:hover {
-            background-color: #2ecc71;
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
         #noButton {
             background-color: #e74c3c;
@@ -72,17 +72,34 @@
             33% { transform: translate(10px, -15px) rotate(5deg); }
             66% { transform: translate(-10px, 15px) rotate(-5deg); }
         }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #27ae60, 0 0 35px #27ae60, 0 0 40px #27ae60, 0 0 50px #27ae60, 0 0 75px #27ae60;
+            }
+            to {
+                box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #27ae60, 0 0 70px #27ae60, 0 0 80px #27ae60, 0 0 100px #27ae60, 0 0 150px #27ae60;
+            }
+        }
 
         @media (max-width: 768px) {
             h1 {
-                font-size: 2rem;
+                font-size: 7vw;
+                margin-bottom: 5vh;
             }
             button {
-                font-size: 1rem;
-                padding: 8px 20px;
+                font-size: 5vw;
+                padding: 2vh 4vw;
             }
-            .container {
-                padding: 1.5rem;
+            .floating-emoji {
+                font-size: 6vw;
+            }
+            .button-container {
+                flex-direction: column;
+                gap: 3vh;
             }
         }
     </style>
@@ -91,21 +108,19 @@
     <div class="container">
         <h1>Klára, ľúbiš ma? 🍯🤎🍂</h1>
         <div class="button-container">
-            <button id="yesButton">Áno, Šimí! 🧡</button>
-            <button id="noButton">Nie 🌫️</button>
+            <button id="yesButton">Anoo, Šimí! 🧡</button>
+            <button id="noButton">Nope 🌫️</button>
         </div>
     </div>
-
     <script>
         const noButton = document.getElementById('noButton');
         const yesButton = document.getElementById('yesButton');
         const container = document.querySelector('.container');
-        let mouseX = 0, mouseY = 0;
-        let isMobile = window.innerWidth <= 768;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         // Create floating emojis
         const emojis = ['🍁', '🍯', '🪐', '🍂', '🤎', '🧡'];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < (isMobile ? 10 : 20); i++) {
             createFloatingEmoji();
         }
 
@@ -114,7 +129,7 @@
             emoji.className = 'floating-emoji';
             emoji.style.left = Math.random() * 100 + 'vw';
             emoji.style.top = Math.random() * 100 + 'vh';
-            emoji.style.fontSize = Math.random() * (30 - 10) + 10 + 'px';
+            emoji.style.fontSize = isMobile ? '6vw' : (Math.random() * (30 - 10) + 10 + 'px');
             emoji.style.animationDuration = Math.random() * (8 - 5) + 5 + 's';
             emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
             document.body.appendChild(emoji);
@@ -131,24 +146,28 @@
             noButton.style.top = newY + 'px';
         }
 
-        noButton.addEventListener('mouseover', moveButton);
+        if (isMobile) {
+            noButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveButton();
+            });
+        } else {
+            noButton.addEventListener('mouseover', moveButton);
+        }
+
         noButton.addEventListener('click', (e) => {
             e.preventDefault();
             moveButton();
         });
 
         yesButton.addEventListener('click', () => {
-            container.innerHTML = '<h1 style="font-size: 3rem; color: #e67e22;">Šimí ťa tiež ľúbi! 🍯🤎🍂🧡</h1>';
+            container.innerHTML = `<h1 style="font-size: ${isMobile ? '8vw' : '3rem'}; color: #e67e22;">Šimí ťa tiež ľúbi! 🍯🤎🍂🧡</h1>`;
             document.body.style.background = 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)';
             
             // Create a emoji burst effect
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < (isMobile ? 30 : 50); i++) {
                 setTimeout(createFloatingEmoji, i * 50);
             }
-        });
-
-        window.addEventListener('resize', () => {
-            isMobile = window.innerWidth <= 768;
         });
     </script>
 </body>
