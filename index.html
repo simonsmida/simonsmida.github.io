@@ -1,183 +1,159 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Šimí 🍯🤎🍂🌫️</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>        
-        body, html {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Šimon Šmída</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f4f4f9;
             overflow: hidden;
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f4f4f9;
+            z-index: -1;
         }
         .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            width: 100%;
+            position: relative;
+            max-width: 900px;
+            margin: 20vh auto;
             text-align: center;
-            box-sizing: border-box;
-            padding: 20px;
+            z-index: 2;
         }
         h1 {
-            color: #e67e22;
-            font-size: 4rem;
-            margin: 0 0 2rem 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            line-height: 1.2;
+            font-size: 3rem;
+            color: #222;
+            margin-bottom: 1rem;
         }
-        .emoji-container {
-            display: inline-block;
-            white-space: nowrap;
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        button {
+        p {
             font-size: 1.2rem;
-            padding: 10px 25px;
-            cursor: pointer;
-            border: none;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            font-family: 'Roboto', sans-serif;
+            color: #555;
         }
-        #yesButton {
-            background-color: #27ae60;
-            color: white;
-            animation: pulse 1.5s infinite, glow 2s infinite alternate;
+        a {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: #007BFF;
+            text-decoration: none;
         }
-        #yesButton:hover {
-            transform: scale(1.1);
-        }
-        #noButton {
-            background-color: #e74c3c;
-            color: white;
-            transition: all 0.2s ease;
-        }
-        #noButton:hover {
-            background-color: #c0392b;
-        }
-        .floating-emoji {
-            position: absolute;
-            pointer-events: none;
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(10px, -15px) rotate(5deg); }
-            66% { transform: translate(-10px, 15px) rotate(-5deg); }
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #27ae60, 0 0 35px #27ae60, 0 0 40px #27ae60, 0 0 50px #27ae60, 0 0 75px #27ae60;
-            }
-            to {
-                box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #27ae60, 0 0 70px #27ae60, 0 0 80px #27ae60, 0 0 100px #27ae60, 0 0 150px #27ae60;
-            }
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 8vw;
-                margin-bottom: 4vh;
-            }
-            .emoji-container {
-                display: block;
-                margin-top: 10px;
-            }
-            button {
-                font-size: 5vw;
-                padding: 2vh 4vw;
-            }
-            .floating-emoji {
-                font-size: 6vw;
-            }
-            .button-container {
-                flex-direction: column;
-                gap: 3vh;
-            }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
+    <canvas id="network-canvas"></canvas>
+
     <div class="container">
-        <h1>Ľúbiš ma? <span class="emoji-container">🍯🤎🍂</span></h1>
-        <div class="button-container">
-            <button id="yesButton">Anoo, Šimí! 🧡</button>
-            <button id="noButton">Nope 🌫️</button>
-        </div>
+        <h1>Šimon Šmída</h1>
+        <p>I understand nothing. Want to understand everything.</p>
+        <a href="https://github.com/username/art-tool" target="_blank">Explore My Work</a>
     </div>
+
     <script>
-        const noButton = document.getElementById('noButton');
-        const yesButton = document.getElementById('yesButton');
-        const container = document.querySelector('.container');
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const canvas = document.getElementById("network-canvas");
+        const ctx = canvas.getContext("2d");
 
-        // Create floating emojis
-        const emojis = ['🍁', '🍯', '🪐', '🍂', '🤎', '🧡', '💛', '❤️', '🦖', '🦕', '🌻'];
-        for (let i = 0; i < (isMobile ? 10 : 20); i++) {
-            createFloatingEmoji();
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const nodes = [];
+        const nodeCount = 70;
+        const mouse = { x: null, y: null, radius: 150 };
+
+        function createNode(x, y) {
+            return {
+                x: x || Math.random() * canvas.width,
+                y: y || Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.2,
+                vy: (Math.random() - 0.5) * 0.2,
+                radius: Math.random() * 2 + 1
+            };
         }
 
-        function createFloatingEmoji() {
-            const emoji = document.createElement('div');
-            emoji.className = 'floating-emoji';
-            emoji.style.left = Math.random() * 100 + 'vw';
-            emoji.style.top = Math.random() * 100 + 'vh';
-            emoji.style.fontSize = isMobile ? '6vw' : (Math.random() * (30 - 10) + 10 + 'px');
-            emoji.style.animationDuration = Math.random() * (8 - 5) + 5 + 's';
-            emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-            document.body.appendChild(emoji);
+        function createNodes(count) {
+            for (let i = 0; i < count; i++) nodes.push(createNode());
         }
 
-        function moveButton() {
-            const maxX = window.innerWidth - noButton.offsetWidth;
-            const maxY = window.innerHeight - noButton.offsetHeight;
-            const newX = Math.random() * maxX;
-            const newY = Math.random() * maxY;
+        function updateNodes() {
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
 
-            noButton.style.position = 'fixed';
-            noButton.style.left = newX + 'px';
-            noButton.style.top = newY + 'px';
-        }
+                if (node.x < 0 || node.x > canvas.width) node.vx = -node.vx;
+                if (node.y < 0 || node.y > canvas.height) node.vy = -node.vy;
 
-        if (isMobile) {
-            noButton.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                moveButton();
+                const dx = mouse.x - node.x;
+                const dy = mouse.y - node.y;
+                const distance = Math.hypot(dx, dy);
+
+                if (distance < mouse.radius) {
+                    const force = (mouse.radius - distance) / mouse.radius;
+                    node.vx -= (dx / distance) * force * 0.05;
+                    node.vy -= (dy / distance) * force * 0.05;
+                }
             });
-        } else {
-            noButton.addEventListener('mouseover', moveButton);
         }
 
-        noButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            moveButton();
+        function drawNodes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(100, 100, 200, 0.7)";
+            ctx.strokeStyle = "rgba(150, 150, 250, 0.3)";
+
+            for (let i = 0; i < nodes.length; i++) {
+                const nodeA = nodes[i];
+
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const nodeB = nodes[j];
+                    const distance = Math.hypot(nodeA.x - nodeB.x, nodeA.y - nodeB.y);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodeA.x, nodeA.y);
+                        ctx.lineTo(nodeB.x, nodeB.y);
+                        ctx.stroke();
+                    }
+                }
+
+                ctx.beginPath();
+                ctx.arc(nodeA.x, nodeA.y, nodeA.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function animate() {
+            updateNodes();
+            drawNodes();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener("mousemove", e => {
+            mouse.x = e.x;
+            mouse.y = e.y;
         });
 
-        yesButton.addEventListener('click', () => {
-            container.innerHTML = `<h1 style="font-size: ${isMobile ? '10vw' : '4rem'}; color: #e67e22;">Šimí Ťa tiež ľúbi! 🍯🤎🍂🧡</h1>`;
-            document.body.style.background = 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)';
-            
-            // Create a emoji burst effect
-            for (let i = 0; i < (isMobile ? 30 : 50); i++) {
-                setTimeout(createFloatingEmoji, i * 50);
-            }
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            nodes.length = 0;
+            createNodes(nodeCount);
         });
+
+        // Add a new node on click
+        canvas.addEventListener("click", e => {
+            nodes.push(createNode(e.clientX, e.clientY));
+        });
+
+        createNodes(nodeCount);
+        animate();
     </script>
 </body>
 </html>
