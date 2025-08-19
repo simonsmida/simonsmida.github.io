@@ -1,1 +1,1 @@
-# simon-smida.github.io
+# simonsmida.github.io
