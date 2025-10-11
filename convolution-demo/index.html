@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Convolution Visualizer</title>
+  <style>
+    :root{
+      --bg:#0b0e14;--fg:#e6e6e6;--muted:#9aa4b2;--border:#2a2f3a;
+      --cell:26px;--gap:4px;--accent:#7c3aed;--accent-2:#22d3ee;
+      --btn:#141927;--btn-hover:#1a2030;--btn-active:#121826;
+      --filter:#60a5fa;
+    }
+    *{box-sizing:border-box}
+    html,body{max-width:100%;overflow-x:hidden}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Inter,Arial;line-height:1.35}
+
+    /* Header */
+    header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;background:linear-gradient(180deg,#0b0e14,#0b0e14f2);z-index:10}
+    header h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.2px}
+
+    /* Buttons */
+    .btn{appearance:none;border:1px solid var(--border);background:var(--btn);color:var(--fg);padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 1px 0 #0006 inset,0 8px 16px #00000026;transition:transform .06s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease;text-align:center}
+    .btn:hover{background:var(--btn-hover)}
+    .btn:active{transform:translateY(1px);background:var(--btn-active)}
+    .btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.2)}
+    .btn.primary{background:linear-gradient(180deg,#1b1f2c,#121725);border-color:#2c3344}
+    .btn.primary:hover{background:linear-gradient(180deg,#212739,#171c2d)}
+    .btn.ghost{background:transparent}
+    .btn .icon{font-size:14px;opacity:.9}
+    .btn.w80{width:80px;height:34px}
+
+    /* Layout */
+    .wrap{display:grid;grid-template-columns:340px 1fr}
+    .panel{border-right:1px solid var(--border);padding:12px;overflow:auto}
+    main{display:grid;grid-template-columns:minmax(300px,1fr) minmax(300px,1fr);gap:5px;padding:10px}
+
+    /* Controls */
+    .controls{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .control{display:flex;flex-direction:column;gap:6px}
+    .control label{font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .control input,.control select{width:100%;padding:8px 10px;background:#0f131b;border:1px solid var(--border);border-radius:10px;color:#fff;outline:none}
+    .control input:focus,.control select:focus{border-color:#334155;box-shadow:0 0 0 2px #33415555}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+    /* Scenes */
+    .scene,.scene *{user-select:none}
+    .scene{position:relative;height:420px;perspective:400px;border:1px dashed var(--border);margin:4px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#0d1118;cursor:grab;overflow:hidden;width:100%}
+    .scene:focus{outline:2px solid #334155}
+    .scene-title{position:absolute;left:8px;top:8px;display:flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;background:rgba(17,24,39,.7);backdrop-filter:blur(6px);border:1px solid rgba(148,163,184,.2);font-size:12px;color:#e5e7eb}
+    .scene-title .chip{padding:2px 6px;border-radius:999px;border:1px solid var(--border);background:#0f131b;color:#cbd5e1}
+    .cube{position:relative;transform-style:preserve-3d;transition:transform .12s ease;will-change:transform}
+    .slice,.out-slice{position:absolute;left:50%;top:50%;display:grid;gap:var(--gap);padding:6px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.02);box-shadow:0 8px 24px rgba(0,0,0,.35);transform:translate(-50%,-50%);transition:opacity .15s ease,transform .12s ease,box-shadow .12s ease;cursor:pointer}
+    .out-slice{background:rgba(125,200,255,.04)}
+    .slice.selected,.out-slice.selected{box-shadow:0 10px 28px rgba(0,0,0,.5),0 0 0 1px rgba(125,200,255,.15) inset}
+    .cell{width:var(--cell);height:var(--cell);display:flex;align-items:center;justify-content:center;border:1px solid #1d222d;border-radius:6px;font-size:11px;color:#d1d5db;white-space:nowrap}
+    .cell.hi{outline:2px solid var(--filter);outline-offset:-2px}
+
+    /* Info blocks */
+    .stat{font-size:12px;color:var(--muted)}
+    legend{font-size:12px;color:var(--muted)}
+
+    /* Kernel panel */
+    .kernel-panel{border:1px solid var(--border);border-radius:12px;padding:10px;background:#0f131b;position:relative}
+    .kernel-panel h3{margin:0 0 6px 0;font-size:13px;display:flex;align-items:center;gap:10px}
+    .kernel-badge{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:999px;border:1px solid var(--filter);background:rgba(96,165,250,.08);cursor:pointer;user-select:none}
+    .kernel-badge .sw{width:8px;height:8px;border-radius:50%;background:var(--filter)}
+    .kernel-grid{display:inline-grid;gap:4px;margin:6px;border:1px dashed transparent;padding:8px;border-radius:10px;transition:border-color .12s ease, background .12s ease;min-width:calc(3 * 24px + 2 * 4px + 16px)}
+    .kernel-grid .cell{width:24px;height:24px;font-size:10px;cursor:pointer}
+    .kernel-grid .k-title{grid-column:1 / -1;display:inline-flex;align-items:center;gap:8px;padding:2px 0;cursor:pointer;white-space:nowrap;justify-self:start;width:fit-content}
+    .kernel-grid.interactive:hover{border-color:#334155}
+    .kernel-grid.selected{border-color:var(--filter);background:rgba(96,165,250,.06)}
+
+    /* Small UI bits */
+    .ch-swatch{display:inline-block;width:10px;height:10px;aspect-ratio:1/1;flex:0 0 auto;border-radius:2px;margin-right:6px;vertical-align:middle;border:1px solid rgba(255,255,255,.25);box-sizing:content-box}
+    .ch-title{font-weight:600}
+
+    /* Filter dropdown */
+    .dropdown{position:fixed;z-index:50;background:#0b0f19;border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:6px;min-width:160px}
+    .dropdown button{width:100%;text-align:left;background:transparent;border:0;color:#e5e7eb;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .dropdown button:hover{background:#111827}
+    .dropdown .rowline{display:flex;align-items:center;gap:8px}
+
+    /* Responsive */
+    @media (max-width:1100px){
+      .wrap{grid-template-columns:1fr}
+      main{grid-template-columns:1fr}
+      .panel{border-right:none;border-bottom:1px solid var(--border)}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .cube{transition:none}
+      .btn{transition:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Convolution Visualizer</h1>
+    <div class="row" role="group" aria-label="Playback controls">
+      <button id="btnStep" class="btn w80" type="button" title="Advance one output position">Step</button>
+      <button id="btnPlay" class="btn primary w80" type="button" title="Play / pause">Play</button>
+      <button id="btnReset" class="btn ghost w80" type="button" title="Reset cursor to (0,0)">Reset</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <aside class="panel" aria-label="Controls">
+      <div class="section">
+        <div class="controls">
+          <div class="control"><label for="inpH">Height</label><input id="inpH" type="number" min="2" max="64" value="6" /></div>
+          <div class="control"><label for="inpW">Width</label><input id="inpW" type="number" min="2" max="64" value="6" /></div>
+          <div class="control"><label for="inpCin">C_in</label><input id="inpCin" type="number" min="1" max="32" value="3" /></div>
+          <div class="control"><label for="inpCout">C_out</label><input id="inpCout" type="number" min="1" max="32" value="3" /></div>
+          <div class="control"><label for="inpK">Kernel k</label><input id="inpK" type="number" min="1" max="31" value="3" /></div>
+          <div class="control"><label for="inpS">Stride</label><input id="inpS" type="number" min="1" max="16" value="1" /></div>
+          <div class="control"><label for="inpP">Padding</label><input id="inpP" type="number" min="0" max="32" value="0" /></div>
+          <div class="control"><label for="inpBias">Bias</label><select id="inpBias"><option value="1" selected>Yes</option><option value="0">No</option></select></div>
+          <div class="control" style="grid-column:1/-1"><label for="inpGap">Channel gap (Z px)</label><input id="inpGap" type="range" min="8" max="80" step="1" value="40" /></div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button id="btnRandomize" class="btn" type="button" title="Randomize input tensor">Randomize Input</button>
+          <button id="btnRandomK" class="btn" type="button" title="Randomize kernels & biases">Randomize Kernels</button>
+        </div>
+      </div>
+
+      <div class="section stat" id="stats" aria-live="polite"></div>
+      <div class="section" id="breakdown"></div>
+    </aside>
+
+    <main>
+      <!-- Row 1: input + output -->
+      <div class="scene" id="inputScene" tabindex="0" aria-label="Input tensor">
+        <div class="scene-title"><strong>Input tensor</strong><span class="chip" id="inputDims"></span></div>
+        <div id="inputCube" class="cube"></div>
+      </div>
+
+      <div class="scene" id="outputScene" tabindex="0" aria-label="Output tensor">
+        <div class="scene-title"><strong>Output tensor</strong><span class="chip" id="outputDims"></span></div>
+        <div id="outCube" class="cube"></div>
+      </div>
+
+      <!-- Row 2: kernel values, spanning both columns -->
+      <div class="section kernel-panel" style="grid-column:1 / -1">
+        <h3>
+          Kernel values (selected filter)
+          <span class="kernel-badge" id="filterBadge" title="Click to change filter" role="button" tabindex="0" aria-haspopup="listbox">
+            <span class="sw"></span><span id="filterName">Filter 0</span>
+          </span>
+        </h3>
+        <div id="kernelValues"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Filter dropdown (created once and reused) -->
+  <div id="filterDropdown" class="dropdown" style="display:none"></div>
+
+  <script>
+    // Convolution Visualizer — Refactored
+    // Single-file module (window.ConvoViz) with clear state + rendering pipeline
+    (() => {
+      "use strict";
+
+      /*** DOM helpers ***/
+      const $ = (id) => document.getElementById(id);
+      const setCSSVar = (name, value) => document.documentElement.style.setProperty(name, value);
+
+      /*** Constants ***/
+      const BASE_COLORS = ['#f59e0b','#60a5fa','#34d399','#a78bfa','#22d3ee','#ef4444','#10b981','#f472b6'];
+
+      /*** State (single source of truth) ***/
+      const state = {
+        H:6, W:6, Cin:3, Cout:3, k:3, s:1, p:0,
+        bias:1,
+        input:[], kernels:[], biases:[],
+        pos:{i:0,j:0},
+        playing:false, timer:null,
+        selF:0,      // selected output filter
+        selC:null,   // optional selected input channel
+        rotX:-18, rotY:-24,
+        depth:40,    // z-gap in px
+        zoomInput:1,
+        zoomOutput:1
+      };
+
+      /*** Math / utils ***/
+      const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+      const dimsOut = () => ({
+        Hout: Math.floor((state.H - state.k + 2*state.p) / state.s) + 1,
+        Wout: Math.floor((state.W - state.k + 2*state.p) / state.s) + 1,
+      });
+      const padVal = (arr,i,j)=> (i<0||j<0||i>=arr.length||j>=arr[0].length) ? 0 : arr[i][j];
+      const getFilterColor = (f)=> BASE_COLORS[f % BASE_COLORS.length];
+      const setFilterAccent = ()=>{
+        const col = getFilterColor(state.selF);
+        setCSSVar('--filter', col);
+        $('filterName').textContent = `Filter ${state.selF}`;
+        const badge = $('filterBadge');
+        badge.style.borderColor = col;
+        badge.querySelector('.sw').style.background = col;
+      };
+      const hexToRGBA = (hex, a=1) => {
+        const n = hex.replace('#','');
+        const full = (n.length===3) ? n.split('').map(ch=>ch+ch).join('') : n;
+        const bigint = parseInt(full, 16);
+        const r=(bigint>>16)&255, g=(bigint>>8)&255, b=bigint&255;
+        return `rgba(${r},${g},${b},${a})`;
+      };
+
+      // Channel tint: same hue as selected filter, descending alpha per channel
+      const channelAlpha = (c) => {
+        if(state.Cin<=1) return 0.36;
+        const aMax=0.45, aMin=0.10;
+        return aMax - (aMax-aMin)*(c/(state.Cin-1));
+      };
+      const channelTint = (c, baseHex=getFilterColor(state.selF)) => hexToRGBA(baseHex, channelAlpha(c));
+
+      // Conv at specific input top-left (i0,j0) for filter f
+      const convAt = (i0,j0,f) => {
+        let sum=0;
+        for(let c=0;c<state.Cin;c++){
+          for(let di=0;di<state.k;di++){
+            for(let dj=0;dj<state.k;dj++){
+              const ii=i0+di-state.p, jj=j0+dj-state.p;
+              sum += padVal(state.input[c],ii,jj) * state.kernels[f][c][di][dj];
+            }
+          }
+        }
+        if(state.bias) sum += state.biases[f];
+        return sum;
+      };
+
+      const breakdownAt = (i0,j0,f) => {
+        const part=[]; let tot=0;
+        for(let c=0;c<state.Cin;c++){
+          let cs=0;
+          for(let di=0;di<state.k;di++){
+            for(let dj=0;dj<state.k;dj++){
+              const ii=i0+di-state.p, jj=j0+dj-state.p;
+              cs += padVal(state.input[c],ii,jj)*state.kernels[f][c][di][dj];
+            }
+          }
+          part.push(cs); tot+=cs;
+        }
+        if(state.bias) tot+=state.biases[f];
+        return { part, total:tot };
+      };
+
+      /*** Random init ***/
+      const randomizeInput = () => {
+        state.input = Array.from({length:state.Cin}, () => (
+          Array.from({length:state.H}, () => (
+            Array.from({length:state.W}, () => Math.round((Math.random()*2-1)*5))
+          ))
+        ));
+      };
+      const randomizeKernels = () => {
+        state.kernels = Array.from({length:state.Cout}, () => (
+          Array.from({length:state.Cin}, () => (
+            Array.from({length:state.k}, () => (
+              Array.from({length:state.k}, () => parseFloat((Math.random()*2-1).toFixed(2)))
+            ))
+          ))
+        ));
+        state.biases = Array.from({length:state.Cout}, () => parseFloat((Math.random()*2-1).toFixed(2)));
+      };
+
+      /*** Rendering helpers ***/
+      const applyTransforms = () => {
+        $('inputCube').style.transform = `rotateX(${state.rotX}deg) rotateY(${state.rotY}deg) scale(${state.zoomInput})`;
+        $('outCube').style.transform   = `rotateX(${state.rotX}deg) rotateY(${state.rotY}deg) scale(${state.zoomOutput})`;
+      };
+
+      const makeGrid = (H,W,cls) => {
+        const d=document.createElement('div');
+        d.className=cls;
+        d.style.gridTemplateColumns=`repeat(${W}, var(--cell))`;
+        d.style.gridTemplateRows=`repeat(${H}, var(--cell))`;
+        return d;
+      };
+
+      const renderInput = () => {
+        const inputCube = $('inputCube');
+        inputCube.innerHTML = '';
+
+        const i0 = state.pos.i * state.s;
+        const j0 = state.pos.j * state.s;
+        const r0 = i0 - state.p;
+        const c0 = j0 - state.p;
+
+        for(let c=0;c<state.Cin;c++){
+          const sl = makeGrid(state.H, state.W, 'slice');
+          const z = (state.Cin - 1 - c) * state.depth;
+          sl.style.transform = `translate(-50%,-50%) translateZ(${z}px)`;
+          sl.style.borderColor = 'rgba(255,255,255,.12)';
+          sl.dataset.chan = String(c);
+
+          const hasSel = state.selC !== null;
+          sl.style.opacity = hasSel ? (state.selC===c ? '1' : '0.25') : '1';
+          sl.classList.toggle('selected', state.selC===c);
+
+          sl.addEventListener('click', (e)=>{
+            e.stopPropagation();
+            state.selC = (state.selC===c) ? null : c;
+            draw();
+          });
+
+          for(let i=0;i<state.H;i++){
+            for(let j=0;j<state.W;j++){
+              const cell = document.createElement('div');
+              cell.className = 'cell';
+
+              const inPad = (i < state.p || j < state.p || i >= state.H - state.p || j >= state.W - state.p);
+              if(inPad){
+                cell.textContent = '·';
+                cell.style.background = 'rgba(255,255,255,0.03)';
+                cell.style.border = '1px dashed #64748b';
+                cell.style.color = '#64748b';
+              } else {
+                const v = state.input[c][i][j];
+                cell.textContent = String(v);
+                const a = Math.max(0.04, Math.min(0.22, 0.04 + (v+5)*0.018));
+                cell.style.background = `rgba(255,255,255,${a})`;
+              }
+
+              if(i >= r0 && i < r0+state.k && j >= c0 && j < c0+state.k){
+                cell.classList.add('hi');
+                // Receptive field tint (fill via massive inset shadow keeps border readable)
+                cell.style.boxShadow = `inset 0 0 0 9999px ${channelTint(c)}`;
+              }
+
+              sl.appendChild(cell);
+            }
+          }
+          inputCube.appendChild(sl);
+        }
+      };
+
+      const renderOutputs = () => {
+        const outCube = $('outCube');
+        outCube.innerHTML = '';
+        const d = dimsOut();
+        if(d.Hout <= 0 || d.Wout <= 0) return;
+
+        for(let f=0; f<state.Cout; f++){
+          const sl = makeGrid(d.Hout, d.Wout, 'out-slice');
+          sl.style.transform = `translate(-50%,-50%) translateZ(${f*state.depth}px)`;
+          sl.dataset.filter = String(f);
+
+          sl.style.opacity = (state.selF===f ? '1' : '0.65');
+          sl.classList.toggle('selected', state.selF===f);
+
+          sl.addEventListener('click', (e)=>{
+            e.stopPropagation();
+            state.selF = f;
+            draw();
+          });
+
+          for(let oi=0; oi<d.Hout; oi++){
+            for(let oj=0; oj<d.Wout; oj++){
+              const cell = document.createElement('div');
+              cell.className = 'cell';
+
+              const idxCur  = state.pos.i * d.Wout + state.pos.j;
+              const idxThis = oi * d.Wout + oj;
+              let val = '';
+
+              if(idxThis <= idxCur){
+                val = convAt(oi*state.s, oj*state.s, f).toFixed(1);
+              }
+              cell.textContent = val;
+
+              if(oi === state.pos.i && oj === state.pos.j && f === state.selF){
+                cell.classList.add('hi');
+                cell.style.outline = `2px solid var(--filter)`;
+                cell.style.outlineOffset = '-2px';
+                cell.style.fontWeight = 'bold';
+                cell.style.color = 'var(--filter)';
+              }
+
+              sl.appendChild(cell);
+            }
+          }
+          outCube.appendChild(sl);
+        }
+      };
+
+      const renderStats = () => {
+        const d=dimsOut();
+        const per=state.k*state.k*state.Cin+(state.bias?1:0);
+        const tot=per*state.Cout;
+        const mac=state.k*state.k*state.Cin; // MACs per output position per filter
+        $('stats').innerHTML = `
+          <br>Filter count: <b>${state.Cout}</b>
+          <br>Params per filter: <b>${per}</b>
+          <br>Total params: <b>${tot}</b>
+          <br>MACs: <b>${mac}</b><br>`;
+      };
+
+      const renderBreakdown = () => {
+        const d = dimsOut();
+        if(d.Hout <= 0 || d.Wout <= 0){ $('breakdown').textContent = ''; return; }
+
+        const i0 = state.pos.i * state.s;
+        const j0 = state.pos.j * state.s;
+        const f  = state.selF;
+        const b  = breakdownAt(i0, j0, f);
+
+        const cont = document.createElement('div');
+        cont.style.fontSize='12px'; cont.style.lineHeight='1.45';
+
+        const header = document.createElement('div');
+        header.innerHTML = `<br><b>Output (oi=${state.pos.i}, oj=${state.pos.j}), filter ${f}</b>`;
+        cont.appendChild(header);
+
+        const list = document.createElement('ul');
+        list.style.margin='6px 0'; list.style.paddingLeft='18px';
+
+        b.part.forEach((v,i)=>{
+          const li=document.createElement('li');
+          const sw=document.createElement('span'); sw.className='ch-swatch'; sw.style.background=channelTint(i); sw.style.borderColor='rgba(255,255,255,.25)';
+          const label=document.createElement('span'); label.className='ch-title'; label.textContent=`ch${i}: `;
+          const val=document.createElement('span'); val.textContent=v.toFixed(2);
+          li.style.color='#cbd5e1'; li.prepend(sw); li.appendChild(label); li.appendChild(val);
+          list.appendChild(li);
+        });
+        cont.appendChild(list);
+
+        const total=document.createElement('div');
+        const totalVal=b.total.toFixed(2);
+        total.innerHTML=`Final total: <b style="color:var(--filter)">${totalVal}</b>`;
+        cont.appendChild(total);
+
+        const br=$('breakdown'); br.innerHTML=''; br.appendChild(cont);
+      };
+
+      const renderKernelValues = () => {
+        const kv=$('kernelValues'); kv.innerHTML=''; if(!state.kernels.length) return;
+
+        for(let c=0;c<state.Cin;c++){
+          const g=document.createElement('div'); g.className='kernel-grid interactive';
+          g.style.gridTemplateColumns=`repeat(${state.k}, 24px)`;
+          g.dataset.chan=String(c);
+          if(state.selC===c) g.classList.add('selected');
+
+          // title row (clickable)
+          const title=document.createElement('div'); title.className='k-title'; title.style.gridColumn=`span ${state.k}`;
+          const sw=document.createElement('span'); sw.className='ch-swatch'; sw.style.background=channelTint(c);
+          const tt=document.createElement('span'); tt.textContent='Channel '+c; tt.style.color='var(--fg)'; tt.style.fontSize='12px';
+          title.appendChild(sw); title.appendChild(tt);
+          title.addEventListener('click', (e)=>{ e.stopPropagation(); toggleChannelPick(c); });
+          g.appendChild(title);
+
+          // weights cells (each click selects that channel)
+          for(let i=0;i<state.k;i++){
+            for(let j=0;j<state.k;j++){
+              const cell=document.createElement('div'); cell.className='cell';
+              cell.textContent=String(state.kernels[state.selF][c][i][j]);
+              cell.style.boxShadow=`inset 0 0 0 9999px ${channelTint(c)}`;
+              cell.addEventListener('click', (e)=>{ e.stopPropagation(); toggleChannelPick(c); });
+              g.appendChild(cell);
+            }
+          }
+          kv.appendChild(g);
+        }
+      };
+
+      const toggleChannelPick = (c) => { state.selC = (state.selC===c) ? null : c; draw(); };
+
+      const renderSceneTitles = () => {
+        const d=dimsOut();
+        $('inputDims').textContent = `${state.H}×${state.W}×(C_in=${state.Cin})`;
+        $('outputDims').textContent = (d.Hout>0 && d.Wout>0) ? `${d.Hout}×${d.Wout}×(C_out=${state.Cout})` : '—';
+      };
+
+      /*** Draw orchestrator ***/
+      const draw = () => {
+        setFilterAccent();
+        applyTransforms();
+        renderStats();
+        renderInput();
+        renderOutputs();
+        renderKernelValues();
+        renderBreakdown();
+        renderSceneTitles();
+      };
+
+      /*** Recompute (on param change) ***/
+      const recompute = () => {
+        state.H=clamp(Math.floor(state.H),2,64);
+        state.W=clamp(Math.floor(state.W),2,64);
+        state.Cin=clamp(Math.floor(state.Cin),1,32);
+        state.Cout=clamp(Math.floor(state.Cout),1,32);
+        state.k=clamp(Math.floor(state.k),1,31);
+        state.s=clamp(Math.floor(state.s),1,16);
+        state.p=clamp(Math.floor(state.p),0,32);
+        const d=dimsOut();
+        const invalid=(d.Hout<=0||d.Wout<=0);
+        $('btnPlay').disabled=invalid; $('btnStep').disabled=invalid;
+        randomizeInput(); randomizeKernels();
+        state.pos={i:0,j:0}; state.selF=0; state.selC=null;
+        draw(); closeFilterDropdown();
+      };
+
+      /*** Playback ***/
+      const stepOnce = () => {
+        const d=dimsOut(); let {i,j}=state.pos; j+=1;
+        if(j>=d.Wout){j=0;i+=1}
+        if(i>=d.Hout){i=d.Hout-1;j=d.Wout-1;stop()}
+        state.pos={i,j}; draw();
+      };
+      const play = () => {
+        state.playing=true; $('btnPlay').innerHTML='Pause';
+        state.timer=setInterval(()=>{
+          const d=dimsOut();
+          const idx=state.pos.i*d.Wout+state.pos.j;
+          if(idx>=d.Hout*d.Wout-1){stop();return}
+          stepOnce();
+        },400);
+      };
+      const stop = () => { state.playing=false; $('btnPlay').innerHTML='Play'; clearInterval(state.timer); };
+      const toggle = () => { state.playing ? stop() : play(); };
+
+      /*** Interactions ***/
+      const enableDrag = (scene) => {
+        let drag=false,sx=0,sy=0,rx=state.rotX,ry=state.rotY;
+        scene.addEventListener('mousedown',e=>{drag=true;sx=e.clientX;sy=e.clientY;rx=state.rotX;ry=state.rotY;scene.style.cursor='grabbing'});
+        window.addEventListener('mouseup',()=>{drag=false;scene.style.cursor='grab'});
+        window.addEventListener('mousemove',e=>{
+          if(!drag)return;
+          const dx=e.clientX-sx,dy=e.clientY-sy;
+          state.rotY=Math.max(-60,Math.min(60,ry+dx/3));
+          state.rotX=Math.max(-60,Math.min(60,rx-dy/3));
+          applyTransforms();
+        });
+        scene.addEventListener('mouseleave',()=>{drag=false;scene.style.cursor='grab'});
+      };
+
+      const enableWheelZoom = (scene, which) => {
+        const minZ=0.6, maxZ=3.0;
+        scene.addEventListener('wheel',(e)=>{
+          e.preventDefault();
+          const factor = (e.deltaY>0) ? 0.92 : 1.08;
+          if(which==='input'){ state.zoomInput = clamp(state.zoomInput*factor, minZ, maxZ); }
+          else{ state.zoomOutput = clamp(state.zoomOutput*factor, minZ, maxZ); }
+          applyTransforms();
+        }, {passive:false});
+      };
+
+      /*** Filter dropdown ***/
+      const openFilterDropdown = (anchorEl) => {
+        const dd = $('filterDropdown');
+        dd.innerHTML = '';
+        for(let f=0; f<state.Cout; f++){
+          const b = document.createElement('button');
+          b.type='button'; b.setAttribute('role','option');
+          const row = document.createElement('div'); row.className='rowline';
+          const sw = document.createElement('span'); sw.className='ch-swatch'; sw.style.background = hexToRGBA(getFilterColor(f), .45);
+          const txt = document.createElement('span'); txt.textContent = `Filter ${f}`;
+          row.appendChild(sw); row.appendChild(txt);
+          b.appendChild(row);
+          if(f===state.selF) b.style.outline='1px solid var(--filter)';
+          b.addEventListener('click', ()=>{ state.selF = f; draw(); closeFilterDropdown(); });
+          dd.appendChild(b);
+        }
+
+        const rect = anchorEl.getBoundingClientRect();
+        dd.style.left = `${rect.left}px`;
+        dd.style.top  = `${rect.bottom + 6}px`;
+        dd.style.display = 'block';
+
+        requestAnimationFrame(()=>{
+          const onDocClick = (e)=>{ if(!dd.contains(e.target) && !anchorEl.contains(e.target)) closeFilterDropdown(); };
+          window.addEventListener('mousedown', onDocClick, { once:true });
+        });
+      };
+      const closeFilterDropdown = () => { $('filterDropdown').style.display='none'; };
+
+      /*** Wire up ***/
+      const bindInputs = () => {
+        ['inpH','inpW','inpCin','inpCout','inpK','inpS','inpP','inpBias'].forEach(id=>{
+          $(id).addEventListener('input',()=>{
+            state.H=+$('inpH').value; state.W=+$('inpW').value;
+            state.Cin=+$('inpCin').value; state.Cout=+$('inpCout').value;
+            state.k=+$('inpK').value; state.s=+$('inpS').value;
+            state.p=+$('inpP').value; state.bias=+$('inpBias').value;
+            recompute();
+          });
+        });
+        $('btnRandomize').addEventListener('click',()=>{ randomizeInput(); draw(); });
+        $('btnRandomK').addEventListener('click',()=>{ randomizeKernels(); renderKernelValues(); renderBreakdown(); renderOutputs(); renderSceneTitles(); });
+        $('btnStep').addEventListener('click', stepOnce);
+        $('btnPlay').addEventListener('click', toggle);
+        $('btnReset').addEventListener('click',()=>{ state.pos={i:0,j:0}; stop(); draw(); });
+        $('inpGap').addEventListener('input',e=>{ state.depth = +e.target.value; draw(); });
+
+        enableDrag($('inputScene'));
+        enableDrag($('outputScene'));
+        enableWheelZoom($('inputScene'),'input');
+        enableWheelZoom($('outputScene'),'output');
+
+        $('filterBadge').addEventListener('click', (e)=>{ e.stopPropagation(); openFilterDropdown(e.currentTarget); });
+        $('filterBadge').addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openFilterDropdown(e.currentTarget); }});
+      };
+
+      /*** Sanity checks (non-fatal warnings) ***/
+      const sanityChecks = () => {
+        try{
+          const snapshot=JSON.parse(JSON.stringify(state));
+          state.H=1;state.W=1;state.Cin=1;state.Cout=1;state.k=1;state.s=1;state.p=0;state.bias=1;
+          state.input=[[[2]]];state.kernels=[[[[3]]]];state.biases=[5];
+          const vb=convAt(0,0,0); if(vb!==11) console.warn('Sanity: bias+kernel failed, got',vb);
+          state.H=5;state.W=5;state.k=3;state.s=1;state.p=1;const d1=dimsOut(); if(d1.Hout!==5||d1.Wout!==5) console.warn('Sanity: padding dims failed',d1);
+          Object.assign(state,snapshot);
+        }catch(e){ console.warn('Sanity checks error',e); }
+      };
+
+      /*** Boot ***/
+      const boot = () => {
+        randomizeInput();
+        randomizeKernels();
+        bindInputs();
+        draw();
+        sanityChecks();
+      };
+
+      // Expose for debugging (optional)
+      window.ConvoViz = { state, draw };
+
+      // Start
+      boot();
+    })();
+  </script>
+</body>
+</html>
