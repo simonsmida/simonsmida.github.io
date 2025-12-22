@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Inner Citadel: Marcus Aurelius Companion</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    
+    <style>
+        /* Typography */
+        h1, h2, h3, h4, .serif-font { font-family: 'Cinzel', serif; }
+        body { font-family: 'Lato', sans-serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6a6a6a; }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-stone-950 text-stone-200 antialiased selection:bg-yellow-900 selection:text-white">
+
+    <nav class="fixed w-full z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-yellow-600">temple_buddhist</span>
+                    <span class="text-xl font-bold serif-font tracking-widest text-stone-100">THE INNER CITADEL</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#philosophy" class="hover:text-yellow-500 transition-colors text-sm font-bold uppercase tracking-wide">The Philosophy</a>
+                    <a href="#disciplines" class="hover:text-yellow-500 transition-colors text-sm font-bold uppercase tracking-wide">3 Disciplines</a>
+                    <a href="#journaling" class="hover:text-yellow-500 transition-colors text-sm font-bold uppercase tracking-wide">Journaling</a>
+                    <a href="#quotes" class="hover:text-yellow-500 transition-colors text-sm font-bold uppercase tracking-wide">Wisdom</a>
+                </div>
+
+                <div class="md:hidden">
+                    <span class="material-symbols-outlined text-stone-300 cursor-pointer">menu</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="../media/marcus.png" alt="Marcus Aurelius Writing in Tent" class="w-full h-full object-cover object-top opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-transparent"></div>
+        </div>
+        
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto fade-in">
+            <p class="text-yellow-600 tracking-[0.2em] mb-4 uppercase text-sm font-bold">The Emperor's Handbook</p>
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">Meditations</h1>
+            <p class="text-xl md:text-2xl text-stone-300 font-light mb-10 italic">"Waste no more time arguing about what a good man should be. Be one."</p>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="#philosophy" class="px-8 py-3 bg-yellow-700 hover:bg-yellow-600 text-white font-bold rounded-sm transition-all duration-300 border border-yellow-600 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                    Start Learning
+                </a>
+                <button onclick="openQuoteModal()" class="px-8 py-3 bg-stone-900/50 hover:bg-stone-800 text-stone-200 font-bold rounded-sm transition-all duration-300 border border-stone-600 backdrop-blur-sm">
+                    Consult the Emperor
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section id="philosophy" class="py-20 px-4 bg-stone-950 relative">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1 space-y-6">
+                <h2 class="text-3xl md:text-4xl text-yellow-500 mb-4">Not a Diary, But a Weapon</h2>
+                <div class="w-20 h-1 bg-yellow-700 mb-6"></div>
+                <p class="text-lg text-stone-300 leading-relaxed">
+                    <span class="text-white font-bold">"To Himself"</span> (<i>Ta eis heauton</i>) was never meant for publication. Marcus Aurelius, the most powerful man on earth, wrote these notes while on military campaigns in the Danube frontier.
+                </p>
+                <p class="text-stone-400 leading-relaxed">
+                    These were not records of daily events, but <span class="text-yellow-500 font-bold">spiritual exercises</span>. He wrote to program his mind, to dye his soul with the ink of philosophy. He was fighting a battle not just against barbarians, but against anger, fear, and the corruption of absolute power.
+                </p>
+                <div class="p-4 border-l-4 border-yellow-700 bg-stone-900/50 rounded-r-lg mt-4">
+                    <p class="italic text-stone-300">"The art of living is more like wrestling than dancing."</p>
+                </div>
+            </div>
+            
+            <div class="order-1 md:order-2">
+                <div class="relative rounded-lg overflow-hidden shadow-2xl border border-stone-800 group h-96 md:h-auto">
+                    <img src="https://img.freepik.com/premium-photo/portrait-stoic-marcus-aurelius-black-white-film-grain-highly-detailed-masterpiece_1097265-29435.jpg?w=360" alt="Marcus Aurelius Bust" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-stone-950 to-transparent opacity-60"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <p class="text-yellow-500 text-sm tracking-widest uppercase">The Philosopher King</p>
+                        <p class="text-white font-bold serif-font text-xl">121 AD - 180 AD</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="disciplines" class="py-20 px-4 bg-stone-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl text-white mb-4">The Three Disciplines</h2>
+                <p class="text-stone-400 max-w-2xl mx-auto">The core framework of the Meditations. Marcus returned to these three themes relentlessly.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-stone-950 border border-stone-800 rounded-lg p-6 hover:border-yellow-700 transition-colors duration-300 group">
+                    <div class="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center mb-4 text-yellow-600 group-hover:bg-yellow-700 group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </div>
+                    <h3 class="text-2xl text-white mb-2">1. Perception</h3>
+                    <p class="text-xs text-stone-500 uppercase tracking-widest mb-4">Discipline of Assent</p>
+                    <p class="text-stone-300 mb-4">Objective judgment. Seeing things exactly as they are, stripped of the "story" we tell ourselves.</p>
+                </div>
+
+                <div class="bg-stone-950 border border-stone-800 rounded-lg p-6 hover:border-yellow-700 transition-colors duration-300 group">
+                    <div class="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center mb-4 text-yellow-600 group-hover:bg-yellow-700 group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">handshake</span>
+                    </div>
+                    <h3 class="text-2xl text-white mb-2">2. Action</h3>
+                    <p class="text-xs text-stone-500 uppercase tracking-widest mb-4">Discipline of Desire</p>
+                    <p class="text-stone-300 mb-4">Unselfish action for the common good. We are social animals, like bees in a hive.</p>
+                </div>
+
+                <div class="bg-stone-950 border border-stone-800 rounded-lg p-6 hover:border-yellow-700 transition-colors duration-300 group">
+                    <div class="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center mb-4 text-yellow-600 group-hover:bg-yellow-700 group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">all_inclusive</span>
+                    </div>
+                    <h3 class="text-2xl text-white mb-2">3. Will</h3>
+                    <p class="text-xs text-stone-500 uppercase tracking-widest mb-4">Amor Fati</p>
+                    <p class="text-stone-300 mb-4">Willing acceptance. Loving what fate brings you, because it is part of the whole.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="journaling" class="py-20 px-4 bg-stone-950">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <h2 class="text-3xl md:text-4xl text-yellow-500 mb-6">How to Take Notes Like a Stoic</h2>
+                    <p class="text-stone-300 mb-4 leading-relaxed">
+                        Marcus's method was <span class="text-white font-bold">reframing</span>. He didn't just vent his feelings; he dissected them. He used writing to strip events of their emotional baggage.
+                    </p>
+                    <ul class="space-y-4 mt-8">
+                        <li class="flex items-start">
+                            <span class="material-symbols-outlined text-yellow-600 mr-3 mt-1">edit_off</span>
+                            <div>
+                                <h4 class="text-white font-bold">1. Strip it Bare</h4>
+                                <p class="text-stone-400 text-sm">Remove the adjectives. "This magnificent roast pork" becomes "a dead pig".</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="material-symbols-outlined text-yellow-600 mr-3 mt-1">psychology</span>
+                            <div>
+                                <h4 class="text-white font-bold">2. Check Your Opinion</h4>
+                                <p class="text-stone-400 text-sm">The event didn't hurt you; your opinion that "it is bad" hurt you.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-stone-900 border border-stone-700 rounded-lg p-6 shadow-xl relative overflow-hidden">
+                    <h3 class="text-xl text-white mb-6 border-b border-stone-800 pb-2">Try the Method</h3>
+                    
+                    <div id="journal-step-1">
+                        <label class="block text-stone-400 text-sm mb-2">What is bothering you?</label>
+                        <textarea id="journal-input" class="w-full bg-stone-950 border border-stone-700 rounded p-3 text-white focus:border-yellow-600 focus:outline-none h-24" placeholder="e.g., My boss yelled at me today..."></textarea>
+                        <button onclick="processJournal()" class="mt-4 w-full bg-yellow-700 hover:bg-yellow-600 text-white py-2 rounded font-bold transition-colors">Apply Stoic Filter</button>
+                    </div>
+
+                    <div id="journal-step-2" class="hidden space-y-4 fade-in">
+                        <div class="bg-stone-950 p-4 rounded border-l-4 border-yellow-600">
+                            <p class="text-xs text-stone-500 uppercase">Step 1: Stripped Bare</p>
+                            <p class="text-stone-300 italic">"A fellow human moved their vocal cords and emitted loud sounds in my direction."</p>
+                        </div>
+                        <div class="bg-stone-950 p-4 rounded border-l-4 border-yellow-600">
+                            <p class="text-xs text-stone-500 uppercase">Step 2: The Opinion</p>
+                            <p class="text-stone-300 italic">"I am choosing to interpret this sound as an injury. I can choose to hear it merely as noise."</p>
+                        </div>
+                        <button onclick="resetJournal()" class="w-full border border-stone-600 text-stone-400 hover:text-white py-2 rounded transition-colors">Try Another</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="h-96 relative flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0">
+            <img src="../media/cosmic_view.png" alt="Cosmic View" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/50"></div>
+        </div>
+        <div class="relative z-10 text-center max-w-3xl px-4">
+            <h3 class="text-3xl md:text-5xl text-white font-bold mb-4 serif-font">The View from Above</h3>
+            <p class="text-xl text-stone-200 italic">"Think of the whole universe of matter and how small your share. Think of the expanse of time and how brief your allotment."</p>
+        </div>
+    </section>
+
+    <section id="quotes" class="py-20 px-4 bg-stone-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-12">
+                <h2 class="text-3xl md:text-4xl text-white mb-6 md:mb-0">Curated Wisdom</h2>
+                
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <button onclick="filterQuotes('all')" class="quote-filter px-4 py-1 rounded-full border border-stone-600 text-sm hover:bg-yellow-700 hover:text-white transition-all bg-yellow-700 text-white">All</button>
+                    <button onclick="filterQuotes('mind')" class="quote-filter px-4 py-1 rounded-full border border-stone-600 text-sm text-stone-300 hover:bg-yellow-700 hover:text-white transition-all">The Mind</button>
+                    <button onclick="filterQuotes('death')" class="quote-filter px-4 py-1 rounded-full border border-stone-600 text-sm text-stone-300 hover:bg-yellow-700 hover:text-white transition-all">Death & Time</button>
+                    <button onclick="filterQuotes('nature')" class="quote-filter px-4 py-1 rounded-full border border-stone-600 text-sm text-stone-300 hover:bg-yellow-700 hover:text-white transition-all">Nature</button>
+                </div>
+            </div>
+
+            <div id="quote-grid" class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                </div>
+        </div>
+    </section>
+
+    <footer class="bg-stone-950 border-t border-stone-800 py-12 px-4 text-center">
+        <p class="text-yellow-600 text-2xl font-bold mb-4 serif-font">THE INNER CITADEL</p>
+        <p class="text-stone-500 text-sm max-w-md mx-auto mb-8">"You could leave life right now. Let that determine what you do and say and think."</p>
+        <div class="text-stone-700 text-xs">
+            <p>Based on the translations of Gregory Hays and George Long.</p>
+        </div>
+    </footer>
+
+    <dialog id="random-quote-modal" class="bg-transparent backdrop:bg-black/80 p-0 rounded-lg shadow-2xl w-11/12 max-w-2xl open:animate-fade-in">
+        <div class="bg-stone-900 border border-yellow-600 rounded-lg p-8 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-yellow-600"></div>
+            <button onclick="document.getElementById('random-quote-modal').close()" class="absolute top-4 right-4 text-stone-500 hover:text-white">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            
+            <div class="text-center py-8">
+                <span class="material-symbols-outlined text-4xl text-yellow-600 mb-4">format_quote</span>
+                <p id="modal-quote-text" class="text-2xl text-white font-serif leading-relaxed mb-6"></p>
+                <p id="modal-quote-source" class="text-yellow-500 text-sm tracking-widest uppercase"></p>
+            </div>
+            
+            <div class="flex justify-center pt-4 border-t border-stone-800">
+                <button onclick="generateRandomQuote()" class="text-stone-400 hover:text-white flex items-center text-sm">
+                    <span class="material-symbols-outlined text-sm mr-2">refresh</span> Another
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        // --- DATA ---
+        const quotes = [
+            { text: "You have power over your mind - not outside events. Realize this, and you will find strength.", category: "mind", book: "Book 4" },
+            { text: "The happiness of your life depends upon the quality of your thoughts.", category: "mind", book: "Book 3" },
+            { text: "Waste no more time arguing about what a good man should be. Be one.", category: "action", book: "Book 10" },
+            { text: "It is not death that a man should fear, but he should fear never beginning to live.", category: "death", book: "Book 12" },
+            { text: "The best revenge is to be unlike him who performed the injury.", category: "people", book: "Book 6" },
+            { text: "Accept the things to which fate binds you, and love the people with whom fate brings you together, but do so with all your heart.", category: "nature", book: "Book 6" },
+            { text: "If you are distressed by anything external, the pain is not due to the thing itself, but to your estimate of it; and this you have the power to revoke at any moment.", category: "mind", book: "Book 8" },
+            { text: "Think of yourself as dead. You have lived your life. Now take what's left and live it properly.", category: "death", book: "Book 7" },
+            { text: "The impediment to action advances action. What stands in the way becomes the way.", category: "action", book: "Book 5" },
+            { text: "Loss is nothing else but change, and change is Nature's delight.", category: "nature", book: "Book 9" }
+        ];
+
+        // --- QUOTE SYSTEM ---
+        function renderQuotes(filter = 'all') {
+            const grid = document.getElementById('quote-grid');
+            grid.innerHTML = '';
+            
+            const filtered = filter === 'all' ? quotes : quotes.filter(q => q.category === filter);
+            
+            filtered.forEach(q => {
+                const el = document.createElement('div');
+                el.className = 'break-inside-avoid bg-stone-950 border border-stone-800 p-6 rounded-lg hover:border-stone-600 transition-all duration-300';
+                el.innerHTML = `
+                    <div class="mb-4"><span class="material-symbols-outlined text-stone-700 text-3xl">format_quote</span></div>
+                    <p class="text-stone-200 text-lg mb-4 serif-font leading-relaxed">${q.text}</p>
+                    <div class="flex justify-between items-center border-t border-stone-900 pt-4">
+                        <span class="text-yellow-600 text-xs font-bold uppercase tracking-wider">${q.book}</span>
+                        <span class="text-stone-600 text-xs uppercase">${q.category}</span>
+                    </div>
+                `;
+                grid.appendChild(el);
+            });
+        }
+
+        function filterQuotes(category) {
+            // Update buttons styling
+            document.querySelectorAll('.quote-filter').forEach(btn => {
+                const isMatch = btn.textContent.toLowerCase().includes(category) || (category === 'all' && btn.textContent === 'All');
+                if(isMatch) {
+                    btn.classList.add('bg-yellow-700', 'text-white');
+                    btn.classList.remove('text-stone-300');
+                } else {
+                    btn.classList.remove('bg-yellow-700', 'text-white');
+                    btn.classList.add('text-stone-300');
+                }
+            });
+            renderQuotes(category);
+        }
+
+        // --- JOURNAL SYSTEM ---
+        function processJournal() {
+            const input = document.getElementById('journal-input').value;
+            if(!input) return;
+            document.getElementById('journal-step-1').classList.add('hidden');
+            document.getElementById('journal-step-2').classList.remove('hidden');
+        }
+
+        function resetJournal() {
+            document.getElementById('journal-input').value = '';
+            document.getElementById('journal-step-2').classList.add('hidden');
+            document.getElementById('journal-step-1').classList.remove('hidden');
+        }
+
+        // --- MODAL SYSTEM ---
+        function openQuoteModal() {
+            document.getElementById('random-quote-modal').showModal(); 
+            generateRandomQuote();
+        }
+
+        function generateRandomQuote() {
+            const random = quotes[Math.floor(Math.random() * quotes.length)];
+            const textEl = document.getElementById('modal-quote-text');
+            const sourceEl = document.getElementById('modal-quote-source');
+            
+            textEl.style.opacity = 0;
+            setTimeout(() => {
+                textEl.textContent = random.text;
+                sourceEl.textContent = `Marcus Aurelius | ${random.book}`;
+                textEl.style.opacity = 1;
+            }, 200);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuotes();
+        });
+    </script>
+</body>
+</html>
