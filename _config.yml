@@ -1,3 +1,12 @@
 remote_theme: "mmistakes/minimal-mistakes"
 plugins:
   - jekyll-include-cache
+
+defaults:
+  - scope:
+      path: "notes"
+    values:
+      layout: single
+      read_time: true
+      toc: false
+      toc_sticky: false

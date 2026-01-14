@@ -1,6 +1,9 @@
 ---
 layout: single
 title: Wonderful blog
+read_time: true
+categories: [interpretability]
+tags: [prototypes, cnn]
 ---
 
 # This is my take on the subject
