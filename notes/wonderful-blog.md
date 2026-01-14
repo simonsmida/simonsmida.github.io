@@ -15,18 +15,28 @@ I want to be clear, it is a really, really interesting one!
 
 ## How to get there?
 
-	* But where??
-	* We will get there, if the time is right
+The real question is:
+
+* But where??
+* We will get there, if the time is right
 
 ---
 
 ```python
 import life
 
-if energy < necessary:
-	stay = hard
+necessary = infty
+
+# This is bad and need a fix (lgtm tho)
+while life.energy < necessary:
+	try:
+		stay = hard
+	finally:
+		die # NOTE: you should not!
+
 
 exit()
+
 ```
 
 ![future](images/futureme.gif)
@@ -44,10 +54,13 @@ This is all nice, but will it work?
 
 ## How do we end?
 
-	* nice and clear
-	* nice and clean
-	* nice and
-	* clearn
-	* help.
+The real stuff:
+
+* nice and clear
+* nice and clean
+* nice and
+* clearn
+* help.
+
 
 This was nice. Lil' bit of this, lil' bit of that - I should finish my slides, otherwise I'm dead.
