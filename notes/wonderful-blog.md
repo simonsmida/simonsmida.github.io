@@ -3,7 +3,7 @@ layout: default
 title: Wonderful Blog n.1
 ---
 
-## This is my take on the subject
+# This is my take on the subject
 
 I want to be clear, it is a really, really interesting one!
 
@@ -15,31 +15,39 @@ I want to be clear, it is a really, really interesting one!
 
 ## How to get there?
 
-* But where??
-* We will get there, if the time is right
+	* But where??
+	* We will get there, if the time is right
 
 ---
 
-<p align="center">
-  <img src="images/futureme.gif" alt="Future Me">
-</p>
+```python
+import life
+
+if energy < necessary:
+	stay = hard
+
+exit()
+```
+
+![future](images/futureme.gif)
 
 This is all nice, but will it work?
 
 ---
 
-| Subject | Object | Neglect |
+| **Subject** | **Object** | **Neglect** |
 | :--- | :--- | :--- |
 | never | stop | living |
 | unless | you | must |
 | die | or | something |
 
+
 ## How do we end?
 
-* nice and clear
-* nice and clean
-* nice and
-* clearn
-* help.
+	* nice and clear
+	* nice and clean
+	* nice and
+	* clearn
+	* help.
 
 This was nice. Lil' bit of this, lil' bit of that - I should finish my slides, otherwise I'm dead.
