@@ -1,6 +1,7 @@
 ---
-layout: default
+layout: single
 title: Notes
+permalink: /notes/
 ---
 
 # Personal Notes

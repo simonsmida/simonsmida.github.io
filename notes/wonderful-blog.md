@@ -1,6 +1,6 @@
 ---
-layout: default
-title: Wonderful Blog n.1
+layout: single
+title: Wonderful blog
 ---
 
 # This is my take on the subject
