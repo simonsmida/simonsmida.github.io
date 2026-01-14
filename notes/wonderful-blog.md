@@ -37,9 +37,7 @@ while life.energy < necessary:
 	finally:
 		die # NOTE: you should not!
 
-
 exit()
-
 ```
 
 ![future](images/futureme.gif)
