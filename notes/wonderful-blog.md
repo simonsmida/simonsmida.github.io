@@ -4,6 +4,7 @@ title: Wonderful blog
 read_time: true
 categories: [interpretability]
 tags: [prototypes, cnn]
+classes: wide
 ---
 
 # This is my take on the subject
