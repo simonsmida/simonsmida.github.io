@@ -2,17 +2,23 @@ remote_theme: "mmistakes/minimal-mistakes"
 plugins:
   - jekyll-include-cache
 
-minimal_mistakes_skin: "default"   # or "air", "contrast", "dark"
+minimal_mistakes_skin: "default"
+
+navigation: false
+
+footer:
+  show: false
 
 defaults:
   - scope:
       path: "notes"
     values:
       layout: single
+      classes: wide
       read_time: true
-      toc: false
-      toc_sticky: false
-
-header:
-  nav: false
-  footer: false
+      show_date: true
+      show_tags: true
+      show_categories: true
+      author_profile: false
+      share: false
+      related: false
