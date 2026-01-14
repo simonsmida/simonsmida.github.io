@@ -1,19 +1,20 @@
 ---
 layout: single
 title: Wonderful blog
-read_time: true
+classes: wide
 categories: [interpretability]
 tags: [prototypes, cnn]
-classes: wide
+meta:
+  - categories
+  - tags
 ---
 
-# This is my take on the subject
+
+## This is my take on the subject
 
 I want to be clear, it is a really, really interesting one!
 
-<p align="center">
-  <img src="images/lucifer.png" alt="Lucifer">
-</p>
+![luci](images/lucifer.png)
 
 > *The more interesting stuff one reads, the more muscle he gains!* - literally no one said never
 

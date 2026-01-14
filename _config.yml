@@ -1,13 +1,14 @@
-remote_theme: "mmistakes/minimal-mistakes"
+remote_theme: mmistakes/minimal-mistakes
 plugins:
   - jekyll-include-cache
 
-minimal_mistakes_skin: "default"
+minimal_mistakes_skin: default
 
-navigation: false
+masthead:
+  display: false
 
 footer:
-  show: false
+  links: []
 
 defaults:
   - scope:
@@ -16,9 +17,6 @@ defaults:
       layout: single
       classes: wide
       read_time: true
-      show_date: true
-      show_tags: true
-      show_categories: true
       author_profile: false
       share: false
       related: false
