@@ -26,14 +26,14 @@ read_time: true
 
 If you want to keep only one picture in your head, keep this:
 
-- A transformer works on a **sequence of vectors**
-- **Attention** lets each vector decide **which other vectors matter**
+- A transformer works on a **sequence of vectors** (tokens)
+- **Attention** lets each token decide **which other tokens matter**
 - It does so by:
-  - comparing vectors (similarity),
+  - comparing tokens (similarity),
   - turning similarities into weights,
   - mixing information accordingly
-- **Q, K, V** are just *different linear views* of the same vectors
-- Attention mixes information; it does **not** create new features
+- **Q, K, V** are *different learned linear views* of the same token vectors
+- Attention mainly does **communication/mixing**, not feature creation (that’s mostly the MLP)
 - Without positional information, attention does **not know order**
 
 Everything below just fills in the details.
@@ -93,7 +93,7 @@ $$
 ## 4. Is this enough?
 
 Ok, is this enough?  
-No. Later on for the transformer to work we would need a thing called **CLS token**.
+No. Later on, for some tasks (like classification), we often add a thing called **CLS token**.
 
 But we'll get there later on.
 
@@ -173,7 +173,7 @@ Important thing is this:
 > **Q, K, V are not concepts!**  
 > They are learned linear projections defining different similarity and information spaces.
 
-And every input gets its Q, K, V vectors:
+And every input gets its Q, K, V vectors. Like this:
 
 $$
 Q = X W_Q
@@ -202,7 +202,7 @@ V
 $$
 
 bjada.  
-Not hard tho, we already have the Q, K, V there, and $d_k$ is some obscure constant which absolutely makes sense there (no but seriously, it helps keep things more stable, for the softmax).
+Not hard tho, we already have the Q, K, V there, and $d_k$ is some obscure constant which absolutely makes sense there (no but seriously, it helps keep the dot products from blowing up with dimension, so the softmax stays in a sane range).
 
 ---
 
@@ -210,14 +210,12 @@ Not hard tho, we already have the Q, K, V there, and $d_k$ is some obscure const
 
 Ok, let's backtrack again a bit.
 
-The $QK$ product, along with the softmax result, produces *weights*  
-(how much similar tokens are), so that we can *weigh* each individual $V$ element.
+The $QK^\top$ product produces pairwise similarity scores between tokens.  
+Then softmax turns them into *weights* (how much each token should attend to others), so that we can *weigh* each individual $V$ element.
 
 In the end, attention comes down to this:
 
-- input vectors (sequence)
-- → **attention**
-- → sequence *with contextual information*
+- input vectors (sequence) → **attention** → sequence *with contextual information*
 
 ---
 
