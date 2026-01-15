@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Attention, from first principles"
+title: "Attention, in 5min"
 excerpt: "A first-principles, no-hype walkthrough of attention in transformers."
 categories:
   - transformers
@@ -20,6 +20,10 @@ read_time: true
 
 ![lucifer](images/lucifer.png)
 > Attention to God I guess... Or vice-versa.
+
+{% twitter https://x.com/hantengri/status/2011542799544627536 %}
+
+Funny, this was posted literally the minute I finished the post T_T..
 
 ---
 
