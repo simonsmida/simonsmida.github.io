@@ -23,7 +23,7 @@ read_time: true
 
 <blockquote class="twitter-tweet">
   <p lang="en" dir="ltr">Funny, this was posted literally the minute I finished the post T_T..</p>
-  ![mock](images/lucifer-mock.png)
+  <img src="images/lucifer-mock.png" alt="lucifer mock">
 </blockquote>
 
 ---
