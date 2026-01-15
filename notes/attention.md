@@ -5,6 +5,7 @@ excerpt: "A first-principles, no-hype walkthrough of attention in transformers."
 categories:
   - transformers
   - deep-learning
+classes: wide
 tags:
   - attention
   - transformers
