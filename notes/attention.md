@@ -34,7 +34,7 @@ If you want to keep only one picture in your head, keep this:
   - turning similarities into weights,
   - mixing information accordingly
 - **Q, K, V** are *different learned linear views* of the same token vectors
-- Attention mainly does **communication/mixing**, not feature creation (that’s mostly the MLP)
+- Attention mainly does **communication / mixing**, not feature creation (that’s mostly the MLP)
 - Without positional information, attention does **not know order**
 
 Everything below just fills in the details.
@@ -60,6 +60,11 @@ $$
 
 (totally *not* vectors yet)
 
+> **NOTE (EDIT):**  
+> Yeah well, chatGPT was harsh, and told me this was too philosophical and technically sloppy.  
+> So to be precise: in a **transformer**, elements actually **must be representable as vectors** *before* attention.  
+> This doesn’t contradict the intuition — it just makes the constraint explicit.
+
 ---
 
 ## 2. From elements to vectors
@@ -76,8 +81,26 @@ Well, well, well... does this make sense? What is input to linear projection?
 - ~~raw vector elements don't necessarily need to be of same size~~ (this was bs)
   - linear projection actually requires *fixed input* dimensionality (makes sense)
 
+> **NOTE (EDIT):**  
+> Got roasted again. Linear projection is **not THE way**.  
+> There are multiple ways to obtain embeddings:
+> - text → embedding **lookup table**
+> - images → often **linear projection of patches** (ViT case)
+>  
+> I was implicitly thinking ViT here, but this distinction matters.
+
 Ok, so linear projection is mainly about producing *embedding* vectors from *raw* data.  
 So they start behaving.
+
+> **NOTE (EDIT):**  
+> chatGPT correction, phrased cleanly:  
+> *“An initial embedding step maps raw data to vectors.  
+> Later linear projections (Q, K, V) re-express those vectors for attention.”*
+
+> **IMPORTANT:**  
+> We want — and for attention we *need* — a **shared latent space**,  
+> with controlled dimensionality for all tokens,  
+> so dot products and mixing are even meaningful.
 
 ---
 
@@ -86,7 +109,7 @@ So they start behaving.
 So far:
 
 $$
-el_i \;\to\; \text{linear projection} \;\to\; x_i
+el_i \;\to\; \text{embedding step} \;\to\; x_i
 $$
 
 ---
@@ -94,9 +117,13 @@ $$
 ## 4. Is this enough?
 
 Ok, is this enough?  
-No. Later on, for some tasks (like classification), we often add a thing called **CLS token**.
+No. Later on, for some tasks, we often add a thing called **CLS token**.
 
 But we'll get there later on.
+
+> **NOTE (EDIT):**  
+> Apparently (thanks chatGPT), the **CLS token is task-specific**,  
+> mainly used for **classification**, not something the transformer *fundamentally* needs to operate.
 
 ---
 
@@ -114,7 +141,8 @@ How do they relate?
 How do they influence each other?  
 How they interact?
 
-To **give them meaning**, and a better (but what does it mean? we'll get there) one than just the recently done linear projection, we'd like to transform them again, and transform them to somewhere *meaningful*.
+To **give them meaning**, and a better one than just the recently done embedding step,  
+we’d like to transform them again, and transform them to somewhere *meaningful*.
 
 How? **attention**, duh... but why?
 
@@ -134,47 +162,49 @@ What we want is to assess which vectors are somehow *similar*, or *related*.
 How to assess this?
 
 - we must **compare** the **vectors** somehow
-- we want to produce some **scalar score** per vector pair, to assess them
+- we want to produce some **scalar score** per vector pair
 
 Perfect candidate for this is dot product!  
-And it's *cheap*, *scales well*, and is *differentiable*!
+And it's *cheap*, *scales well*, and *differentiable*.
 
-So input embeddings:
+Input embeddings:
 
 $$
 x_1, x_2, \dots x_n
 $$
 
-Score:
+Similarity score:
 
 $$
 \text{Score}(i, j) = x_i \cdot x_j
 $$
 
-...eeeh.. this *should* work in principle, but is apparently not enough (but why?).  
+…eeeh… this *should* work in principle,  
+but is apparently not enough (but why?).
+
 **Q, K, V for the rescue.**
 
 ---
 
 ## 7. Q, K, V (role play time)
 
-I said Q, K, V for the rescue!! Yeah, these letters. We need to role play.
+I said Q, K, V for the rescue!!  
+Yeah, these letters. We need to role play.
 
-From Q, K, V we want to represent distinct roles of interest:
+From Q, K, V we want to represent distinct roles:
 
 - Decide **what** the vector **is looking for** → **Q**
 - Decide **how** the vector **should be matched** → **K**
-- Decide **what info should** the vector **transmit** → **V**
+- Decide **what information** the vector **transmits** → **V**
 
 Mystical, needs *polish*ing (🇵🇱 mentioned).
 
-Ok, not polished yet, but whatever idc now.  
-Important thing is this:
+Important thing:
 
-> **Q, K, V are not concepts!**  
-> They are learned linear projections defining different similarity and information spaces.
+> **Q, K, V are not concepts.**  
+> They are **learned linear projections** defining different similarity and information spaces.
 
-And every input gets its Q, K, V vectors. Like this:
+Every input gets its own Q, K, V:
 
 $$
 Q = X W_Q
@@ -192,7 +222,7 @@ $$
 
 ## 8. The attention formula
 
-Then attention is simple, just blindly follow this formula:
+Then attention is simple. Just blindly follow the formula:
 
 $$
 \mathrm{Attention}(X) =
@@ -203,20 +233,27 @@ V
 $$
 
 bjada.  
-Not hard tho, we already have the Q, K, V there, and $d_k$ is some obscure constant which absolutely makes sense there (no but seriously, it helps keep the dot products from blowing up with dimension, so the softmax stays in a sane range).
+Not hard tho — we already have Q, K, V.
+
+And $d_k$?  
+Not some mystical constant — it prevents dot products from growing with dimension  
+and keeps the softmax in a sane regime.
 
 ---
 
 ## 9. What the formula actually does
 
-Ok, let's backtrack again a bit.
+Let’s unpack it again.
 
-The $QK^\top$ product produces pairwise similarity scores between tokens.  
-Then softmax turns them into *weights* (how much each token should attend to others), so that we can *weigh* each individual $V$ element.
+- $QK^\top$ → pairwise similarity scores
+- softmax → normalized attention weights
+- weighted sum of $V$ → information mixing
 
-In the end, attention comes down to this:
+In the end:
 
-- input vectors (sequence) → **attention** → sequence *with contextual information*
+input vectors (sequence)  
+→ **attention**  
+→ sequence *with contextual information*
 
 ---
 
@@ -224,23 +261,27 @@ In the end, attention comes down to this:
 
 So we done? Basically. But not practically.
 
-What we've done is called **single self-attention**.  
+What we’ve described so far is **single self-attention**.  
 But this is ~~weak~~ **limited to one similarity space**.
 
-It learns just a *single* notion of relevance.
+It learns a *single* notion of relevance.
 
-We want to do better.
+Why stop there?
 
-Why not do it *multiple* times, to get *multiple* notions of relevance, to get different similarity metrics??  
-And do it in parallel??
+Why not:
+- multiple similarity spaces,
+- multiple notions of relevance,
+- computed in parallel?
 
-Yeah, that's **multi-head attention**.
+Yeah. That’s **multi-head attention**.
 
 ---
 
 ## 11. One crucial thing I forgor
 
-So that I'm totally cooked, apparently I omitted the most important thing I should mention.  
-Thanks chatGPT again. So here it is:
+So yeah, I totally forgot the most important thing at first.
 
-> “Note that **attention alone is permutation-invariant**, so *positional* information must be added separately.” — chatGPT banger
+Here it is:
+
+> **“Attention alone is permutation-invariant,  
+> so positional information must be added separately.”** — chatGPT banger
