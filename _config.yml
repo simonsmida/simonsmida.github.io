@@ -22,3 +22,4 @@ defaults:
       author_profile: false
       share: false
       related: false
+      mathjax: true
