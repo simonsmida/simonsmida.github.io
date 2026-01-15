@@ -16,10 +16,10 @@ author_profile: false
 share: false
 related: false
 read_time: true
-mathjax: true
 ---
 
 ![lucifer](images/lucifer.png)
+> Attention to God I guess... Or vice-versa.
 
 🧙🏻‍♂️: Let's try to unpack this *magic* word.
 
