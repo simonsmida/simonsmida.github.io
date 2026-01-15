@@ -23,10 +23,8 @@ read_time: true
 
 <blockquote class="twitter-tweet">
   <p lang="en" dir="ltr">Funny, this was posted literally the minute I finished the post T_T..</p>
-  &mdash; Username (@handle) <a href="https://x.com/hantengri/status/2011542799544627536">Date</a>
+  ![mock](images/lucifer-mock.png)
 </blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
 
 ---
 
