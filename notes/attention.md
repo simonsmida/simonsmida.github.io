@@ -11,7 +11,6 @@ tags:
   - vit
   - self-attention
   - deep-learning
-classes: wide
 author_profile: false
 share: false
 related: false
@@ -20,6 +19,26 @@ read_time: true
 
 ![lucifer](images/lucifer.png)
 > Attention to God I guess... Or vice-versa.
+
+---
+
+## TL;DR — the mental model
+
+If you want to keep only one picture in your head, keep this:
+
+- A transformer works on a **sequence of vectors**
+- **Attention** lets each vector decide **which other vectors matter**
+- It does so by:
+  - comparing vectors (similarity),
+  - turning similarities into weights,
+  - mixing information accordingly
+- **Q, K, V** are just *different linear views* of the same vectors
+- Attention mixes information; it does **not** create new features
+- Without positional information, attention does **not know order**
+
+Everything below just fills in the details.
+
+---
 
 🧙🏻‍♂️: Let's try to unpack this *magic* word.
 
@@ -32,10 +51,12 @@ Sequence = sentence of words, image of patches, ...
 
 - elements of a sequence are not necessarily vectors; they can be *anything*!
 
-Input sequence:  
-\[
+Input sequence:
+
+$$
 el_1, el_2, \dots el_n
-\]
+$$
+
 (totally *not* vectors yet)
 
 ---
@@ -63,9 +84,9 @@ So they start behaving.
 
 So far:
 
-\[
+$$
 el_i \;\to\; \text{linear projection} \;\to\; x_i
-\]
+$$
 
 ---
 
@@ -118,14 +139,16 @@ Perfect candidate for this is dot product!
 And it's *cheap*, *scales well*, and is *differentiable*!
 
 So input embeddings:
-\[
+
+$$
 x_1, x_2, \dots x_n
-\]
+$$
 
 Score:
-\[
+
+$$
 \text{Score}(i, j) = x_i \cdot x_j
-\]
+$$
 
 ...eeeh.. this *should* work in principle, but is apparently not enough (but why?).  
 **Q, K, V for the rescue.**
@@ -152,9 +175,17 @@ Important thing is this:
 
 And every input gets its Q, K, V vectors:
 
-- \( Q = X W_Q \)
-- \( K = X W_K \)
-- \( V = X W_V \)
+$$
+Q = X W_Q
+$$
+
+$$
+K = X W_K
+$$
+
+$$
+V = X W_V
+$$
 
 ---
 
@@ -162,16 +193,16 @@ And every input gets its Q, K, V vectors:
 
 Then attention is simple, just blindly follow this formula:
 
-\[
+$$
 \mathrm{Attention}(X) =
 \mathrm{softmax}\left(
 \frac{Q K^\top}{\sqrt{d_k}}
 \right)
 V
-\]
+$$
 
 bjada.  
-Not hard tho, we already have the Q, K, V there, and \( d_k \) is some obscure constant which absolutely makes sense there (no but seriously, it helps keep things more stable, for the softmax).
+Not hard tho, we already have the Q, K, V there, and $d_k$ is some obscure constant which absolutely makes sense there (no but seriously, it helps keep things more stable, for the softmax).
 
 ---
 
@@ -179,8 +210,8 @@ Not hard tho, we already have the Q, K, V there, and \( d_k \) is some obscure c
 
 Ok, let's backtrack again a bit.
 
-The \( QK \) product, along with the softmax result, produces *weights*  
-(how much similar tokens are), so that we can *weigh* each individual \( V \) element.
+The $QK$ product, along with the softmax result, produces *weights*  
+(how much similar tokens are), so that we can *weigh* each individual $V$ element.
 
 In the end, attention comes down to this:
 
@@ -213,4 +244,4 @@ Yeah, that's **multi-head attention**.
 So that I'm totally cooked, apparently I omitted the most important thing I should mention.  
 Thanks chatGPT again. So here it is:
 
-> **“Note that attention alone is permutation-invariant, so positional information must be added separately.”** — chatGPT banger
+> “Note that **attention alone is permutation-invariant**, so *positional* information must be added separately.” — chatGPT banger
