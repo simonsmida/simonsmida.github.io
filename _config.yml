@@ -10,6 +10,8 @@ masthead:
 footer:
   links: []
 
+mathjax: true
+
 defaults:
   - scope:
       path: "notes"
