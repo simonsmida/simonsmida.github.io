@@ -9,3 +9,4 @@ permalink: /notes/
 Here are my thoughts and learnings.
 
 * [Wonderful Blog](/notes/wonderful-blog)
+* [Attention](/notes/attention)
