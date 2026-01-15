@@ -21,9 +21,12 @@ read_time: true
 ![lucifer](images/lucifer.png)
 > Attention to God I guess... Or vice-versa.
 
-{{twitter https://x.com/hantengri/status/2011542799544627536}}
+<blockquote class="twitter-tweet">
+  <p lang="en" dir="ltr">Funny, this was posted literally the minute I finished the post T_T..</p>
+  &mdash; Username (@handle) <a href="https://x.com/hantengri/status/2011542799544627536">Date</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-Funny, this was posted literally the minute I finished the post T_T..
 
 ---
 
