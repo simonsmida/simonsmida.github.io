@@ -1,5 +1,6 @@
 ---
 title: Notes
 permalink: /notes/
-layout: home 
+layout: posts
+entries_layout: grid
 ---
