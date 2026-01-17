@@ -38,8 +38,3 @@ footer:
     - label: "RSS"
       icon: "fas fa-rss"
       url: "/feed.xml"
-
-collections:
-  shorties:
-    output: true
-    permalink: /shorties/:slug/
