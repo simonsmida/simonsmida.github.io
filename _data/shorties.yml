@@ -6,14 +6,6 @@
   url: "books/plato/last-days-of-socrates"
   description: "A summary of the dialogues: Euthyphro, Apology, Crito, and Phaedo. Virtue, Justice, and Death."
 
-- title: "Plato: The Theory of Forms"
-  category: Philosophy
-  accent: amber
-  icon: psychology
-  tag: Philosophy
-  url: "philosophy/plato/forms/"
-  description: "The Allegory of the Cave and why perfect circles don't exist in reality."
-
 - title: "Marcus Aurelius: Meditations"
   category: Philosophy
   accent: amber
