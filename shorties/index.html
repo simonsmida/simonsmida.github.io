@@ -1,6 +1,3 @@
----
-layout: null
----
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +22,7 @@ layout: null
 <body class="min-h-screen flex flex-col">
 
     <nav class="flex justify-between items-center p-6 border-b border-stone-800 bg-stone-900/50 backdrop-blur-md sticky top-0 z-50">
-        <a href="/" class="flex items-center gap-2 text-stone-500 hover:text-stone-300 transition-colors text-sm">
+        <a href="../index.html" class="flex items-center gap-2 text-stone-500 hover:text-stone-300 transition-colors text-sm">
             <span class="material-symbols-outlined text-lg">arrow_back</span>
             Back to Main Site
         </a>
@@ -57,23 +54,14 @@ layout: null
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                {% assign books = site.shorties | where: "category", "books" %}
-                {% for shorty in books %}
-                <a href="{{ shorty.url }}" class="search-item block bg-stone-900 border border-stone-800 rounded-xl p-6 transition-all duration-300 card-hover group">
+                <a href="books/last_days_of_socrates.html" class="search-item block bg-stone-900 border border-stone-800 rounded-xl p-6 transition-all duration-300 card-hover group">
                     <div class="flex justify-between items-start mb-4">
                         <span class="bg-red-900/30 text-red-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-widest">Book Summary</span>
                         <span class="material-symbols-outlined text-stone-600 group-hover:text-red-500 transition-colors">arrow_outward</span>
                     </div>
-                    <h3 class="text-xl font-bold text-stone-100 mb-2 group-hover:text-red-400 transition-colors">{{ shorty.title }}</h3>
-                    <p class="text-stone-400 text-sm leading-relaxed">{{ shorty.description }}</p>
+                    <h3 class="text-xl font-bold text-stone-100 mb-2 group-hover:text-red-400 transition-colors">Plato: The Last Days of Socrates</h3>
+                    <p class="text-stone-400 text-sm leading-relaxed">A summary of the dialogues: Euthyphro, Apology, Crito, and Phaedo. Virtue, Justice, and Death.</p>
                 </a>
-                {% endfor %}
-
-                {% if books.size == 0 %}
-                <div class="text-stone-600 italic text-sm p-4 border border-dashed border-stone-800 rounded">
-                    No book summaries yet...
-                </div>
-                {% endif %}
                 
             </div>
         </div>
@@ -84,18 +72,24 @@ layout: null
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                {% assign philosophy = site.shorties | where: "category", "philosophy" %}
-                {% for shorty in philosophy %}
-                <a href="{{ shorty.url }}" class="search-item block bg-stone-900 border border-stone-800 rounded-xl p-6 transition-all duration-300 card-hover group">
+                <a href="philosophy/plato_forms.html" class="search-item block bg-stone-900 border border-stone-800 rounded-xl p-6 transition-all duration-300 card-hover group">
                     <div class="flex justify-between items-start mb-4">
                         <span class="bg-amber-900/30 text-amber-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-widest">Philosophy</span>
                         <span class="material-symbols-outlined text-stone-600 group-hover:text-amber-500 transition-colors">arrow_outward</span>
                     </div>
-                    <h3 class="text-xl font-bold text-stone-100 mb-2 group-hover:text-amber-400 transition-colors">{{ shorty.title }}</h3>
-                    <p class="text-stone-400 text-sm leading-relaxed">{{ shorty.description }}</p>
+                    <h3 class="text-xl font-bold text-stone-100 mb-2 group-hover:text-amber-400 transition-colors">Plato: The Theory of Forms</h3>
+                    <p class="text-stone-400 text-sm leading-relaxed">The Allegory of the Cave and why perfect circles don't exist in reality.</p>
                 </a>
-                {% endfor %}
 
+                <a href="philosophy/marcus_aurelius_meditations.html" class="search-item block bg-stone-900 border border-stone-800 rounded-xl p-6 transition-all duration-300 card-hover group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-amber-900/30 text-amber-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-widest">Philosophy</span>
+                        <span class="material-symbols-outlined text-stone-600 group-hover:text-amber-500 transition-colors">arrow_outward</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-stone-100 mb-2 group-hover:text-amber-400 transition-colors">Marcus Aurelius: Meditations</h3>
+                    <p class="text-stone-400 text-sm leading-relaxed">Stoic wisdom from the Roman Emperor on virtue, resilience, and the nature of the universe.</p>
+                </a>
+                
             </div>
         </div>
 
@@ -104,25 +98,9 @@ layout: null
                 <span class="material-symbols-outlined text-blue-500">science</span> Physics
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                {% assign physics = site.shorties | where: "category", "physics" %}
-                {% for shorty in physics %}
-                <a href="{{ shorty.url }}" class="search-item block bg-stone-900 border border-stone-800 rounded-xl p-6 transition-all duration-300 card-hover group">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="bg-blue-900/30 text-blue-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-widest">Physics</span>
-                        <span class="material-symbols-outlined text-stone-600 group-hover:text-blue-500 transition-colors">arrow_outward</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-stone-100 mb-2 group-hover:text-blue-400 transition-colors">{{ shorty.title }}</h3>
-                    <p class="text-stone-400 text-sm leading-relaxed">{{ shorty.description }}</p>
-                </a>
-                {% endfor %}
-
-                {% if physics.size == 0 %}
                 <div class="text-stone-600 italic text-sm p-4 border border-dashed border-stone-800 rounded">
                     No physics shorties yet...
                 </div>
-                {% endif %}
-
             </div>
         </div>
 
