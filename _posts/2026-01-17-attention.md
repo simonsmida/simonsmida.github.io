@@ -1,29 +1,15 @@
 ---
-layout: single
-title: "Attention, in 5min"
-excerpt: "A first-principles, no-hype walkthrough of attention in transformers."
-categories:
-  - transformers
-  - deep-learning
-classes: wide
-tags:
-  - attention
-  - transformers
-  - vit
-  - self-attention
-  - deep-learning
-author_profile: false
-share: false
-related: false
+title: "Attention"
+categories: [notes]
 read_time: true
 ---
 
-![lucifer](images/lucifer.png)
+![lucifer](../assets/notes/lucifer.png)
 > Attention to God I guess... Or vice-versa.
 
 <blockquote class="twitter-tweet">
   <p lang="en" dir="ltr">Funny, this was posted literally the minute I finished the post T_T..</p>
-  <img src="images/lucifer-mock.png" alt="lucifer mock">
+  <img src="../assets/notes/lucifer-mock.png" alt="lucifer mock">
 </blockquote>
 
 ---

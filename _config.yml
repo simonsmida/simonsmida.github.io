@@ -1,39 +1,8 @@
-title: Notes to myself (and anyone else)
-description: A way to keep track of thoughts, mental notes, and ideas.
+title: Notes to myself (and anyone else) - Šimon Šmída
 url: https://simonsmida.github.io
-baseurl: ""
 
 remote_theme: mmistakes/minimal-mistakes
-minimal_mistakes_skin: default
 
 plugins:
   - jekyll-include-cache
   - jekyll-feed
-
-include:
-  - _pages
-
-collections:
-  notes:
-    output: true
-    permalink: /notes/:path/
-
-defaults:
-  - scope:
-      path: ""
-    values:
-      author_profile: false
-
-  - scope:
-      path: ""
-      type: notes
-    values:
-      layout: single
-      classes: wide
-      toc: true
-      read_time: true
-
-navigation:
-  main:
-    - title: Notes
-      url: /notes/
