@@ -26,7 +26,12 @@ atom_feed:
 
 footer:
   links:
+    - label: "Personal Website"
+      icon: "fas fa-globe"
+      url: "https://simonsmida.github.io"
     - label: "GitHub"
+      icon: "fab fa-github"
       url: "https://github.com/simonsmida"
     - label: "RSS"
+      icon: "fas fa-rss"
       url: "/feed.xml"
