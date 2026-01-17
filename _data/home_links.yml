@@ -1,0 +1,20 @@
+- label: Chaotic Attractors
+  href: https://simonsmida.github.io/vin-attractool/
+  external: true
+
+- label: Image Interpretability
+  href: /interpretability-demo/
+  external: true
+
+- label: Convolution Demo
+  href: /convolution-demo/
+  external: true
+
+- label: U-Net Feature Explorer
+  href: /unet-demo/
+  external: true
+
+- label: Notes
+  href: /notes/
+  external: false
+  primary: true
