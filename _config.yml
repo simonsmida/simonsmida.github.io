@@ -10,6 +10,9 @@ plugins:
   - jekyll-include-cache
   - jekyll-feed
 
+include:
+  - _pages
+
 collections:
   notes:
     output: true
