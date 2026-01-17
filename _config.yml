@@ -1,6 +1,8 @@
 title: Notes to myself (and anyone else) - Šimon Šmída
 url: https://simonsmida.github.io
 
+masthead_url: /notes/
+
 remote_theme: mmistakes/minimal-mistakes
 
 plugins:

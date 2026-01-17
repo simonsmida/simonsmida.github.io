@@ -4,12 +4,12 @@ categories: [notes]
 read_time: true
 ---
 
-![lucifer](assets/notes/lucifer.png)
+![lucifer](/assets/notes/lucifer.png)
 > Attention to God I guess... Or vice-versa.
 
 <blockquote class="twitter-tweet">
   <p lang="en" dir="ltr">Funny, this was posted literally the minute I finished the post T_T..</p>
-  <img src="assets/notes/lucifer-mock.png" alt="lucifer mock">
+  <img src="/assets/notes/lucifer-mock.png" alt="lucifer mock">
 </blockquote>
 
 ---
