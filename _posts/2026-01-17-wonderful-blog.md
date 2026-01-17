@@ -1,12 +1,7 @@
 ---
-layout: single
-title: Wonderful blog
-classes: wide
-categories: [interpretability]
-tags: [prototypes, cnn]
-meta:
-  - categories
-  - tags
+title: "Wonderful Blog"
+categories: [notes]
+read_time: true
 ---
 
 
