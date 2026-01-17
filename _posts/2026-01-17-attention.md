@@ -1,8 +1,11 @@
 ---
 title: "Attention"
 categories: [notes]
-read_time: true
+excerpt: "Attention mixes information; it does not perform reasoning."
+header:
+  image: /assets/notes/lucifer.png
 ---
+
 
 ![lucifer](/assets/notes/lucifer.png)
 > Attention to God I guess... Or vice-versa.
