@@ -1,69 +1,128 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Last Days of Socrates: A Trilogy</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0"
+        rel="stylesheet">
 
     <style>
-        body { font-family: 'Merriweather', serif; color: #2c2c2c; }
-        h1, h2, h3, h4, h5, h6, button { font-family: 'Cinzel', serif; }
-        .sans { font-family: 'Open Sans', sans-serif; }
-        
-        /* Animations */
-        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        body {
+            font-family: 'Merriweather', serif;
+            color: #2c2c2c;
         }
-        
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        button {
+            font-family: 'Cinzel', serif;
+        }
+
+        .sans {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Hover Effects */
-        .interactive-card { transition: all 0.3s ease; }
-        .interactive-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        
+        .interactive-card {
+            transition: all 0.3s ease;
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
         /* Thematic Backgrounds */
-        .bg-euthyphro { background-color: #fdfbf7; } /* Marble/Light */
-        .bg-apology { background-color: #f5f2eb; } /* Parchment */
-        .bg-phaedo { background-color: #1c1917; color: #e7e5e4; } /* Dark Stone */
+        .bg-euthyphro {
+            background-color: #fdfbf7;
+        }
+
+        /* Marble/Light */
+        .bg-apology {
+            background-color: #f5f2eb;
+        }
+
+        /* Parchment */
+        .bg-phaedo {
+            background-color: #1c1917;
+            color: #e7e5e4;
+        }
+
+        /* Dark Stone */
 
         /* Navigation Active State */
-        .active-tab-border { border-bottom: 3px solid #d97706; color: #1c1917; }
-        
+        .active-tab-border {
+            border-bottom: 3px solid #d97706;
+            color: #1c1917;
+        }
+
         /* Smooth hiding/showing */
         .hidden-transition {
             display: none;
             opacity: 0;
             transition: opacity 0.5s ease;
         }
+
         .visible-transition {
             display: block;
             opacity: 1;
         }
     </style>
 </head>
+
 <body class="antialiased">
 
-    <nav class="fixed top-0 w-full z-50 bg-stone-900/95 backdrop-blur-sm border-b border-stone-800 text-stone-300 shadow-xl transition-all duration-300">
+    <nav
+        class="fixed top-0 w-full z-50 bg-stone-900/95 backdrop-blur-sm border-b border-stone-800 text-stone-300 shadow-xl transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
                 <span class="material-symbols-outlined text-amber-500">temple_buddhist</span>
                 <span class="font-bold text-amber-500 hidden md:block tracking-wider">The Last Days of Socrates</span>
             </div>
-            
+
             <div class="flex gap-4 md:gap-8 text-xs md:text-sm font-bold uppercase tracking-widest">
-                <a class="hover:text-amber-500 transition-colors py-5 border-b-2 border-transparent hover:border-amber-500" href="#euthyphro">Euthyphro</a>
-                <a class="hover:text-amber-500 transition-colors py-5 border-b-2 border-transparent hover:border-amber-500" href="#apology">Apology</a>
-                <a class="hover:text-amber-500 transition-colors py-5 border-b-2 border-transparent hover:border-amber-500" href="#phaedo">Phaedo</a>
+                <a class="hover:text-amber-500 transition-colors py-5 border-b-2 border-transparent hover:border-amber-500"
+                    href="#euthyphro">Euthyphro</a>
+                <a class="hover:text-amber-500 transition-colors py-5 border-b-2 border-transparent hover:border-amber-500"
+                    href="#apology">Apology</a>
+                <a class="hover:text-amber-500 transition-colors py-5 border-b-2 border-transparent hover:border-amber-500"
+                    href="#phaedo">Phaedo</a>
             </div>
 
-            <button class="bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg active:scale-95" onclick="downloadCode()">
+            <button
+                class="bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg active:scale-95"
+                onclick="downloadCode()">
                 <span class="material-symbols-outlined text-base">download</span>
                 <span class="hidden sm:inline">Export Page</span>
             </button>
@@ -74,17 +133,21 @@
         <div class="absolute inset-0 opacity-50">
             <!-- <img alt="Athens Twilight" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?q=80&w=1920&auto=format&fit=crop"> -->
             <!-- use socrates death as background-->
-            <img alt="The Death of Socrates Painting by David" class="w-full h-full object-cover" src="https://upload.wikimedia.org/wikipedia/commons/8/8c/David_-_The_Death_of_Socrates.jpg">
+            <img alt="The Death of Socrates Painting by David" class="w-full h-full object-cover"
+                src="https://upload.wikimedia.org/wikipedia/commons/8/8c/David_-_The_Death_of_Socrates.jpg">
         </div>
         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-stone-900/60 to-stone-900"></div>
-        
+
         <div class="relative z-10 text-center px-6 max-w-4xl mx-auto fade-in">
             <p class="text-amber-500 tracking-[0.3em] uppercase text-sm font-bold mb-4">The Complete Trilogy</p>
-            <h1 class="text-5xl md:text-8xl text-stone-100 font-bold mb-6 drop-shadow-2xl">The Death of a Philosopher</h1>
+            <h1 class="text-5xl md:text-8xl text-stone-100 font-bold mb-6 drop-shadow-2xl">The Death of a Philosopher
+            </h1>
             <p class="text-xl md:text-2xl text-stone-300 font-light italic mb-10 max-w-2xl mx-auto font-serif">
-                Follow the journey from the courthouse steps, through the trial of the century, to the final cup of hemlock.
+                Follow the journey from the courthouse steps, through the trial of the century, to the final cup of
+                hemlock.
             </p>
-            <a class="inline-flex items-center gap-2 px-8 py-4 bg-amber-700 hover:bg-amber-600 text-white rounded-full transition-all font-bold tracking-wide shadow-lg hover:shadow-amber-900/50" href="#euthyphro">
+            <a class="inline-flex items-center gap-2 px-8 py-4 bg-amber-700 hover:bg-amber-600 text-white rounded-full transition-all font-bold tracking-wide shadow-lg hover:shadow-amber-900/50"
+                href="#euthyphro">
                 Begin the Journey <span class="material-symbols-outlined">arrow_downward</span>
             </a>
         </div>
@@ -99,46 +162,59 @@
                 <h2 class="text-4xl md:text-5xl font-bold text-stone-800 mb-4">I. Euthyphro</h2>
                 <p class="text-xl text-stone-600 italic font-serif">"What is Piety?"</p>
                 <p class="mt-6 text-stone-500 max-w-2xl mx-auto leading-relaxed sans">
-                    Weeks before his trial, Socrates meets Euthyphro, a priest prosecuting his own father. Socrates asks for a definition of Piety to help with his own defense.
+                    Weeks before his trial, Socrates meets Euthyphro, a priest prosecuting his own father. Socrates asks
+                    for a definition of Piety to help with his own defense.
                 </p>
             </div>
 
             <div class="bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden mb-16">
-                <div class="bg-stone-100 p-4 border-b border-stone-200 text-center font-bold text-stone-500 uppercase tracking-widest text-xs">
+                <div
+                    class="bg-stone-100 p-4 border-b border-stone-200 text-center font-bold text-stone-500 uppercase tracking-widest text-xs">
                     The 5 Failed Definitions
                 </div>
                 <div id="euthyphro-container">
-                    </div>
+                </div>
             </div>
 
-            <div class="bg-stone-800 rounded-3xl p-8 md:p-12 text-stone-200 shadow-2xl relative overflow-hidden border border-stone-700">
+            <div
+                class="bg-stone-800 rounded-3xl p-8 md:p-12 text-stone-200 shadow-2xl relative overflow-hidden border border-stone-700">
                 <div class="relative z-10 max-w-4xl mx-auto text-center">
                     <h3 class="text-3xl font-bold text-amber-50 mb-8">The Euthyphro Dilemma</h3>
                     <p class="text-xl font-serif italic mb-10 text-stone-300">
                         "Is the pious loved by the gods because it is pious,<br>
                         or is it pious because it is loved by the gods?"
                     </p>
-                    
+
                     <div class="grid md:grid-cols-2 gap-6 mb-8">
-                        <button class="p-6 rounded-xl border-2 border-stone-600 hover:border-amber-500 hover:bg-stone-700 transition-all text-left group" id="horn1-btn" onclick="euthyphroSelectHorn(1)">
+                        <button
+                            class="p-6 rounded-xl border-2 border-stone-600 hover:border-amber-500 hover:bg-stone-700 transition-all text-left group"
+                            id="horn1-btn" onclick="euthyphroSelectHorn(1)">
                             <div class="flex items-center gap-3 mb-2">
                                 <span class="material-symbols-outlined text-amber-500">radio_button_unchecked</span>
-                                <span class="font-bold text-lg text-stone-200 group-hover:text-amber-400">Option A</span>
+                                <span class="font-bold text-lg text-stone-200 group-hover:text-amber-400">Option
+                                    A</span>
                             </div>
-                            <p class="text-sm text-stone-400 sans">Gods love it <strong class="text-white">because</strong> it is pious.</p>
+                            <p class="text-sm text-stone-400 sans">Gods love it <strong
+                                    class="text-white">because</strong> it is pious.</p>
                         </button>
-                        
-                        <button class="p-6 rounded-xl border-2 border-stone-600 hover:border-amber-500 hover:bg-stone-700 transition-all text-left group" id="horn2-btn" onclick="euthyphroSelectHorn(2)">
+
+                        <button
+                            class="p-6 rounded-xl border-2 border-stone-600 hover:border-amber-500 hover:bg-stone-700 transition-all text-left group"
+                            id="horn2-btn" onclick="euthyphroSelectHorn(2)">
                             <div class="flex items-center gap-3 mb-2">
                                 <span class="material-symbols-outlined text-amber-500">touch_app</span>
-                                <span class="font-bold text-lg text-stone-200 group-hover:text-amber-400">Option B</span>
+                                <span class="font-bold text-lg text-stone-200 group-hover:text-amber-400">Option
+                                    B</span>
                             </div>
-                            <p class="text-sm text-stone-400 sans">It is pious <strong class="text-white">because</strong> the gods love it.</p>
+                            <p class="text-sm text-stone-400 sans">It is pious <strong
+                                    class="text-white">because</strong> the gods love it.</p>
                         </button>
                     </div>
 
-                    <div class="bg-black/30 p-6 rounded-xl border border-stone-600 min-h-[140px] flex items-center justify-center transition-all" id="dilemma-outcome">
-                        <p class="text-stone-400 italic">Select an option above to reveal the philosophical consequence...</p>
+                    <div class="bg-black/30 p-6 rounded-xl border border-stone-600 min-h-[140px] flex items-center justify-center transition-all"
+                        id="dilemma-outcome">
+                        <p class="text-stone-400 italic">Select an option above to reveal the philosophical
+                            consequence...</p>
                     </div>
                 </div>
             </div>
@@ -146,9 +222,10 @@
     </div>
 
     <div class="bg-apology pt-24 pb-20 border-b border-stone-300 relative" id="apology">
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-300 to-transparent"></div>
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-300 to-transparent">
+        </div>
         <div class="max-w-6xl mx-auto px-4 md:px-8">
-            
+
             <div class="text-center mb-16">
                 <div class="inline-block p-3 rounded-full bg-stone-800 mb-4 text-amber-50 shadow-lg">
                     <span class="material-symbols-outlined text-3xl">gavel</span>
@@ -156,7 +233,8 @@
                 <h2 class="text-4xl md:text-5xl font-bold text-stone-800 mb-4">II. The Apology</h2>
                 <p class="text-xl text-stone-600 italic font-serif">"The Defense"</p>
                 <p class="mt-6 text-stone-500 max-w-2xl mx-auto leading-relaxed sans">
-                    399 BC. Socrates stands before 500 jurors accused of corrupting the youth and impiety. He refuses to beg. He uses logic to dismantle his accusers.
+                    399 BC. Socrates stands before 500 jurors accused of corrupting the youth and impiety. He refuses to
+                    beg. He uses logic to dismantle his accusers.
                 </p>
             </div>
 
@@ -166,7 +244,8 @@
                     <p class="text-xs uppercase tracking-wide text-stone-500 mb-2 sans">The Poet</p>
                     <p class="text-sm text-stone-600 sans">Young, aggressive, the official accuser.</p>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-amber-600 text-center transform md:-translate-y-4 interactive-card">
+                <div
+                    class="bg-white p-6 rounded-xl shadow-md border-t-4 border-amber-600 text-center transform md:-translate-y-4 interactive-card">
                     <h4 class="font-bold text-lg">Anytus</h4>
                     <p class="text-xs uppercase tracking-wide text-stone-500 mb-2 sans">The Politician</p>
                     <p class="text-sm text-stone-600 sans">The powerful man behind the trial.</p>
@@ -180,42 +259,63 @@
 
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-16 border border-stone-200">
                 <div class="flex border-b border-stone-200 overflow-x-auto bg-stone-50">
-                    <button class="flex-1 py-4 px-6 font-bold text-stone-800 hover:bg-stone-100 transition-colors active-tab-border whitespace-nowrap" id="tab-oracle" onclick="apologySwitchTab('oracle')">
+                    <button
+                        class="flex-1 py-4 px-6 font-bold text-stone-800 hover:bg-stone-100 transition-colors active-tab-border whitespace-nowrap"
+                        id="tab-oracle" onclick="apologySwitchTab('oracle')">
                         1. The Oracle
                     </button>
-                    <button class="flex-1 py-4 px-6 font-bold text-stone-500 hover:text-stone-800 hover:bg-stone-100 transition-colors border-b-2 border-transparent whitespace-nowrap" id="tab-gadfly" onclick="apologySwitchTab('gadfly')">
+                    <button
+                        class="flex-1 py-4 px-6 font-bold text-stone-500 hover:text-stone-800 hover:bg-stone-100 transition-colors border-b-2 border-transparent whitespace-nowrap"
+                        id="tab-gadfly" onclick="apologySwitchTab('gadfly')">
                         2. The Gadfly
                     </button>
-                    <button class="flex-1 py-4 px-6 font-bold text-stone-500 hover:text-stone-800 hover:bg-stone-100 transition-colors border-b-2 border-transparent whitespace-nowrap" id="tab-logic" onclick="apologySwitchTab('logic')">
+                    <button
+                        class="flex-1 py-4 px-6 font-bold text-stone-500 hover:text-stone-800 hover:bg-stone-100 transition-colors border-b-2 border-transparent whitespace-nowrap"
+                        id="tab-logic" onclick="apologySwitchTab('logic')">
                         3. The Logic Trap
                     </button>
                 </div>
-                
+
                 <div class="p-8 md:p-12 min-h-[400px] bg-white">
-                    
+
                     <div class="tab-content block fade-in" id="content-oracle">
                         <div class="grid md:grid-cols-2 gap-10 items-center">
                             <div>
                                 <h3 class="text-2xl font-bold text-stone-800 mb-4">The Wisest Man?</h3>
-                                <p class="text-stone-700 mb-4 leading-relaxed sans">The Oracle at Delphi said "No one is wiser than Socrates." Socrates tried to prove the god wrong by questioning experts.</p>
+                                <p class="text-stone-700 mb-4 leading-relaxed sans">The Oracle at Delphi said "No one is
+                                    wiser than Socrates." Socrates tried to prove the god wrong by questioning experts.
+                                </p>
                                 <ul class="space-y-3 text-sm text-stone-600 sans">
-                                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-amber-600">close</span> Poets couldn't explain their poems.</li>
-                                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-amber-600">close</span> Politicians had power but no wisdom.</li>
-                                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-green-600">check</span> Conclusion: "I am wiser because I know that I know nothing."</li>
+                                    <li class="flex items-center gap-2"><span
+                                            class="material-symbols-outlined text-amber-600">close</span> Poets couldn't
+                                        explain their poems.</li>
+                                    <li class="flex items-center gap-2"><span
+                                            class="material-symbols-outlined text-amber-600">close</span> Politicians
+                                        had power but no wisdom.</li>
+                                    <li class="flex items-center gap-2"><span
+                                            class="material-symbols-outlined text-green-600">check</span> Conclusion: "I
+                                        am wiser because I know that I know nothing."</li>
                                 </ul>
                             </div>
-                            <img alt="Oracle Statue" class="rounded-lg shadow-lg object-cover h-64 w-full" src="https://substackcdn.com/image/fetch/$s_!v1mX!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd2a41821-fecf-4bc4-80cd-a6493d07ffa9_1200x1200.jpeg">
+                            <img alt="Oracle Statue" class="rounded-lg shadow-lg object-cover h-64 w-full"
+                                src="https://substackcdn.com/image/fetch/$s_!v1mX!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd2a41821-fecf-4bc4-80cd-a6493d07ffa9_1200x1200.jpeg">
                         </div>
                     </div>
 
                     <div class="tab-content hidden" id="content-gadfly">
                         <div class="text-center max-w-2xl mx-auto">
-                            <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-stone-800 shadow-xl">
-                                <img alt="Gadfly Metaphor" class="w-full h-full object-cover" src="/assets/shorties/books/plato/gadfly.jpg">
+                            <div
+                                class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-stone-800 shadow-xl">
+                                <img alt="Gadfly Metaphor" class="w-full h-full object-cover"
+                                    src="/assets/shorties/books/plato/gadfly.jpg">
                             </div>
                             <h3 class="text-2xl font-bold text-stone-800 mb-4">The Gadfly & The Horse</h3>
-                            <p class="text-lg italic text-stone-600 mb-6 font-serif">"God has attached me to the city like a gadfly to a great and noble horse, which is sluggish due to its size and needs to be stung into life."</p>
-                            <p class="text-stone-700 sans">Socrates argues that his annoying questioning is a <strong>divine service</strong> to keep Athens alert and virtuous. Killing him would be harming themselves.</p>
+                            <p class="text-lg italic text-stone-600 mb-6 font-serif">"God has attached me to the city
+                                like a gadfly to a great and noble horse, which is sluggish due to its size and needs to
+                                be stung into life."</p>
+                            <p class="text-stone-700 sans">Socrates argues that his annoying questioning is a
+                                <strong>divine service</strong> to keep Athens alert and virtuous. Killing him would be
+                                harming themselves.</p>
                         </div>
                     </div>
 
@@ -223,56 +323,76 @@
                         <div class="max-w-2xl mx-auto space-y-4">
                             <div class="bg-white p-4 rounded-lg border-l-4 border-red-500 shadow-sm">
                                 <span class="text-xs font-bold text-red-500 uppercase">Meletus Accuses:</span>
-                                <p class="font-bold text-stone-800 font-serif">"You are an atheist! You believe in no gods!"</p>
+                                <p class="font-bold text-stone-800 font-serif">"You are an atheist! You believe in no
+                                    gods!"</p>
                             </div>
-                            
+
                             <div class="text-center py-4">
                                 <p class="text-sm text-stone-500 mb-2 sans">How does Socrates reply?</p>
                                 <div class="grid gap-2">
-                                    <button class="p-3 border rounded hover:bg-stone-100 text-left text-sm w-full transition-colors" onclick="apologyWrongAnswer(this)">"I go to the temple every day!"</button>
-                                    <button class="p-3 border rounded hover:bg-stone-100 text-left text-sm w-full font-bold transition-colors" id="logic-correct-btn" onclick="apologyRevealTrap()">"Does the indictment not say I teach about 'spiritual things'?"</button>
+                                    <button
+                                        class="p-3 border rounded hover:bg-stone-100 text-left text-sm w-full transition-colors"
+                                        onclick="apologyWrongAnswer(this)">"I go to the temple every day!"</button>
+                                    <button
+                                        class="p-3 border rounded hover:bg-stone-100 text-left text-sm w-full font-bold transition-colors"
+                                        id="logic-correct-btn" onclick="apologyRevealTrap()">"Does the indictment not
+                                        say I teach about 'spiritual things'?"</button>
                                 </div>
                             </div>
 
                             <div class="hidden space-y-4 fade-in" id="logic-trap-result">
-                                <div class="bg-stone-800 p-4 rounded-lg border-l-4 border-green-500 text-stone-100 shadow-sm">
+                                <div
+                                    class="bg-stone-800 p-4 rounded-lg border-l-4 border-green-500 text-stone-100 shadow-sm">
                                     <span class="text-xs font-bold text-green-400 uppercase">Socrates Retorts:</span>
-                                    <p class="italic font-serif">"If I believe in spiritual things, I must believe in spirits. If spirits are gods or children of gods, then I believe in gods. You contradict yourself, Meletus."</p>
+                                    <p class="italic font-serif">"If I believe in spiritual things, I must believe in
+                                        spirits. If spirits are gods or children of gods, then I believe in gods. You
+                                        contradict yourself, Meletus."</p>
                                 </div>
-                                <p class="text-center text-green-600 font-bold text-sm uppercase tracking-widest">Meletus is silenced.</p>
+                                <p class="text-center text-green-600 font-bold text-sm uppercase tracking-widest">
+                                    Meletus is silenced.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-stone-900 text-stone-300 rounded-3xl p-8 md:p-12 text-center border border-stone-700 shadow-2xl">
+            <div
+                class="bg-stone-900 text-stone-300 rounded-3xl p-8 md:p-12 text-center border border-stone-700 shadow-2xl">
                 <h3 class="text-3xl font-bold text-amber-50 mb-4">The Verdict</h3>
-                <p class="mb-8 sans">Guilty by a margin of 30 votes. Meletus asks for <strong>Death</strong>. Socrates must propose a counter-penalty.</p>
-                
+                <p class="mb-8 sans">Guilty by a margin of 30 votes. Meletus asks for <strong>Death</strong>. Socrates
+                    must propose a counter-penalty.</p>
+
                 <div id="sentencing-stage-1">
-                    <button class="px-8 py-3 bg-amber-700 hover:bg-amber-600 text-white font-bold rounded shadow-lg transition-transform hover:scale-105" onclick="apologyStartSentencing()">
+                    <button
+                        class="px-8 py-3 bg-amber-700 hover:bg-amber-600 text-white font-bold rounded shadow-lg transition-transform hover:scale-105"
+                        onclick="apologyStartSentencing()">
                         Propose Counter-Penalty
                     </button>
                 </div>
 
                 <div class="hidden grid md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-8" id="sentencing-stage-2">
-                    <button class="p-4 bg-stone-800 border border-stone-600 hover:border-amber-500 rounded-xl text-left hover:bg-stone-700 transition-all" onclick="apologyChoosePenalty('exile')">
+                    <button
+                        class="p-4 bg-stone-800 border border-stone-600 hover:border-amber-500 rounded-xl text-left hover:bg-stone-700 transition-all"
+                        onclick="apologyChoosePenalty('exile')">
                         <span class="block text-amber-500 font-bold mb-1">Exile</span>
                         <span class="text-xs text-stone-400">Leave Athens forever.</span>
                     </button>
-                    <button class="p-4 bg-stone-800 border border-stone-600 hover:border-amber-500 rounded-xl text-left hover:bg-stone-700 transition-all" onclick="apologyChoosePenalty('fine')">
+                    <button
+                        class="p-4 bg-stone-800 border border-stone-600 hover:border-amber-500 rounded-xl text-left hover:bg-stone-700 transition-all"
+                        onclick="apologyChoosePenalty('fine')">
                         <span class="block text-amber-500 font-bold mb-1">A Fine</span>
                         <span class="text-xs text-stone-400">Pay a small sum of money.</span>
                     </button>
-                    <button class="p-4 bg-stone-800 border border-stone-600 hover:border-amber-500 rounded-xl text-left hover:bg-stone-700 transition-all" onclick="apologyChoosePenalty('meals')">
+                    <button
+                        class="p-4 bg-stone-800 border border-stone-600 hover:border-amber-500 rounded-xl text-left hover:bg-stone-700 transition-all"
+                        onclick="apologyChoosePenalty('meals')">
                         <span class="block text-amber-500 font-bold mb-1">Free Meals</span>
                         <span class="text-xs text-stone-400">Prize for a benefactor.</span>
                     </button>
                 </div>
 
                 <div class="hidden mt-8 p-6 bg-black/40 rounded-xl border border-stone-600 fade-in" id="penalty-result">
-                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -280,89 +400,128 @@
     <div class="bg-phaedo pt-24 pb-32" id="phaedo">
         <div class="max-w-6xl mx-auto px-4 md:px-8">
             <div class="text-center mb-16">
-                <div class="inline-block p-3 rounded-full bg-stone-800 border border-stone-700 mb-4 text-stone-400 shadow-lg">
+                <div
+                    class="inline-block p-3 rounded-full bg-stone-800 border border-stone-700 mb-4 text-stone-400 shadow-lg">
                     <span class="material-symbols-outlined text-3xl">hourglass_empty</span>
                 </div>
                 <h2 class="text-4xl md:text-5xl font-bold text-stone-100 mb-4">III. The Phaedo</h2>
                 <p class="text-xl text-stone-400 italic font-serif">"The Immortality of the Soul"</p>
                 <p class="mt-6 text-stone-500 max-w-2xl mx-auto leading-relaxed sans">
-                    The final hours in the prison cell. Socrates comforts his weeping friends by proving that for a philosopher, death is not an end, but a liberation.
+                    The final hours in the prison cell. Socrates comforts his weeping friends by proving that for a
+                    philosopher, death is not an end, but a liberation.
                 </p>
             </div>
 
             <div class="grid lg:grid-cols-12 gap-8 mb-20">
                 <div class="lg:col-span-4 space-y-3">
-                    <button class="w-full text-left p-4 rounded-lg bg-stone-800 border-l-4 border-amber-600 text-stone-200 shadow-lg hover:bg-stone-700 transition-all group" id="arg-btn-0" onclick="phaedoSetArg(0)">
-                        <span class="font-bold block text-lg group-hover:text-amber-500 transition-colors">1. Recollection</span>
+                    <button
+                        class="w-full text-left p-4 rounded-lg bg-stone-800 border-l-4 border-amber-600 text-stone-200 shadow-lg hover:bg-stone-700 transition-all group"
+                        id="arg-btn-0" onclick="phaedoSetArg(0)">
+                        <span class="font-bold block text-lg group-hover:text-amber-500 transition-colors">1.
+                            Recollection</span>
                         <span class="text-xs text-stone-500 sans">Learning is remembering.</span>
                     </button>
-                    <button class="w-full text-left p-4 rounded-lg bg-stone-900 border-l-4 border-stone-700 text-stone-400 shadow-lg hover:bg-stone-800 transition-all group" id="arg-btn-1" onclick="phaedoSetArg(1)">
-                        <span class="font-bold block text-lg group-hover:text-stone-300 transition-colors">2. The Harmony</span>
+                    <button
+                        class="w-full text-left p-4 rounded-lg bg-stone-900 border-l-4 border-stone-700 text-stone-400 shadow-lg hover:bg-stone-800 transition-all group"
+                        id="arg-btn-1" onclick="phaedoSetArg(1)">
+                        <span class="font-bold block text-lg group-hover:text-stone-300 transition-colors">2. The
+                            Harmony</span>
                         <span class="text-xs text-stone-500 sans">Simmias' objection.</span>
                     </button>
-                    <button class="w-full text-left p-4 rounded-lg bg-stone-900 border-l-4 border-stone-700 text-stone-400 shadow-lg hover:bg-stone-800 transition-all group" id="arg-btn-2" onclick="phaedoSetArg(2)">
-                        <span class="font-bold block text-lg group-hover:text-stone-300 transition-colors">3. The Weaver</span>
+                    <button
+                        class="w-full text-left p-4 rounded-lg bg-stone-900 border-l-4 border-stone-700 text-stone-400 shadow-lg hover:bg-stone-800 transition-all group"
+                        id="arg-btn-2" onclick="phaedoSetArg(2)">
+                        <span class="font-bold block text-lg group-hover:text-stone-300 transition-colors">3. The
+                            Weaver</span>
                         <span class="text-xs text-stone-500 sans">Cebes' objection.</span>
                     </button>
                 </div>
 
-                <div class="lg:col-span-8 bg-stone-800 rounded-2xl p-8 border border-stone-700 min-h-[300px] flex flex-col justify-center relative shadow-2xl">
+                <div
+                    class="lg:col-span-8 bg-stone-800 rounded-2xl p-8 border border-stone-700 min-h-[300px] flex flex-col justify-center relative shadow-2xl">
                     <div class="phaedo-content block fade-in" id="phaedo-content-0">
                         <h3 class="text-2xl font-bold text-amber-500 mb-4">The Argument from Recollection</h3>
-                        <p class="text-stone-300 mb-4 sans leading-relaxed">We have concepts of perfect Equality, Beauty, and Goodness. We never see perfection in this world. Therefore, we must have known these standards <strong>before we were born</strong>.</p>
+                        <p class="text-stone-300 mb-4 sans leading-relaxed">We have concepts of perfect Equality,
+                            Beauty, and Goodness. We never see perfection in this world. Therefore, we must have known
+                            these standards <strong>before we were born</strong>.</p>
                         <div class="bg-black/30 p-4 rounded text-sm italic text-stone-400 border-l-2 border-stone-600">
                             "The soul must have existed before the body to possess this knowledge."
                         </div>
                     </div>
                     <div class="phaedo-content hidden" id="phaedo-content-1">
                         <h3 class="text-2xl font-bold text-stone-200 mb-4">Simmias: "Is the Soul a Harmony?"</h3>
-                        <p class="text-stone-400 mb-4 sans leading-relaxed">Simmias argues that the soul is like the harmony of a lyre. If the lyre (body) breaks, the harmony (soul) vanishes.</p>
-                        <button class="text-amber-500 font-bold hover:underline text-sm" id="reveal-btn-1" onclick="phaedoRevealRebuttal(1)">See Socrates' Rebuttal</button>
-                        <div class="hidden mt-4 p-4 bg-green-900/20 rounded border border-green-900/50 text-stone-300 text-sm fade-in" id="rebuttal-1">
-                            <strong class="text-green-400">Socrates:</strong> A harmony cannot direct the instrument; it is a result. But the Soul <strong>directs</strong> the body (controlling impulses). Therefore, it is not a harmony.
+                        <p class="text-stone-400 mb-4 sans leading-relaxed">Simmias argues that the soul is like the
+                            harmony of a lyre. If the lyre (body) breaks, the harmony (soul) vanishes.</p>
+                        <button class="text-amber-500 font-bold hover:underline text-sm" id="reveal-btn-1"
+                            onclick="phaedoRevealRebuttal(1)">See Socrates' Rebuttal</button>
+                        <div class="hidden mt-4 p-4 bg-green-900/20 rounded border border-green-900/50 text-stone-300 text-sm fade-in"
+                            id="rebuttal-1">
+                            <strong class="text-green-400">Socrates:</strong> A harmony cannot direct the instrument; it
+                            is a result. But the Soul <strong>directs</strong> the body (controlling impulses).
+                            Therefore, it is not a harmony.
                         </div>
                     </div>
                     <div class="phaedo-content hidden" id="phaedo-content-2">
-                        <h3 class="text-2xl font-bold text-stone-200 mb-4">Cebes: "Does the Weaver outlive the cloak?"</h3>
-                        <p class="text-stone-400 mb-4 sans leading-relaxed">Cebes argues the soul might outlive many bodies (reincarnation) but eventually wear out and die, just as a weaver outlives many coats but eventually dies.</p>
-                        <button class="text-amber-500 font-bold hover:underline text-sm" id="reveal-btn-2" onclick="phaedoRevealRebuttal(2)">See Socrates' Rebuttal</button>
-                        <div class="hidden mt-4 p-4 bg-green-900/20 rounded border border-green-900/50 text-stone-300 text-sm fade-in" id="rebuttal-2">
-                            <strong class="text-green-400">Socrates:</strong> The Soul is the carrier of Life. Just as Snow cannot admit Fire, the Soul cannot admit Death. It is essentially deathless.
+                        <h3 class="text-2xl font-bold text-stone-200 mb-4">Cebes: "Does the Weaver outlive the cloak?"
+                        </h3>
+                        <p class="text-stone-400 mb-4 sans leading-relaxed">Cebes argues the soul might outlive many
+                            bodies (reincarnation) but eventually wear out and die, just as a weaver outlives many coats
+                            but eventually dies.</p>
+                        <button class="text-amber-500 font-bold hover:underline text-sm" id="reveal-btn-2"
+                            onclick="phaedoRevealRebuttal(2)">See Socrates' Rebuttal</button>
+                        <div class="hidden mt-4 p-4 bg-green-900/20 rounded border border-green-900/50 text-stone-300 text-sm fade-in"
+                            id="rebuttal-2">
+                            <strong class="text-green-400">Socrates:</strong> The Soul is the carrier of Life. Just as
+                            Snow cannot admit Fire, the Soul cannot admit Death. It is essentially deathless.
                         </div>
                     </div>
                 </div>
             </div>
 
-            <img alt="The Death of Socrates Painting by David" class="w-full max-w-xl mx-auto rounded-xl shadow-2xl border-4 border-amber-600 mb-12" src="https://upload.wikimedia.org/wikipedia/commons/8/8c/David_-_The_Death_of_Socrates.jpg">
+            <img alt="The Death of Socrates Painting by David"
+                class="w-full max-w-xl mx-auto rounded-xl shadow-2xl border-4 border-amber-600 mb-12"
+                src="https://upload.wikimedia.org/wikipedia/commons/8/8c/David_-_The_Death_of_Socrates.jpg">
             <div class="max-w-2xl mx-auto border-l-2 border-stone-800 pl-8 space-y-12 relative">
-                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-amber-600 shadow-[0_0_15px_rgba(217,119,6,0.6)]"></div>
-                
+                <div
+                    class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-amber-600 shadow-[0_0_15px_rgba(217,119,6,0.6)]">
+                </div>
+
                 <div class="group">
                     <h3 class="text-2xl font-bold text-stone-200 mb-2">Sunset</h3>
-                    <p class="text-stone-500 leading-relaxed sans">The sacred ship has returned. The jailer enters, weeping. Socrates bathes to spare the women the trouble of washing his corpse.</p>
+                    <p class="text-stone-500 leading-relaxed sans">The sacred ship has returned. The jailer enters,
+                        weeping. Socrates bathes to spare the women the trouble of washing his corpse.</p>
                 </div>
-                
+
                 <div class="group opacity-40 hover:opacity-100 transition-opacity duration-500">
-                    <div class="absolute -left-[9px] w-4 h-4 rounded-full bg-stone-700 group-hover:bg-stone-500 transition-colors"></div>
+                    <div
+                        class="absolute -left-[9px] w-4 h-4 rounded-full bg-stone-700 group-hover:bg-stone-500 transition-colors">
+                    </div>
                     <h3 class="text-2xl font-bold text-stone-200 mb-2">The Hemlock</h3>
                     <div class="flex gap-4 items-start">
-                        <p class="text-stone-500 leading-relaxed sans">He takes the cup cheerfully. He prays for a prosperous journey. He drinks it in one breath.</p>
-                        <img alt="Cup" class="w-32 h-16 rounded opacity-80 object-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRquZRQq-tVrXvZ4Ff6VyTyTU7mZidAodAz2w&s">
+                        <p class="text-stone-500 leading-relaxed sans">He takes the cup cheerfully. He prays for a
+                            prosperous journey. He drinks it in one breath.</p>
+                        <img alt="Cup" class="w-32 h-16 rounded opacity-80 object-cover"
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRquZRQq-tVrXvZ4Ff6VyTyTU7mZidAodAz2w&s">
                     </div>
                 </div>
-                
+
                 <div class="group opacity-40 hover:opacity-100 transition-opacity duration-500">
-                    <div class="absolute -left-[9px] w-4 h-4 rounded-full bg-stone-700 group-hover:bg-amber-800 transition-colors"></div>
+                    <div
+                        class="absolute -left-[9px] w-4 h-4 rounded-full bg-stone-700 group-hover:bg-amber-800 transition-colors">
+                    </div>
                     <h3 class="text-2xl font-bold text-stone-200 mb-2">The Final Words</h3>
-                    <blockquote class="text-xl font-serif text-amber-500 mb-2 italic">"Crito, we owe a cock to Asclepius. Pay it and do not neglect it."</blockquote>
-                    <p class="text-xs text-stone-600 uppercase tracking-widest">Death is the cure for the sickness of life.</p>
+                    <blockquote class="text-xl font-serif text-amber-500 mb-2 italic">"Crito, we owe a cock to
+                        Asclepius. Pay it and do not neglect it."</blockquote>
+                    <p class="text-xs text-stone-600 uppercase tracking-widest">Death is the cure for the sickness of
+                        life.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <footer class="bg-black py-12 text-center text-stone-600 text-sm border-t border-stone-900">
-        <p class="font-serif italic mb-2">"Such was the end of our friend, the wisest and justest and best of all men."</p>
+        <p class="font-serif italic mb-2">"Such was the end of our friend, the wisest and justest and best of all men."
+        </p>
         <p class="sans">Interactive Experience created for Educational Purposes.</p>
     </footer>
 
@@ -424,7 +583,7 @@
                 btn.classList.remove('bg-stone-600', 'border-amber-500');
                 btn.querySelector('.font-bold').classList.remove('text-amber-400');
             });
-            
+
             // Activate selected
             const activeBtn = document.getElementById(`horn${horn}-btn`);
             activeBtn.classList.add('bg-stone-600', 'border-amber-500');
@@ -523,4 +682,5 @@
         });
     </script>
 </body>
+
 </html>
