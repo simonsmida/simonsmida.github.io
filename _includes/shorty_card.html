@@ -1,0 +1,21 @@
+<a
+  href="{{ include.item.url }}"
+  class="search-item block bg-stone-900 border border-stone-800 rounded-xl p-6 transition-all duration-300 card-hover group"
+>
+  <div class="flex justify-between items-start mb-4">
+    <span class="bg-{{ include.section.accent }}-900/30 text-{{ include.section.accent }}-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-widest">
+      {{ include.section.tag }}
+    </span>
+    <span class="material-symbols-outlined text-stone-600 group-hover:text-{{ include.section.accent }}-500 transition-colors">
+      arrow_outward
+    </span>
+  </div>
+
+  <h3 class="text-xl font-bold text-stone-100 mb-2 group-hover:text-{{ include.section.accent }}-400 transition-colors">
+    {{ include.item.title }}
+  </h3>
+
+  <p class="text-stone-400 text-sm leading-relaxed">
+    {{ include.item.description }}
+  </p>
+</a>

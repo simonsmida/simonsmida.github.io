@@ -6,31 +6,24 @@ layout: null
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simon's Shorties (by Gemini dynamic view)</title>
+    <title>Simon's Shorties</title>
 
+    <!-- Tailwind (CDN is fine here; no build step) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
 
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0c0a09; color: #e7e5e4; }
-        .serif-font { font-family: 'Cinzel', serif; }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 30px -10px rgba(251, 191, 36, 0.1); }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1c1917; }
-        ::-webkit-scrollbar-thumb { background: #44403c; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #57534e; }
-    </style>
+    <!-- Page-specific styles -->
+    <link rel="stylesheet" href="/assets/css/shorties.css">
 </head>
 
 <body class="min-h-screen flex flex-col">
 
     <!-- NAV -->
     <nav class="flex justify-between items-center p-6 border-b border-stone-800 bg-stone-900/50 backdrop-blur-md sticky top-0 z-50">
-        <a href="../index.html" class="flex items-center gap-2 text-stone-500 hover:text-stone-300 transition-colors text-sm">
+        <a href="/" class="flex items-center gap-2 text-stone-500 hover:text-stone-300 transition-colors text-sm">
             <span class="material-symbols-outlined text-lg">arrow_back</span>
             Back to Main Site
         </a>
@@ -68,68 +61,38 @@ layout: null
     <!-- CONTENT -->
     <main class="flex-grow container mx-auto px-6 py-12">
 
-        {% for section in site.data.shorties %}
-        <div class="category-section mb-16">
+        {% assign grouped = site.data.shorties | group_by: "category" %}
 
-            <h2 class="text-2xl font-bold text-stone-200 mb-6 flex items-center gap-2 border-l-4 border-{{ section.accent }}-500 pl-4">
-                <span class="material-symbols-outlined text-{{ section.accent }}-500">
-                    {{ section.icon }}
-                </span>
-                {{ section.category }}
-            </h2>
+        {% for g in grouped %}
+            {% assign first = g.items[0] %}
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for s in section.items %}
-                <a
-                    href="{{ s.url }}"
-                    class="search-item block bg-stone-900 border border-stone-800 rounded-xl p-6 transition-all duration-300 card-hover group"
-                >
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="bg-{{ section.accent }}-900/30 text-{{ section.accent }}-500 text-xs font-bold px-2 py-1 rounded uppercase tracking-widest">
-                            {{ section.tag }}
-                        </span>
-                        <span class="material-symbols-outlined text-stone-600 group-hover:text-{{ section.accent }}-500 transition-colors">
-                            arrow_outward
-                        </span>
-                    </div>
+            <div class="category-section mb-16">
 
-                    <h3 class="text-xl font-bold text-stone-100 mb-2 group-hover:text-{{ section.accent }}-400 transition-colors">
-                        {{ s.title }}
-                    </h3>
+                <h2 class="text-2xl font-bold text-stone-200 mb-6 flex items-center gap-2 border-l-4 border-{{ first.accent }}-500 pl-4">
+                    <span class="material-symbols-outlined text-{{ first.accent }}-500">
+                        {{ first.icon }}
+                    </span>
+                    {{ g.name }}
+                </h2>
 
-                    <p class="text-stone-400 text-sm leading-relaxed">
-                        {{ s.description }}
-                    </p>
-                </a>
-                {% endfor %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for s in g.items %}
+                        {% include shorty_card.html section=first item=s %}
+                    {% endfor %}
+                </div>
+
             </div>
-
-        </div>
         {% endfor %}
 
     </main>
 
     <!-- FOOTER -->
     <footer class="text-center py-8 text-stone-600 text-sm border-t border-stone-900">
-        <p>Curated by Simon, but created almost entirely by Gemini</p>
+        <p>Curated by Simon</p>
     </footer>
 
-    <!-- SEARCH SCRIPT -->
-    <script>
-        function filterContent() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toUpperCase();
-            const cards = document.getElementsByClassName('search-item');
-
-            for (let i = 0; i < cards.length; i++) {
-                const h3 = cards[i].getElementsByTagName("h3")[0];
-                const p = cards[i].getElementsByTagName("p")[0];
-                const text = (h3.textContent || h3.innerText) + " " + (p.textContent || p.innerText);
-
-                cards[i].style.display = text.toUpperCase().includes(filter) ? "" : "none";
-            }
-        }
-    </script>
+    <!-- Page-specific JS -->
+    <script src="/assets/js/shorties.js" defer></script>
 
 </body>
 </html>
