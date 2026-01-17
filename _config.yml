@@ -1,24 +1,36 @@
-remote_theme: mmistakes/minimal-mistakes
-plugins:
-  - jekyll-include-cache
+title: Notes to myself (and anyone else)
+description: A way to keep track of thoughts, mental notes, and ideas.
+url: https://simonsmida.github.io
+baseurl: ""
 
+remote_theme: mmistakes/minimal-mistakes
 minimal_mistakes_skin: default
 
-masthead:
-  display: false
+plugins:
+  - jekyll-include-cache
+  - jekyll-feed
 
-footer:
-  links: []
-
-mathjax: true
+collections:
+  notes:
+    output: true
+    permalink: /notes/:path/
 
 defaults:
   - scope:
-      path: "notes"
+      path: ""
+    values:
+      author_profile: false
+
+  - scope:
+      path: ""
+      type: notes
     values:
       layout: single
+      classes: wide
+      toc: true
       read_time: true
-      author_profile: false
-      share: false
-      related: false
-      mathjax: true
+
+navigation:
+  main:
+    - title: Notes
+      url: /notes/
