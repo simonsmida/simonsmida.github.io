@@ -32,7 +32,7 @@ footer:
     - label: "GitHub"
       icon: "fab fa-github"
       url: "https://github.com/simonsmida"
-    - label: "Subscribe to newsletter"
+    - label: "Newsletter"
       icon: "fas fa-envelope"
       url: "https://buttondown.email/simonsmida"
     - label: "RSS"
