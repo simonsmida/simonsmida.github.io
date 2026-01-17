@@ -1,0 +1,20 @@
+- category: Book Summaries
+  icon: menu_book
+  accent: red
+  tag: Book Summary
+  items:
+    - title: "Plato: The Last Days of Socrates"
+      url: "books/last_days_of_socrates.html"
+      description: "A summary of the dialogues: Euthyphro, Apology, Crito, and Phaedo. Virtue, Justice, and Death."
+
+- category: Philosophy
+  icon: psychology
+  accent: amber
+  tag: Philosophy
+  items:
+    - title: "Plato: The Theory of Forms"
+      url: "philosophy/plato_forms.html"
+      description: "The Allegory of the Cave and why perfect circles don't exist in reality."
+    - title: "Marcus Aurelius: Meditations"
+      url: "philosophy/marcus_aurelius_meditations.html"
+      description: "Stoic wisdom from the Roman Emperor on virtue, resilience, and the nature of the universe."
