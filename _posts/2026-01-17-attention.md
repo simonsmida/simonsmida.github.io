@@ -2,8 +2,6 @@
 title: "Attention"
 categories: [notes]
 excerpt: "Attention mixes information; it does not perform reasoning."
-header:
-  image: /assets/notes/lucifer.png
 ---
 
 
