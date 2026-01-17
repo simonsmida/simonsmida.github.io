@@ -20,3 +20,13 @@ defaults:
       author_profile: false
       read_time: true
       classes: wide
+
+atom_feed:
+  hide: true
+
+footer:
+  links:
+    - label: "GitHub"
+      url: "https://github.com/simonsmida"
+    - label: "RSS"
+      url: "/feed.xml"
