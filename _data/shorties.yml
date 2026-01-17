@@ -3,7 +3,7 @@
   accent: red
   icon: menu_book
   tag: Book Summary
-  url: "books/last_days_of_socrates.html"
+  url: "books/plato/last-days-of-socrates"
   description: "A summary of the dialogues: Euthyphro, Apology, Crito, and Phaedo. Virtue, Justice, and Death."
 
 - title: "Plato: The Theory of Forms"
@@ -11,7 +11,7 @@
   accent: amber
   icon: psychology
   tag: Philosophy
-  url: "philosophy/plato_forms.html"
+  url: "philosophy/plato/forms/"
   description: "The Allegory of the Cave and why perfect circles don't exist in reality."
 
 - title: "Marcus Aurelius: Meditations"
@@ -19,5 +19,5 @@
   accent: amber
   icon: psychology
   tag: Philosophy
-  url: "philosophy/marcus_aurelius_meditations.html"
+  url: "philosophy/marcus_aurelius/meditations/"
   description: "Stoic wisdom from the Roman Emperor on virtue, resilience, and the nature of the universe."
