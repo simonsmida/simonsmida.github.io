@@ -7,12 +7,24 @@
 .note-card {
   display: flex;
   gap: 1rem;
-  padding: 1rem;
+
+  /* keep padding for text area, but remove on left so image can flush */
+  padding: 1rem 1rem 1rem 0;
+
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 12px;
   margin: 0 0 1rem 0;
-  align-items: flex-start;
+  align-items: stretch; /* let image fill card height */
   position: relative;
+
+  /* grayscale text by default */
+  filter: grayscale(100%);
+  transition: filter 160ms ease;
+}
+
+/* restore original colors on hover */
+.note-card:hover {
+  filter: grayscale(0%);
 }
 
 /* Full-card clickable overlay */
@@ -36,14 +48,20 @@
   pointer-events: auto;
 }
 
+/* Thumbnail flush to left edge, no outer padding */
 .note-card__thumb {
-  flex: 0 0 160px;
-  width: 160px;
-  height: 110px;
-  border-radius: 10px;
+  flex: 0 0 180px;
+  width: 180px;
+
+  /* fill full card height */
+  height: auto;
+
+  /* remove any spacing and blend with card edge */
+  margin: 0;
+  border: 0;
+  border-radius: 12px 0 0 12px;
   overflow: hidden;
   display: block;
-  border: 1px solid rgba(0,0,0,0.12);
 }
 
 .note-card__thumb img {
@@ -51,13 +69,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-
-  filter: grayscale(100%);
-  transition: filter 160ms ease;
-}
-
-.note-card:hover .note-card__thumb img {
-  filter: grayscale(0%);
 }
 
 .note-card__thumbPlaceholder {
@@ -69,6 +80,7 @@
 .note-card__body {
   flex: 1 1 auto;
   min-width: 0;
+  padding: 1rem 0; /* top/bottom padding inside body */
 }
 
 .note-card__title {
@@ -97,10 +109,17 @@
 @media (max-width: 600px) {
   .note-card {
     flex-direction: column;
+    padding: 0 1rem 1rem 1rem; /* image on top, then padding around text */
+    gap: 0.75rem;
   }
 
   .note-card__thumb {
     width: 100%;
-    height: 160px;
+    height: 180px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .note-card__body {
+    padding: 0;
   }
 }
