@@ -3,7 +3,7 @@ layout: default
 ---
 
 <div class="notes-index">
-  {% assign notes = site.posts | where_exp: "p", "p.path contains 'notes/'" | sort: "date" | reverse %}
+  {% assign notes = site.posts | where_exp: "p", "p.categories contains 'notes'" | sort: "date" | reverse %}
   {% for post in notes %}
     {% include note-card.html post=post %}
   {% endfor %}
