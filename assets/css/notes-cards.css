@@ -13,6 +13,13 @@
   border-radius: 12px;
   margin: 0 0 1rem 0;
   align-items: flex-start;
+  position: relative;
+}
+
+.note-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 .note-card__thumb {

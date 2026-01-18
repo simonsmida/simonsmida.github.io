@@ -10,6 +10,7 @@
 {% assign summary = p.tldr | default: p.excerpt %}
 
 <article class="note-card">
+  <a class="note-card__link" href="{{ p.url | relative_url }}" aria-label="{{ p.title | escape }}"></a>
   <a class="note-card__thumb" href="{{ p.url | relative_url }}" aria-label="{{ p.title | escape }}">
     {% if teaser %}
       <img src="{{ teaser | relative_url }}" alt="" loading="lazy">
