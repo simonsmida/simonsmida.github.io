@@ -46,6 +46,12 @@
   filter: grayscale(0%);
 }
 
+.note-card__thumb,
+.note-card__body a {
+  position: relative;
+  z-index: 2;
+}
+
 
 .note-card__thumbPlaceholder {
   width: 100%;
