@@ -4,7 +4,6 @@
   padding: 0 1rem;
 }
 
-
 .note-card {
   display: flex;
   gap: 1rem;
@@ -16,10 +15,25 @@
   position: relative;
 }
 
+/* Full-card clickable overlay */
 .note-card__link {
   position: absolute;
   inset: 0;
   z-index: 1;
+}
+
+/* Put content above overlay visually, but let clicks pass to overlay */
+.note-card__thumb,
+.note-card__body {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Re-enable clicks for real links */
+.note-card__thumb,
+.note-card__body a {
+  pointer-events: auto;
 }
 
 .note-card__thumb {
@@ -46,30 +60,47 @@
   filter: grayscale(0%);
 }
 
-.note-card__thumb,
-.note-card__body a {
-  position: relative;
-  z-index: 2;
-}
-
-
 .note-card__thumbPlaceholder {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.06);
 }
 
-.note-card__body { flex: 1 1 auto; min-width: 0; }
+.note-card__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
 
-.note-card__title { margin: 0 0 0.35rem 0; line-height: 1.2; }
-.note-card__title a { text-decoration: none; }
+.note-card__title {
+  margin: 0 0 0.35rem 0;
+  line-height: 1.2;
+}
 
-.note-card__meta { font-size: 0.9rem; opacity: 0.75; margin-bottom: 0.6rem; }
-.note-card__metaSep { margin: 0 0.45rem; }
+.note-card__title a {
+  text-decoration: none;
+}
 
-.note-card__tldr { margin: 0; }
+.note-card__meta {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  margin-bottom: 0.6rem;
+}
+
+.note-card__metaSep {
+  margin: 0 0.45rem;
+}
+
+.note-card__tldr {
+  margin: 0;
+}
 
 @media (max-width: 600px) {
-  .note-card { flex-direction: column; }
-  .note-card__thumb { width: 100%; height: 160px; }
+  .note-card {
+    flex-direction: column;
+  }
+
+  .note-card__thumb {
+    width: 100%;
+    height: 160px;
+  }
 }
