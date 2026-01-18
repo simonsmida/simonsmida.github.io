@@ -8,15 +8,14 @@
 /* Card */
 .note-card {
   display: flex;
-  gap: 1rem;
+  gap: 0;
   margin: 0 0 1rem 0;
 
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 12px;
   position: relative;
 
-  /* no padding on left, image flush */
-  padding: 1rem 1rem 1rem 0;
+  padding: 0;              /* key: no padding on card */
   align-items: stretch;
 }
 
@@ -50,7 +49,6 @@
   overflow: hidden;
   display: block;
 
-  /* flush left, rounded only on left side */
   border-radius: 12px 0 0 12px;
   border-right: 1px solid rgba(0,0,0,0.12);
 }
@@ -65,17 +63,18 @@
   transition: filter 160ms ease;
 }
 
-/* Body */
+/* Body — padding lives here */
 .note-card__body {
   flex: 1 1 auto;
   min-width: 0;
 
-  /* grayscale text by default */
+  padding: 1rem;           /* space for text only */
+
   filter: grayscale(100%);
   transition: filter 160ms ease;
 }
 
-/* Restore color on hover */
+/* Hover restores color */
 .note-card:hover .note-card__thumb img,
 .note-card:hover .note-card__body {
   filter: grayscale(0%);
@@ -109,7 +108,6 @@
 @media (max-width: 600px) {
   .note-card {
     flex-direction: column;
-    padding: 0 1rem 1rem 1rem;
   }
 
   .note-card__thumb {
@@ -118,5 +116,9 @@
     border-radius: 12px 12px 0 0;
     border-right: none;
     border-bottom: 1px solid rgba(0,0,0,0.12);
+  }
+
+  .note-card__body {
+    padding: 1rem;
   }
 }
