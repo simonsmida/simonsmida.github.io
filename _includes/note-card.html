@@ -1,0 +1,40 @@
+{% assign p = include.post %}
+{% assign teaser = p.header.teaser | default: site.teaser %}
+{% assign shown_date = p.last_modified_at | default: p.date %}
+
+{% assign wpm = site.words_per_minute | default: 200 %}
+{% assign words = p.content | strip_html | number_of_words %}
+{% assign mins = words | divided_by: wpm %}
+{% if mins < 1 %}{% assign mins = 1 %}{% endif %}
+
+{% assign summary = p.tldr | default: p.excerpt %}
+
+<article class="note-card">
+  <a class="note-card__thumb" href="{{ p.url | relative_url }}" aria-label="{{ p.title | escape }}">
+    {% if teaser %}
+      <img src="{{ teaser | relative_url }}" alt="" loading="lazy">
+    {% else %}
+      <div class="note-card__thumbPlaceholder" aria-hidden="true"></div>
+    {% endif %}
+  </a>
+
+  <div class="note-card__body">
+    <h2 class="note-card__title">
+      <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
+    </h2>
+
+    <div class="note-card__meta">
+      <span>{{ mins }} min read</span>
+      <span class="note-card__metaSep">·</span>
+      <time datetime="{{ shown_date | date_to_xmlschema }}">
+        {{ shown_date | date: "%Y-%m-%d" }}
+      </time>
+    </div>
+
+    {% if summary %}
+      <p class="note-card__tldr">
+        <strong>TL;DR</strong> {{ summary | markdownify | strip_html | strip_newlines | truncate: 220 }}
+      </p>
+    {% endif %}
+  </div>
+</article>

@@ -1,7 +1,11 @@
 ---
 title: "Why Attention Is Not Reasoning"
+date: 2026-01-17
 categories: [notes]
 excerpt: "Attention enables information routing, not logical inference. Confusing the two leads to persistent conceptual errors in ML discourse."
+header:
+  teaser: /assets/notes/futureme.gif
+tldr: "Attention mixes information. Reasoning transforms state."
 ---
 
 ## TL;DR

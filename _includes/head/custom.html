@@ -1,3 +1,8 @@
+{% if page.url == "/notes/" %}
+  <link rel="stylesheet" href="{{ '/assets/css/notes-cards.css' | relative_url }}">
+{% endif %}
+
+
 <script>
   window.MathJax = {
     tex: {

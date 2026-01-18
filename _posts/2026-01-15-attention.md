@@ -1,9 +1,11 @@
 ---
 title: "Attention"
+date: 2026-01-15
 categories: [notes]
 excerpt: "Attention mixes information; it does not perform reasoning."
 header:
   teaser: /assets/notes/lucifer.png
+tldr: "A first-principles, no-hype walkthrough of attention in transformers."
 ---
 
 
