@@ -1,5 +1,8 @@
 title: ... to myself (and anyone else)
+description: A collection of notes, ideas, and essays on various topics (but mostly machine learning, philosophy, life, universe and everything).
 url: https://simonsmida.github.io
+author:
+  name: Simon Smida
 
 masthead_url: /notes/
 
@@ -8,6 +11,8 @@ remote_theme: mmistakes/minimal-mistakes
 plugins:
   - jekyll-include-cache
   - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
 permalink: /notes/:title/
 

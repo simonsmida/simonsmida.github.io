@@ -6,6 +6,10 @@ excerpt: "Attention enables information routing, not logical inference. Confusin
 header:
   teaser: /assets/notes/attention-reasoning.jpg
 tldr: "Attention mixes information. Reasoning transforms state."
+description: >
+  Why attention mechanisms in transformers do not implement reasoning,
+  with concrete intuitions and examples.
+author: Simon Smida
 ---
 
 ## TL;DR
