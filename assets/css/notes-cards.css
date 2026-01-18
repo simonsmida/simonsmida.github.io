@@ -19,27 +19,6 @@
   align-items: stretch;
 }
 
-/* Full-card clickable overlay */
-.note-card__link {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-
-/* Content above overlay but click-through */
-.note-card__thumb,
-.note-card__body {
-  position: relative;
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* Re-enable real links */
-.note-card__thumb,
-.note-card__body a {
-  pointer-events: auto;
-}
-
 /* Thumbnail */
 .note-card__thumb {
   flex: 0 0 160px;
