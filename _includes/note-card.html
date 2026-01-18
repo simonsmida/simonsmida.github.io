@@ -25,7 +25,10 @@
     </h2>
 
     <div class="note-card__meta">
-      <span>{{ mins }} min read</span>
+      <span class="note-card__readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        {{ mins }} min read
+      </span>
       <span class="note-card__metaSep">·</span>
       <time datetime="{{ shown_date | date_to_xmlschema }}">
         {{ shown_date | date: "%Y-%m-%d" }}
