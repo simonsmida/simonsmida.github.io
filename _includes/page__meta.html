@@ -1,0 +1,21 @@
+{% capture date_label %}{{ site.data.ui-text[site.locale].date_label | default: "Updated:" }}{% endcapture %}
+{% capture read_time_label %}{{ site.data.ui-text[site.locale].read_time_label | default: "min read" }}{% endcapture %}
+
+<p class="page__meta">
+  {% if page.date %}
+    <span class="page__meta-date">
+      <i class="far fa-calendar-alt" aria-hidden="true"></i>
+      <time datetime="{{ page.date | date_to_xmlschema }}">
+        {{ page.date | date: "%Y-%m-%d" }}
+      </time>
+    </span>
+  {% endif %}
+
+  {% if page.read_time %}
+    <span class="page__meta-sep"> · </span>
+    <span class="page__meta-readtime">
+      <i class="far fa-clock" aria-hidden="true"></i>
+      {{ page.read_time }} {{ read_time_label }}
+    </span>
+  {% endif %}
+</p>
