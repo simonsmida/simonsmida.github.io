@@ -1,0 +1,11 @@
+/* Site-wide base size */
+html { font-size: 16px; }
+
+/* Your notes cards tuning */
+.note-card__body { font-size: 0.95rem; line-height: 1.55; }
+.note-card__title { font-size: 1.08rem; }
+.note-card__meta { font-size: 0.82rem; }
+
+/* Optional: reduce post/article body too (uncomment if needed)
+.page__content { font-size: 0.98rem; line-height: 1.65; }
+*/
