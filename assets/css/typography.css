@@ -9,3 +9,18 @@ html { font-size: 16px; }
 /* Optional: reduce post/article body too (uncomment if needed)
 .page__content { font-size: 0.98rem; line-height: 1.65; }
 */
+
+/* Center footer content */
+.page__footer,
+.page__footer .wrapper {
+  text-align: center;
+}
+
+.page__footer ul {
+  justify-content: center;
+}
+
+.page__footer li {
+  float: none;
+  display: inline-block;
+}
