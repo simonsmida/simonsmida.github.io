@@ -4,8 +4,7 @@
 
 {% assign wpm = site.words_per_minute | default: 200 %}
 {% assign words = p.content | strip_html | number_of_words %}
-{% assign mins = words | divided_by: wpm %}
-{% if mins < 1 %}{% assign mins = 1 %}{% endif %}
+{% assign mins = words | plus: wpm | minus: 1 | divided_by: wpm %}
 
 {% assign summary = p.tldr | default: p.excerpt %}
 

@@ -12,10 +12,15 @@
   {% endif %}
 
   {% if page.read_time %}
+    {% assign wpm = page.words_per_minute | default: site.words_per_minute | default: 200 %}
+    {% assign words = page.content | strip_html | number_of_words %}
+    {% assign mins = words | plus: wpm | minus: 1 | divided_by: wpm %}  {# ceil(words/wpm) #}
+
     <span class="page__meta-sep"></span>
     <span class="page__meta-readtime">
       <i class="far fa-clock" aria-hidden="true"></i>
-      {{ page.read_time }} {{ read_time_label }}
+      {{ mins }} {{ read_time_label }}
     </span>
   {% endif %}
+
 </p>
