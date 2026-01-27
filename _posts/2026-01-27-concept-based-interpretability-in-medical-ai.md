@@ -4,7 +4,7 @@ date: 2026-01-27
 categories: [notes]
 excerpt: "A structured outline for a comprehensive survey on concept-based interpretability methods in medical AI."
 header:
-  teaser: /assets/notes/concept-based-interpretability-medical-ai.png
+  teaser: /assets/notes/cxai.png
 tldr: "A structured outline for a comprehensive survey on concept-based interpretability methods in medical AI."
 ---
 
