@@ -81,7 +81,7 @@ Explain *where concepts live* and *what form* they take inside neural networks. 
 - Monosemanticity vs. polysemanticity
 - Linear Representation Hypothesis (LRH) and its limits
 
-> **Key insight:** Many failures of C-XAI come from a mismatch between *assumed* and *actual* empirically observed representation structure (geometry).
+> **Key insight:** Many failures of C-XAI come from a mismatch between *assumed* and *actual* empirically observed representation structure (see also the [reification fallacy](https://surajsrinivas.substack.com/p/the-reification-fallacy-interpretability)).
 
 A mental model of concept representation that explains both successes and failures of existing methods.
 
