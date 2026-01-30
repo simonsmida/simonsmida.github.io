@@ -8,17 +8,17 @@ header:
 tldr: "By opening black-box bio foundational model, researchers discovered that AI relies on DNA fragment lengths to detect Alzheimer's, a signal that outperformed traditional biomarkers (methylation) and proved AI can teach us new biology."
 ---
 
-## The Model as Scientist: What happens when we _listen_ to AI, instead of just blindly using it?
+## What happens when we _listen_ to AI, instead of just using it blindly?
 
 We should move beyond plain "black box" prediction to learning scientific insights from AI models. This post shows a promissing step in that direction. 
 
 Research from the collaboration between [Goodfire](https://www.goodfire.ai/) and [Prima Mente](https://www.primamente.com/) demonstrated how opening the black box can lead to new knowledge. In "[Using Interpretability to Identify a Novel Class of Alzheimer's Biomarkers](https://www.goodfire.ai/research/interpretability-for-alzheimers-detection)" they described a proof-of-concept for the potential of AI interpretability-guided biomarker discovery.
 
-## Using AI to discover a new Alzheimer's biomarker
+## Using AI to Discover a New Alzheimer's Biomarker
 
 ![research-process](https://research-posts.s3.amazonaws.com/alzheimers-graphical-abstract.webp)
 
-### The Goal: A simple blood test for Alzheimer's
+### The Goal: A Simple Blood Test for Alzheimer's
 
 **Problem:** Diagnosing Alzheimer's Disease (AD) usually requires invasive brain scans or spinal taps. A simple blood test would be a game-changer.
 
@@ -29,21 +29,23 @@ Scientists usually look at specific known markers to diagnose diseases. The **bi
 We could look into AI to find new insights, but how do we open the black box? The answer lies in interpretability techniques.
 
 
-### Meet _Pleiades_ foundational model
+### The _Pleiades_ Foundational Model
 
 The researchers used a _foundational model_ for biology called [Pleiades](https://www.primamente.com/Pleiades-July-2025/). It is a large, general-purpose biological model trained once at scale and reused across many tasks.
 
 ![Pleiades-architecture](https://research-posts.s3.amazonaws.com/pleiades-ad-detection.webp)
 
 **Parameters:** 7B
+
 **Training Data:** 1.9T tokens of human DNA sequences (genomic and cfDNA)
+
 **Model Architecture:** Hierarchical Attention Transformer
 
 What it can do? In simple terms, it takes raw DNA data from a blood sample and predicts if the person has Alzheimer's or not.
 
 But knowing _that_ it works isn't enough. We need to understand _how_ it makes the decisions.
 
-### Opening the black box with interpretability
+### Opening the Black Box with Interpretability
 
 The researchers applied two distinct interpretability techniques to peek inside the model:
 
@@ -74,7 +76,7 @@ Result: Yes, they showed evidence that the model encodes both methylation and fr
 Taking both _supervised_ and _unsupervised_ interpretability approaches together, the researchers found that methylation and fragmentomics signals are both accessible in the model. However, fragment length had a particularly prominent role in the model's AD predictions.
 
 
-### But why did the model care about DNA fragment length?
+### But Why Did the Model Care About DNA Fragment Length?
 
 When researchers visualized the model's internal understanding of fragment length, they found a U-shaped curve.
 
@@ -85,7 +87,7 @@ The model paid most attention to fragments exactly 167 base pair long. The 167 i
 The model figured out that the structure of how DNA is packed breaks down in Alzheimer's patients, leaving specific fragment sizes behind.
 
 
-### Interpretability as a tool for hypothesis triage
+## Interpretability as a Tool for Hypothesis Triage
 
 We cannot just blindly trust the model's findings. But we can use interpretability to generate new hypotheses and then validate them experimentally.
 
@@ -107,7 +109,7 @@ To test it, researchers build an interpretable logistic regression model using o
 Fragment length (the AI's choice) generalized to new patients better than methylation (the standard choice).
 
 
-### AI as a Teacher
+## AI as a Teacher
 
 Listening to AI can lead to new scientific insights.
 
