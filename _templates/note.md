@@ -4,7 +4,7 @@ categories: [notes]
 excerpt: "One sentence summary shown in metadata and previews."
 tldr: "The shortest useful version of the note."
 # header:
-#   teaser: /assets/notes/your-image.jpg
+#   teaser: /assets/notes/YYYY-MM-DD-short-title/your-image.jpg
 published: false
 ---
 
@@ -15,7 +15,7 @@ Use this file as a starting point:
 2. Replace the title, excerpt, and tldr.
 3. Keep `published: false` while drafting.
 4. Remove `published: false` or set it to true when the note is ready.
-5. Put local note images in `assets/notes/` and reference them as `/assets/notes/name.ext`.
+5. Put local note images in `assets/notes/YYYY-MM-DD-short-title/` and reference them with that full path.
 -->
 
 ## TL;DR

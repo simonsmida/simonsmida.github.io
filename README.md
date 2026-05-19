@@ -31,6 +31,7 @@ Then open <http://localhost:4000>.
 
 - Start new notes from `_templates/note.md`, then copy them to `_posts/YYYY-MM-DD-short-slug.md`.
 - Add notes as dated Markdown files in `_posts/` with `categories: [notes]`.
+- Put note images in `assets/notes/YYYY-MM-DD-short-slug/` so each note owns its assets.
 - Keep drafts out of `_posts/`; Jekyll expects post filenames to start with `YYYY-MM-DD-`.
 - Prefer editing `_data/home_links.yml` instead of changing home page markup.
 - Keep one-off demos isolated in their own folder with an `index.html`.

@@ -4,17 +4,17 @@ date: 2026-01-15
 categories: [notes]
 excerpt: "Attention mixes information; it does not perform reasoning."
 header:
-  teaser: /assets/notes/attention.jpg
+  teaser: /assets/notes/2026-01-15-attention/attention.jpg
 tldr: "A first-principles, no-hype walkthrough of attention in transformers."
 ---
 
 
-![lucifer](/assets/notes/lucifer.png)
+![lucifer](/assets/notes/2026-01-15-attention/lucifer.png)
 > Attention to God I guess... Or vice-versa.
 
 <blockquote class="twitter-tweet">
   <p lang="en" dir="ltr">Funny, this was posted literally the minute I finished the post T_T..</p>
-  <img src="/assets/notes/lucifer-mock.png" alt="lucifer mock">
+  <img src="/assets/notes/2026-01-15-attention/lucifer-mock.png" alt="lucifer mock">
 </blockquote>
 
 ---
