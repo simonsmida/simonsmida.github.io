@@ -157,7 +157,7 @@
 
   <script>
     // Convolution Visualizer — Refactored
-    // Single-file module (window.ConvoViz) with clear state + rendering pipeline
+    // Single-file module with clear state + rendering pipeline
     (() => {
       "use strict";
 
@@ -623,9 +623,6 @@
         draw();
         sanityChecks();
       };
-
-      // Expose for debugging (optional)
-      window.ConvoViz = { state, draw };
 
       // Start
       boot();

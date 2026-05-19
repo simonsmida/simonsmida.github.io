@@ -3,6 +3,8 @@ const ctx = canvas.getContext("2d");
 const nodes = [];
 const nodeCount = 70;
 const mouse = { x: null, y: null, radius: 150 };
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let animationFrame = null;
 
 function initCanvas() {
     canvas.width = window.innerWidth;
@@ -11,8 +13,8 @@ function initCanvas() {
 
 function createNode(x, y) {
     return {
-        x: x || Math.random() * canvas.width,
-        y: y || Math.random() * canvas.height,
+        x: x ?? Math.random() * canvas.width,
+        y: y ?? Math.random() * canvas.height,
         vx: (Math.random() - 0.5) * 0.2,
         vy: (Math.random() - 0.5) * 0.2,
         radius: Math.random() * 2 + 1
@@ -24,12 +26,10 @@ function updateNodes() {
         node.x += node.vx;
         node.y += node.vy;
 
-        // Bounce off walls
         if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
         if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
 
-        // Mouse interaction
-        if (mouse.x && mouse.y) {
+        if (mouse.x !== null && mouse.y !== null) {
             const dx = mouse.x - node.x;
             const dy = mouse.y - node.y;
             const distance = Math.hypot(dx, dy);
@@ -72,37 +72,28 @@ function drawNodes() {
 function animate() {
     updateNodes();
     drawNodes();
-    requestAnimationFrame(animate);
+    animationFrame = requestAnimationFrame(animate);
 }
 
 function initTheme() {
     const toggle = document.querySelector('.theme-toggle');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     const savedTheme = localStorage.getItem('theme');
 
-    function setTheme(isDark) {
+    function setTheme(isDark, save = true) {
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        toggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+        if (save) {
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
     }
 
-    if (savedTheme) {
-        setTheme(savedTheme === 'dark');
-    } else {
-        setTheme(false); // Default to light theme
-    }
+    setTheme(savedTheme === 'dark', false);
 
     toggle.addEventListener('click', () => {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         setTheme(!isDark);
     });
 
-    prefersDark.addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) {
-            setTheme(false); // Keep light theme even when system preference changes
-        }
-    });
-
-    // Observe theme changes to redraw nodes
     new MutationObserver(drawNodes).observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['data-theme']
@@ -117,7 +108,6 @@ function init() {
     }
 }
 
-// Event Listeners
 window.addEventListener("pointermove", e => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
@@ -125,11 +115,24 @@ window.addEventListener("pointermove", e => {
 
 window.addEventListener("resize", init);
 
-canvas.addEventListener("click", e => {
-    nodes.push(createNode(e.clientX, e.clientY));
+reducedMotion.addEventListener("change", () => {
+    if (reducedMotion.matches) {
+        cancelAnimationFrame(animationFrame);
+        drawNodes();
+    } else {
+        animate();
+    }
 });
 
-// Initialize
+canvas.addEventListener("click", e => {
+    nodes.push(createNode(e.clientX, e.clientY));
+    drawNodes();
+});
+
 init();
 initTheme();
-animate();
+if (reducedMotion.matches) {
+    drawNodes();
+} else {
+    animate();
+}
