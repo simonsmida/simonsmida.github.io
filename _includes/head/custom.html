@@ -4,6 +4,11 @@
   <link rel="stylesheet" href="{{ '/assets/css/notes-cards.css' | relative_url }}">
 {% endif %}
 
+{% if page.interactive_map %}
+  <link rel="stylesheet" href="{{ '/assets/css/interactive-map.css' | relative_url }}">
+  <script defer src="{{ '/assets/js/interactive-map.js' | relative_url }}"></script>
+{% endif %}
+
 <script>
   window.MathJax = {
     tex: {
