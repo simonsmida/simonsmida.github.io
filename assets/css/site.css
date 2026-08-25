@@ -1020,6 +1020,10 @@ footer {
   overflow-y: auto;
 }
 
+.article-page .site-header {
+  background: var(--paper);
+}
+
 .article-page::after {
   display: none;
 }
