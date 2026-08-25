@@ -609,7 +609,6 @@
     let lastFuelRead = -Infinity;
     let protectionAreas = [];
     let fuelTargets = [];
-    let fuelBounds = { top: 0, bottom: 0 };
     const fuelStrengths = new WeakMap();
     let resizeTimer = 0;
 
@@ -692,26 +691,18 @@
         const strength = fuelStrengths.get(target.card) || 0;
         const centerY = (target.top + target.bottom) * .5;
         const inlineCards = target.left > viewportWidth * .28;
-        const topSpace = target.top - fuelBounds.top;
-        const bottomSpace = fuelBounds.bottom - target.bottom;
-        const rightSpace = viewportWidth - target.right;
-        const rightApproach = inlineCards
-          && rightSpace > Math.max(topSpace, bottomSpace, 120);
         let candidate;
 
-        if (inlineCards && rightApproach) {
-          const sinkX = Math.max(
-            target.left,
-            target.right - Math.min(isCompact ? 34 : 52, target.width * .1)
+        if (inlineCards) {
+          const sinkX = Math.min(
+            target.right,
+            target.left + Math.min(isCompact ? 34 : 52, target.width * .1)
           );
-          const sourceX = Math.min(
-            viewportWidth,
-            sinkX + (isCompact ? 170 : 250)
-          );
-          if (x < sinkX || x > sourceX) return;
+          const sourceX = Math.max(0, target.left - (isCompact ? 170 : 410));
+          if (x < sourceX || x > sinkX) return;
 
           const baseProgress = clamp(
-            (sourceX - x) / Math.max(1, sourceX - sinkX)
+            (x - sourceX) / Math.max(1, sinkX - sourceX)
           );
           const travel = reducedMotion.matches
             ? baseProgress
@@ -783,15 +774,11 @@
             : (baseProgress + timestamp * .0000058) % 1;
           const portSpacing = isCompact ? 86 : 142;
           const portIndex = Math.round((x - target.left - portSpacing * .5) / portSpacing);
-          const inlinePortX = target.left
-            + Math.min(isCompact ? 34 : 52, target.width * .1);
-          const portX = inlineCards
-            ? inlinePortX
-            : clamp(
-              target.left + portSpacing * (.5 + portIndex),
-              target.left + 24,
-              target.right - 24
-            );
+          const portX = clamp(
+            target.left + portSpacing * (.5 + portIndex),
+            target.left + 24,
+            target.right - 24
+          );
           const curvePhase = timestamp * .00007 + portIndex * .81;
           const curveAt = (progress) => {
             const envelope = 1 - Math.pow(progress, .72);
@@ -926,7 +913,6 @@
       context.font = `500 ${isCompact ? 10 : 11}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
 
       const bounds = getDrawingBounds();
-      fuelBounds = bounds;
       if (timestamp - lastFuelRead >= 100) {
         readFuelTargets(bounds);
         lastFuelRead = timestamp;
@@ -948,13 +934,14 @@
           const field = fieldFunction(normalizedX, normalizedY, phase, column, row);
           const fuel = fuelAttractionAt(x, y, timestamp, isCompact);
           const readability = readabilityAt(x, y);
+          const textDimming = readability < .24 ? .35 : 1;
           const effectiveReadability = Math.max(
             readability,
-            fuel.visibilityFloor
+            fuel.visibilityFloor * textDimming
           );
           const intensity = clamp(
             field.intensity * (.76 + effectiveReadability * .46)
-              + fuel.intensityBoost
+              + fuel.intensityBoost * textDimming
           );
           const random = gridNoise(column + 47, row + 19);
           const shouldSkip = intensity < .1
@@ -977,9 +964,13 @@
           context.globalAlpha = (.03 + intensity * .44)
             * effectiveReadability
             * glyphShade
-            * (1 + fuel.salience * .72);
+            * (1 + fuel.salience * textDimming * .72);
           const glyphColor = fuel.colorStrength > .008
-            ? mixColor(fieldColorRgb, accentColorRgb, fuel.colorStrength)
+            ? mixColor(
+              fieldColorRgb,
+              accentColorRgb,
+              fuel.colorStrength * textDimming
+            )
             : fieldColor;
 
           context.fillStyle = glyphColor;
