@@ -728,7 +728,7 @@
               progress * Math.PI * 3.4 + curvePhase * .8
             );
 
-            return (isCompact ? 48 : 98) * narrowing * widthVariation;
+            return (isCompact ? 44 : 84) * narrowing * widthVariation;
           };
           const currentY = curveAt(baseProgress);
           const radius = radiusAt(baseProgress);
@@ -743,17 +743,30 @@
             * filament
             * smoothstep(0, .18, baseProgress);
           const lane = (y - currentY) / Math.max(1, radius);
+          const pathStrength = gaussian(lane, 3.2)
+            * smoothstep(0, .16, baseProgress);
+          const arrival = smoothstep(.08, .96, travel);
           const mappedX = sourceX + travel * (sinkX - sourceX);
           const mappedY = curveAt(travel) + lane * radiusAt(travel);
 
           candidate = {
             influence,
+            pathStrength,
+            arrival,
             driftX: (mappedX - x) * influence,
             driftY: (mappedY - y) * influence,
-            intensityBoost: influence * (.2 + strength * .3),
-            visibilityFloor: influence * (.3 + strength * .56),
-            colorStrength: influence * (.28 + strength * .72),
-            salience: strength * influence
+            intensityBoost: influence * (
+              .13 + arrival * .23 + strength * (.18 + arrival * .2)
+            ),
+            visibilityFloor: influence * (
+              .24 + arrival * .24 + strength * (.25 + arrival * .22)
+            ),
+            colorStrength: pathStrength
+              * arrival
+              * (.52 + strength * .48),
+            salience: strength
+              * pathStrength
+              * (.4 + arrival * .6)
           };
         } else {
           const aboveCard = y <= centerY;
@@ -812,6 +825,9 @@
             * filament
             * smoothstep(0, .2, baseProgress);
           const lane = (x - currentX) / Math.max(1, radius);
+          const pathStrength = gaussian(lane, 3.2)
+            * smoothstep(0, .18, baseProgress);
+          const arrival = smoothstep(.08, .96, travel);
           const mappedX = curveAt(travel) + lane * radiusAt(travel);
           const mappedY = aboveCard
             ? sourceY + travel * (sinkY - sourceY)
@@ -819,12 +835,22 @@
 
           candidate = {
             influence,
+            pathStrength,
+            arrival,
             driftX: (mappedX - x) * influence,
             driftY: (mappedY - y) * influence,
-            intensityBoost: influence * (.16 + strength * .24),
-            visibilityFloor: influence * (.25 + strength * .48),
-            colorStrength: influence * (.28 + strength * .72),
-            salience: strength * influence
+            intensityBoost: influence * (
+              .12 + arrival * .2 + strength * (.16 + arrival * .18)
+            ),
+            visibilityFloor: influence * (
+              .22 + arrival * .2 + strength * (.22 + arrival * .2)
+            ),
+            colorStrength: pathStrength
+              * arrival
+              * (.52 + strength * .48),
+            salience: strength
+              * pathStrength
+              * (.4 + arrival * .6)
           };
         }
 
@@ -839,6 +865,8 @@
         intensityBoost: 0,
         visibilityFloor: 0,
         influence: 0,
+        pathStrength: 0,
+        arrival: 0,
         colorStrength: 0,
         salience: 0
       };
@@ -944,10 +972,11 @@
               + fuel.intensityBoost * textDimming
           );
           const random = gridNoise(column + 47, row + 19);
+          const flowDensity = fuel.pathStrength * (.72 + fuel.arrival * .28);
           const shouldSkip = intensity < .1
             || random > Math.max(
               .5 + intensity * .5,
-              .34 + fuel.influence * .62
+              .3 + flowDensity * .68
             )
             || (effectiveReadability < .24
               && gridNoise(column + 91, row + 7) > .3);
@@ -964,7 +993,8 @@
           context.globalAlpha = (.03 + intensity * .44)
             * effectiveReadability
             * glyphShade
-            * (1 + fuel.salience * textDimming * .72);
+            * (1 + fuel.pathStrength * textDimming * .24)
+            * (1 + fuel.salience * textDimming * .82);
           const glyphColor = fuel.colorStrength > .008
             ? mixColor(
               fieldColorRgb,
