@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" role="img" aria-labelledby="title desc">
+  <title id="title">Signal discovery</title>
+  <desc id="desc">Many faint biological traces converge through a narrow passage into a few clear signal bands.</desc>
+  <style>
+    .trace { fill: none; stroke: #8b8177; stroke-width: .8; stroke-linecap: round; }
+    .point { fill: #8b8177; }
+    .soft { opacity: .14; }
+    .mid { opacity: .28; }
+    .strong { opacity: .62; }
+    @media (prefers-reduced-motion: reduce) { .drift { animation: none !important; } }
+    .drift { animation: drift 20s ease-in-out infinite alternate; transform-origin: center; }
+    @keyframes drift { from { transform: translateY(-2px); } to { transform: translateY(2px); } }
+  </style>
+  <g class="drift">
+    <g class="soft">
+      <path class="trace" d="M36 47 C126 41 166 80 247 94 C294 102 322 92 355 77 C414 49 467 42 684 47"/>
+      <path class="trace" d="M36 58 C124 55 170 84 249 101 C297 111 324 101 357 84 C419 53 478 51 684 60"/>
+      <path class="trace" d="M36 72 C129 70 170 92 252 110 C297 121 325 111 360 94 C420 67 482 66 684 73"/>
+      <path class="trace" d="M36 88 C129 86 173 101 256 120 C300 130 331 120 364 104 C421 80 489 79 684 87"/>
+      <path class="trace" d="M36 106 C132 104 180 112 258 130 C304 140 335 131 368 115 C429 91 493 93 684 104"/>
+      <path class="trace" d="M36 124 C131 123 178 124 261 139 C307 148 338 141 372 127 C430 103 500 108 684 121"/>
+      <path class="trace" d="M36 143 C129 141 181 137 265 148 C311 154 343 151 375 138 C437 116 502 125 684 139"/>
+    </g>
+    <g class="mid">
+      <path class="trace" d="M44 54 C150 50 190 86 253 99 C305 110 329 97 364 79 C421 50 499 53 674 54"/>
+      <path class="trace" d="M44 132 C149 130 191 125 256 138 C309 148 335 139 370 122 C429 96 501 116 674 130"/>
+    </g>
+    <g class="strong">
+      <path class="trace" d="M55 99 C169 98 205 103 260 116 C308 128 340 116 375 99 C445 65 526 91 666 100"/>
+      <circle class="point" cx="375" cy="99" r="2.8"/>
+      <circle class="point" cx="476" cy="79" r="2"/>
+      <circle class="point" cx="530" cy="88" r="1.7"/>
+      <circle class="point" cx="584" cy="96" r="2.3"/>
+      <circle class="point" cx="632" cy="100" r="1.7"/>
+    </g>
+    <g class="mid">
+      <path class="trace" d="M375 99 C409 97 422 95 445 89"/>
+      <path class="trace" d="M375 99 C411 101 432 103 463 105"/>
+      <path class="trace" d="M375 99 C411 92 449 76 489 68"/>
+    </g>
+  </g>
+</svg>

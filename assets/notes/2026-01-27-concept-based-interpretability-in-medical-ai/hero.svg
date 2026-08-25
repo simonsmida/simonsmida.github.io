@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" role="img" aria-labelledby="title desc">
+  <title id="title">Concept field</title>
+  <desc id="desc">A continuous field of points resolves into three sparse, interpretable concept clusters.</desc>
+  <style>
+    .trace { fill: none; stroke: #8b8177; stroke-width: .8; stroke-linecap: round; }
+    .point { fill: #8b8177; }
+    .soft { opacity: .16; }
+    .mid { opacity: .3; }
+    .strong { opacity: .62; }
+    @media (prefers-reduced-motion: reduce) { .drift { animation: none !important; } }
+    .drift { animation: drift 18s ease-in-out infinite alternate; transform-origin: center; }
+    @keyframes drift { from { transform: translateX(-3px); } to { transform: translateX(3px); } }
+  </style>
+  <g class="drift">
+    <g class="soft">
+      <path class="trace" d="M55 104 C128 62 184 70 248 96 S360 139 422 112 S524 57 666 94"/>
+      <path class="trace" d="M54 117 C130 79 184 87 248 108 S358 150 425 122 S526 74 668 108"/>
+      <path class="trace" d="M56 91 C126 49 191 59 251 86 S359 126 420 101 S524 45 664 81"/>
+      <path class="trace" d="M80 130 C148 105 190 108 252 124 S360 160 432 136 S535 98 650 120"/>
+    </g>
+    <g class="mid">
+      <path class="trace" d="M72 101 C145 83 201 89 264 105 S361 131 432 111 S527 79 650 98"/>
+      <path class="trace" d="M84 113 C150 99 205 102 268 116 S366 142 438 120 S535 93 638 110"/>
+      <path class="trace" d="M98 88 C161 77 212 81 274 96 S369 119 438 101 S530 71 627 87"/>
+    </g>
+    <g class="strong">
+      <circle class="point" cx="290" cy="102" r="2"/>
+      <circle class="point" cx="315" cy="120" r="1.5"/>
+      <circle class="point" cx="340" cy="91" r="1.4"/>
+      <circle class="point" cx="380" cy="113" r="1.7"/>
+      <circle class="point" cx="442" cy="96" r="2"/>
+    </g>
+    <g class="mid">
+      <ellipse class="trace" cx="505" cy="89" rx="54" ry="27"/>
+      <ellipse class="trace" cx="505" cy="89" rx="38" ry="18"/>
+      <ellipse class="trace" cx="505" cy="89" rx="21" ry="10"/>
+      <ellipse class="trace" cx="583" cy="115" rx="43" ry="22"/>
+      <ellipse class="trace" cx="583" cy="115" rx="27" ry="13"/>
+      <ellipse class="trace" cx="628" cy="76" rx="31" ry="16"/>
+    </g>
+    <g class="strong">
+      <circle class="point" cx="505" cy="89" r="2.5"/>
+      <circle class="point" cx="583" cy="115" r="2.2"/>
+      <circle class="point" cx="628" cy="76" r="2.1"/>
+    </g>
+  </g>
+</svg>
