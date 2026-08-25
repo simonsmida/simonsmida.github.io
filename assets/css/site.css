@@ -1741,6 +1741,38 @@ footer {
   }
 }
 
+/* Short and medium-height desktop viewports keep the complete article introduction in frame. */
+@media (min-width: 861px) and (max-height: 960px) {
+  .article-header {
+    padding-top: 38px;
+    padding-bottom: 40px;
+  }
+
+  .article-date {
+    margin-bottom: 14px;
+  }
+
+  .article-hero-art {
+    width: min(100%, 680px);
+    margin-bottom: 18px;
+  }
+
+  .article-header h1 {
+    font-size: clamp(36px, 5vw, 60px);
+  }
+
+  .article-meta {
+    margin-top: 12px;
+  }
+
+  .article-lede {
+    max-width: 600px;
+    margin-top: 12px;
+    font-size: clamp(15px, 1.5vw, 18px);
+    line-height: 1.4;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
