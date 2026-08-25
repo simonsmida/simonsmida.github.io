@@ -171,6 +171,9 @@
     applyStyle(readSavedAsciiStyle(), { save: false });
   }
 
+  // Route recovery can add the canvas after this script has already run.
+  window.initializeAsciiPicker = initializeAsciiPicker;
+
   /* Decorative SVG fields */
 
   const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
@@ -430,6 +433,7 @@
       const importedCanvas = document.importNode(nextCanvas, true);
       const header = document.querySelector(".site-header");
       document.body.insertBefore(importedCanvas, header || document.body.firstChild);
+      window.initializeAsciiPicker?.();
 
       const asciiScript = [...nextDocument.scripts].find((script) => (
         script.src.includes("/ascii-field.js")
