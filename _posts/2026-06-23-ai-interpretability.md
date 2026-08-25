@@ -60,18 +60,22 @@ Is it meaningful to try to explain these black boxes? Why not come up with model
 
 Over the years, various views on interpretability were introduced, and they often evolved independently. There were multiple pitfalls, crises, push backs, but to me this field is one of the most interesting and cool research areas there is. Below you can find an **outline of the main interpretability methods**, all af which are further discussed below:
 
-- **Attribution** (saliency maps, LRP, DeepLIFT, Integrated Gradients, LIME, SHAP, Grad-CAM)
+- **1. Attribution** (saliency maps, LRP, DeepLIFT, Integrated Gradients, LIME, SHAP, Grad-CAM)
   - what parts of the input receive credit for the prediction 
-- **Probing** (linear and structural probes)
+- **2. Probing** (linear and structural probes)
   -  what information is represented
-- **Concept methods** (CBMs, TCAV)
-  - can model behavior be described using human concepts
-- **Prototype methods** (ProtoPNet)
+- **3. Prototype methods** (ProtoPNet)
   - which examples or patches support a decision
-- **Counterfactuals** (actionable recourse, contrastive explanations, DiCE) 
+- **4. Concept methods** (CBMs, TCAV)
+  - can model behavior be described using human concepts
+- **5. Counterfactuals** (actionable recourse, contrastive explanations, DiCE) 
   - what would change the output
-- **Mechanistic interpretability** (circuits, superposition, SAEs)
+- **6. Mechanistic interpretability** (circuits, superposition, SAEs)
   - how the computation is implemented.
+
+- **X. Inherently-interpretable models**
+  - instead of black boxes, let's make the models interpretable by design while preserving good performance
+
 
 In the image below you can see the rough timeline of AI interpretability approaches and the corresponding methods.
 
@@ -122,12 +126,17 @@ There are multiple ways of how to assign importance/relevance credit to the indi
 - approximate the effect of removing input regions
 
 One of the truly successful neural network-based architectures were in the field of computer vision (the AlexNet moment), thus it is natural people wanted to understand the decisions behind model predictions. Why did the model predict this specific label? Why did it fail for this specific example? Is the model driven by meaningful regions, concepts within the input image? This lead to the plethora of saliency based methods, with **saliency maps** introduced by [Simonyan et al., 2013](https://arxiv.org/abs/1312.6034) (use of raw gradients). The field then further evolved:
-* **Layerwise Relevance Propagation** ([Binder et al., 2016](https://arxiv.org/abs/1604.00825))
-* **DeepLIFT** ([Shrikumar et al., 2017](https://arxiv.org/abs/1704.02685))
-* **Integrated Gradients** ([Sundararajan et al., 2017](https://arxiv.org/abs/1703.01365))
-* **LIME** ([Ribeiro et al., 2016](https://arxiv.org/abs/1602.04938))
-* **SHAP** ([Lundberg and Lee, 2017](https://arxiv.org/abs/1705.07874))
-* **Grad-CAM** ([Selvaraju et al., 2016](https://arxiv.org/abs/1610.02391))
+
+* **Grad-CAM** ([Selvaraju et al., 2016](https://arxiv.org/abs/1610.02391)): gradient-weighted class activation mapping
+* **Layerwise Relevance Propagation** ([Binder et al., 2016](https://arxiv.org/abs/1604.00825)): propagate prediction relevance backward through the net to the input
+* **Integrated Gradients** ([Sundararajan et al., 2017](https://arxiv.org/abs/1703.01365)): accumulate gradients from a baseline to the input
+* **DeepLIFT** ([Shrikumar et al., 2017](https://arxiv.org/abs/1704.02685)): attribute predictions by comparing neuron activations to a ref. baseline
+* **LIME** ([Ribeiro et al., 2016](https://arxiv.org/abs/1602.04938)): model-agnostic = needs only inputs and outputs
+* **SHAP** ([Lundberg and Lee, 2017](https://arxiv.org/abs/1705.07874)): based on [Shapley value](https://en.wikipedia.org/wiki/Shapley_value) from game theory
+
+As you could notice, some of the methods rely on a "baseline" choice; read this well written [Distill article](https://distill.pub/2020/attribution-baselines/?utm_source=chatgpt.com) explaining the impact of feature attribution baselines.
+
+![saliency-maps](/assets/notes/2026-06-23-ai-interpretability/saliency-maps.png)
 
 
 But there was almost immediate pushback.  Does this kind of explanation truly reflect what the model computes? It is nice to see that specific areas of input are somehow relevant for the network, and some more than others. But what does it mean? This was the problem of "faithfulness".
@@ -157,7 +166,7 @@ The deeper lesson is almost philosophical. Humans are incredibely easy to fool w
 
 <section id="map-probing" data-map-section="probing" markdown="1">
 
-## 2. Probing the network representations to see what information is present
+## 2. _Probing_ the network representations to see what information is present
 <!-- ## Question 2: What information is present inside the representations? -->
 **Probing** a neural network means testing whether a certain information is present inside its internal representations.
 
@@ -199,7 +208,9 @@ Interventions: What information is actually _used_?
 <section id="map-prototypes" data-map-section="prototypes" markdown="1">
 
 
-## 3. Understanding neural networks with _prototypes_ and examples
+## 3. Prototypes
+
+Understanding neural networks with _prototypes_ and examples
 <!-- ### Question 4: Which examples does the model compare this to? -->
 
 **Example-based** methods: generic terms for interpretability methods explaining by training examples. The goal is to assess which examples, patches, or learned prototypes support the decision of interest.
@@ -221,12 +232,12 @@ Prototype methods belong naturally to example-based interpretability, together w
 
 </section>
 
-## 4. Inherently-interpretable models
-- advocated mainly by Cynthia Rudin, e.g. see [Rudin (2019)](https://arxiv.org/abs/1811.10154)
 
 <section id="map-concept-based" data-map-section="concept-based" markdown="1">
 
-## 5. Explaining the models with human-understandable _concepts_
+## 4. Concept-based Interpretability
+
+Explaining the models with human-understandable _concepts_
 
 **Concept-based interpretability** is inspired by the fact that humans typically reason in _concepts_ - abstractions of collections of things that are related in some meaningful way. Concepts can be faces, wheels, structures, but also emotions, philosophical constructs and others. In medical domain, when doctors make their diagnoses, they analyze the structures, morphology, similarities, known cell types, tissues, tumor regions, ...
 
@@ -242,41 +253,35 @@ It also allows intervention: What happens if we deliberately _change_ this conce
 
 <section id="map-counterfactuals" data-map-section="counterfactuals" markdown="1">
 
-## 6. What would need to change for the output to change?
+## 5. Counterfactual explanations
 
-A different angle on interpretability - explain by what would flip the output.
+A different angle on interpretability - explain by what would flip the output. What would need to change for the output to change?
 
 Counterfactual explanations ask a contrastive question. Not simply "why this output?", but rather "why this output instead of another one?".
 
-For example:
-
-> If income were higher by this amount, the loan would be approved.
+For example: _If income were higher by this amount, the loan would be approved._
 
 This line of work includes counterfactual explanations, actionable recourse, and DiCE.
 
-The explanation is not a heatmap, concept, or circuit.
-
-It is a minimal change that would alter the outcome.
-
-The central question is:
-
-> What change would flip the decision?
+The explanation is not a heatmap, concept, or circuit. It is a minimal change that would alter the outcome.
 
 </section>
 
 <section id="map-mechinterp" data-map-section="mechinterp" markdown="1">
 
-## 7. Understanding the actual mechanisms inside neural networks - the algorithm itself
+## 6. Mechanistic Interpretability
 
-Mechanistic interpretability asks the strongest question. It tries to _reverse-engineer_ the model's internal computation into something human-readable.
+Understanding the actual mechanisms inside neural networks - the algorithm itself
+
+Mechanistic interpretability asks probably the most ambition question. Can we _reverse-engineer_ the model's internal computation into something human-readable?
 
 The objects of study are weights, activations, features, circuits, and causal pathways.
 
-The goal is not just "what input mattered?", or "what information is represented?". The goal is close to understanding what algorithm is implemented inside the network. What variables, the unknown unknowns, and how they interact. Olah made a nice analogy with reverse-enginering a binary program.
+The goal is not just "what input mattered?", or "what information is represented?". The goal is close to understanding what algorithm is implemented inside the network. The variables, the unknown unknowns, and their interactions. Olah drew the analogy of reverse-enginering a binary program with how we can uncover the mysteries of neural networks in his [blog post](https://www.transformer-circuits.pub/2022/mech-interp-essay).
 
 This includes work on circuits, activation patching, superposition, and sparse autoencoders.
 
-Sparse autoencoders are useful here because they may decompose dense activations into more interpretable features.
+Sparse autoencoders (SAEs) are useful here because they may decompose dense activations into more interpretable features.
 
 But finding features is not automatically the same as explaining the mechanism.
 
@@ -284,7 +289,13 @@ For a mechanistic claim, we usually need causal evidence: ablations, activation 
 
 </section>
 
+--- 
+
+## X. Inherently-interpretable models
+- advocated mainly by Cynthia Rudin, e.g. see [Rudin (2019)](https://arxiv.org/abs/1811.10154)
+
 ---
+
 
 ## References
 

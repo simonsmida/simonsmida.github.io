@@ -24,7 +24,6 @@ defaults:
       layout: single
       author_profile: false
       read_time: true
-      classes: wide
 
 atom_feed:
   hide: true
