@@ -674,16 +674,29 @@
           const travel = reducedMotion.matches
             ? baseProgress
             : (baseProgress + timestamp * .0000062) % 1;
-          const slowBreath = Math.sin(
-            timestamp * .0001 + target.index * 1.31
-          ) * (isCompact ? 15 : 34);
-          const curveAt = (progress) => centerY
-            + slowBreath * (1 - progress)
-            + Math.sin(
-              progress * 5.2 - timestamp * .000075 + target.index * .73
-            ) * (1 - progress) * (isCompact ? 7 : 14);
-          const radiusAt = (progress) => (isCompact ? 46 : 76)
-            * (1 - progress * .82);
+          const curvePhase = timestamp * .000065 + target.index * .91;
+          const curveAt = (progress) => {
+            const envelope = .28 + .72 * (1 - Math.pow(progress, .74));
+            const broadTurn = Math.sin(
+              progress * Math.PI * 1.55 + curvePhase
+            ) * (isCompact ? 26 : 72);
+            const counterTurn = Math.sin(
+              progress * Math.PI * 3.75 - curvePhase * .72 + target.index
+            ) * (isCompact ? 9 : 25);
+            const softTurn = Math.sin(
+              progress * Math.PI * .72 + curvePhase * .45
+            ) * (isCompact ? 7 : 18);
+
+            return centerY + envelope * (broadTurn + counterTurn + softTurn);
+          };
+          const radiusAt = (progress) => {
+            const narrowing = 1 - progress * .76;
+            const widthVariation = .76 + .24 * Math.sin(
+              progress * Math.PI * 3.4 + curvePhase * .8
+            );
+
+            return (isCompact ? 48 : 98) * narrowing * widthVariation;
+          };
           const currentY = curveAt(baseProgress);
           const radius = radiusAt(baseProgress);
           const proximity = gaussian(
@@ -732,11 +745,26 @@
             target.left + 24,
             target.right - 24
           );
-          const curveAt = (progress) => portX + Math.sin(
-            progress * 4.7 + timestamp * .00009 + portIndex * .81
-          ) * (1 - progress) * (isCompact ? 9 : 16);
-          const radiusAt = (progress) => (isCompact ? 40 : 58)
-            * (1 - progress * .62);
+          const curvePhase = timestamp * .00007 + portIndex * .81;
+          const curveAt = (progress) => {
+            const envelope = 1 - Math.pow(progress, .72);
+            const broadTurn = Math.sin(
+              progress * Math.PI * 2.1 + curvePhase
+            ) * (isCompact ? 14 : 30);
+            const counterTurn = Math.sin(
+              progress * Math.PI * 4.3 - curvePhase * .65
+            ) * (isCompact ? 5 : 12);
+
+            return portX + envelope * (broadTurn + counterTurn);
+          };
+          const radiusAt = (progress) => {
+            const narrowing = 1 - progress * .62;
+            const widthVariation = .78 + .22 * Math.sin(
+              progress * Math.PI * 3 + curvePhase
+            );
+
+            return (isCompact ? 40 : 64) * narrowing * widthVariation;
+          };
           const currentX = curveAt(baseProgress);
           const radius = radiusAt(baseProgress);
           const proximity = gaussian(
