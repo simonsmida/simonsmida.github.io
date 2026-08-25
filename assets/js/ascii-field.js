@@ -609,6 +609,7 @@
     let lastFuelRead = -Infinity;
     let protectionAreas = [];
     let fuelTargets = [];
+    let fuelBounds = { top: 0, bottom: 0 };
     const fuelStrengths = new WeakMap();
     let resizeTimer = 0;
 
@@ -691,18 +692,26 @@
         const strength = fuelStrengths.get(target.card) || 0;
         const centerY = (target.top + target.bottom) * .5;
         const inlineCards = target.left > viewportWidth * .28;
+        const topSpace = target.top - fuelBounds.top;
+        const bottomSpace = fuelBounds.bottom - target.bottom;
+        const rightSpace = viewportWidth - target.right;
+        const rightApproach = inlineCards
+          && rightSpace > Math.max(topSpace, bottomSpace, 120);
         let candidate;
 
-        if (inlineCards) {
-          const sinkX = Math.min(
-            target.right,
-            target.left + Math.min(isCompact ? 34 : 52, target.width * .1)
+        if (inlineCards && rightApproach) {
+          const sinkX = Math.max(
+            target.left,
+            target.right - Math.min(isCompact ? 34 : 52, target.width * .1)
           );
-          const sourceX = Math.max(0, target.left - (isCompact ? 170 : 410));
-          if (x < sourceX || x > sinkX) return;
+          const sourceX = Math.min(
+            viewportWidth,
+            sinkX + (isCompact ? 170 : 250)
+          );
+          if (x < sinkX || x > sourceX) return;
 
           const baseProgress = clamp(
-            (x - sourceX) / Math.max(1, sinkX - sourceX)
+            (sourceX - x) / Math.max(1, sourceX - sinkX)
           );
           const travel = reducedMotion.matches
             ? baseProgress
@@ -774,11 +783,15 @@
             : (baseProgress + timestamp * .0000058) % 1;
           const portSpacing = isCompact ? 86 : 142;
           const portIndex = Math.round((x - target.left - portSpacing * .5) / portSpacing);
-          const portX = clamp(
-            target.left + portSpacing * (.5 + portIndex),
-            target.left + 24,
-            target.right - 24
-          );
+          const inlinePortX = target.left
+            + Math.min(isCompact ? 34 : 52, target.width * .1);
+          const portX = inlineCards
+            ? inlinePortX
+            : clamp(
+              target.left + portSpacing * (.5 + portIndex),
+              target.left + 24,
+              target.right - 24
+            );
           const curvePhase = timestamp * .00007 + portIndex * .81;
           const curveAt = (progress) => {
             const envelope = 1 - Math.pow(progress, .72);
@@ -913,6 +926,7 @@
       context.font = `500 ${isCompact ? 10 : 11}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
 
       const bounds = getDrawingBounds();
+      fuelBounds = bounds;
       if (timestamp - lastFuelRead >= 100) {
         readFuelTargets(bounds);
         lastFuelRead = timestamp;
