@@ -22,6 +22,7 @@
   --subtle: #73818a;
   --line: #cdd7dc;
   --accent: #668093;
+  --fuel-accent: #4d829f;
   --glow: rgba(91, 128, 153, .31);
   --particle: #647f93;
   --shadow: rgba(35, 52, 64, .09);
@@ -36,6 +37,7 @@
   --subtle: #7f98a8;
   --line: #29404f;
   --accent: #83a7ca;
+  --fuel-accent: #a6cbed;
   --glow: rgba(110, 158, 207, .46);
   --particle: #82a7cb;
   --shadow: rgba(0, 0, 0, .3);

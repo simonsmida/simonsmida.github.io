@@ -68,6 +68,32 @@
     return value - Math.floor(value);
   }
 
+  function parseColor(value) {
+    const hex = value.trim().replace(/^#/, "");
+    if (/^[0-9a-f]{3,8}$/i.test(hex)) {
+      const normalized = hex.length === 3
+        ? hex.split("").map((digit) => `${digit}${digit}`).join("")
+        : hex;
+      return [
+        Number.parseInt(normalized.slice(0, 2), 16),
+        Number.parseInt(normalized.slice(2, 4), 16),
+        Number.parseInt(normalized.slice(4, 6), 16)
+      ];
+    }
+
+    const channels = value.match(/[\d.]+/g);
+    return channels?.length >= 3
+      ? channels.slice(0, 3).map(Number)
+      : [100, 127, 147];
+  }
+
+  function mixColor(start, end, amount) {
+    const blend = clamp(amount);
+    return `rgb(${start.map((channel, index) => Math.round(
+      channel + (end[index] - channel) * blend
+    )).join(", ")})`;
+  }
+
   function pointSegmentDistanceSquared(px, py, ax, ay, bx, by) {
     const abx = bx - ax;
     const aby = by - ay;
@@ -575,6 +601,8 @@
     let viewportWidth = 0;
     let viewportHeight = 0;
     let fieldColor = "rgb(100, 127, 147)";
+    let fieldColorRgb = [100, 127, 147];
+    let accentColorRgb = [102, 128, 147];
     let animationFrame = 0;
     let lastPaint = -Infinity;
     let lastProtectionRead = -Infinity;
@@ -586,6 +614,11 @@
 
     function readPalette() {
       fieldColor = window.getComputedStyle(canvas).color;
+      fieldColorRgb = parseColor(fieldColor);
+      accentColorRgb = parseColor(
+        window.getComputedStyle(document.documentElement)
+          .getPropertyValue("--fuel-accent")
+      );
     }
 
     function readProtectionAreas() {
@@ -719,6 +752,7 @@
             driftY: (mappedY - y) * influence,
             intensityBoost: influence * (.2 + strength * .3),
             visibilityFloor: influence * (.3 + strength * .56),
+            colorStrength: influence * (.28 + strength * .72),
             salience: strength * influence
           };
         } else {
@@ -789,6 +823,7 @@
             driftY: (mappedY - y) * influence,
             intensityBoost: influence * (.16 + strength * .24),
             visibilityFloor: influence * (.25 + strength * .48),
+            colorStrength: influence * (.28 + strength * .72),
             salience: strength * influence
           };
         }
@@ -804,6 +839,7 @@
         intensityBoost: 0,
         visibilityFloor: 0,
         influence: 0,
+        colorStrength: 0,
         salience: 0
       };
     }
@@ -928,7 +964,12 @@
             * effectiveReadability
             * glyphShade
             * (1 + fuel.salience * .72);
-          context.shadowColor = fieldColor;
+          const glyphColor = fuel.colorStrength > .008
+            ? mixColor(fieldColorRgb, accentColorRgb, fuel.colorStrength)
+            : fieldColor;
+
+          context.fillStyle = glyphColor;
+          context.shadowColor = glyphColor;
           context.shadowBlur = intensity > .8 ? 7 : 0;
           context.fillText(
             characters[characterIndex],
