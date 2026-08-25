@@ -577,7 +577,9 @@
     let animationFrame = 0;
     let lastPaint = -Infinity;
     let lastProtectionRead = -Infinity;
+    let lastFuelRead = -Infinity;
     let protectionAreas = [];
+    let fuelTargets = [];
     let resizeTimer = 0;
 
     function readPalette() {
@@ -602,6 +604,89 @@
           }];
         })
       ));
+    }
+
+    // Cards act as quiet destinations for a few strands of the field.
+    function readFuelTargets(bounds) {
+      const cards = [...document.querySelectorAll(
+        ".hero-tab-panel .content-card, .content-page .content-card, .mobile-tab-section .content-card"
+      )];
+
+      fuelTargets = cards.flatMap((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const clip = card.closest(
+          ".hero-tab-list, .content-list-region, .mobile-tab-section-list"
+        )?.getBoundingClientRect();
+        const top = Math.max(rect.top, bounds.top, clip?.top ?? bounds.top);
+        const bottom = Math.min(rect.bottom, bounds.bottom, clip?.bottom ?? bounds.bottom);
+
+        if (rect.width === 0 || rect.height === 0 || bottom - top < 14) return [];
+
+        return [{
+          card,
+          index,
+          left: rect.left,
+          width: rect.width,
+          top,
+          bottom
+        }];
+      });
+    }
+
+    function drawFuelConnections(timestamp, phase, bounds, isCompact) {
+      if (!fuelTargets.length) return;
+
+      context.save();
+      context.lineCap = "round";
+      context.lineJoin = "round";
+
+      fuelTargets.forEach((target) => {
+        const centerY = (target.top + target.bottom) * .5;
+        const endpointDepth = isCompact
+          ? Math.min(44, target.width * .2)
+          : Math.min(98, target.width * .16);
+        const endpointX = clamp(target.left + endpointDepth, 0, viewportWidth);
+        const span = Math.min(isCompact ? 110 : 250, Math.max(24, endpointX));
+        const sourceX = Math.max(4, endpointX - span);
+        const active = target.card.matches(":hover") || target.card.matches(":focus-within");
+        const strandCount = isCompact ? 2 : 5;
+        const strandSpacing = isCompact ? 4 : 6;
+
+        for (let strand = 0; strand < strandCount; strand += 1) {
+          const offset = (strand - (strandCount - 1) * .5) * strandSpacing;
+          const drift = Math.sin(phase * 1.35 + target.index * .75 + strand * .6) * (isCompact ? 1.4 : 3.2);
+          const startY = centerY + offset * 1.8 + drift;
+          const endY = centerY + offset * .28;
+
+          context.beginPath();
+          context.moveTo(sourceX, startY);
+          context.bezierCurveTo(
+            sourceX + span * .28,
+            startY + drift * .7,
+            endpointX - span * .34,
+            endY - drift * .5,
+            endpointX,
+            endY
+          );
+          context.strokeStyle = fieldColor;
+          context.globalAlpha = active ? .32 : .11;
+          context.lineWidth = active ? 1.15 : .65;
+          context.shadowColor = fieldColor;
+          context.shadowBlur = active ? 5 : 0;
+          context.stroke();
+        }
+
+        context.beginPath();
+        context.arc(endpointX, centerY, active ? 2 : 1, 0, Math.PI * 2);
+        context.fillStyle = fieldColor;
+        context.globalAlpha = active ? .4 : .14;
+        context.shadowBlur = active ? 6 : 0;
+        context.fill();
+      });
+
+      context.globalAlpha = 1;
+      context.shadowBlur = 0;
+      context.restore();
     }
 
     function readabilityAt(x, y) {
@@ -673,10 +758,17 @@
       context.font = `500 ${isCompact ? 10 : 11}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
 
       const bounds = getDrawingBounds();
+      if (timestamp - lastFuelRead >= 100) {
+        readFuelTargets(bounds);
+        lastFuelRead = timestamp;
+      }
+
       context.save();
       context.beginPath();
       context.rect(0, bounds.top, viewportWidth, bounds.bottom - bounds.top);
       context.clip();
+
+      drawFuelConnections(timestamp, phase, bounds, isCompact);
 
       for (let row = 0; row < rows; row += 1) {
         const y = row * cellSize;
@@ -742,7 +834,10 @@
 
     function invalidateLayout() {
       lastProtectionRead = -Infinity;
+      lastFuelRead = -Infinity;
     }
+
+    document.addEventListener("scroll", invalidateLayout, { passive: true, capture: true });
 
     resizeCanvas();
     updateMotion();
