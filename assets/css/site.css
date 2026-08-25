@@ -1186,9 +1186,25 @@ footer {
   z-index: 2;
   min-height: 88px;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   padding-block: 14px 18px;
   border-top: 0;
+}
+
+.article-footer-mark {
+  width: min(100%, 420px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--subtle);
+}
+
+.article-footer-mark::before,
+.article-footer-mark::after {
+  height: 1px;
+  flex: 1;
+  background: var(--line);
+  content: "";
 }
 
 .footer-atom {
