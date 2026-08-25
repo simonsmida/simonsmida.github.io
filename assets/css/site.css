@@ -1041,6 +1041,12 @@ footer {
   overflow-y: auto;
 }
 
+/* A canvas can remain mounted during client-side navigation; hide it on
+   article routes, which intentionally use a quiet reading background. */
+.article-page .ascii-manifold {
+  visibility: hidden;
+}
+
 .article-page .site-header {
   background: var(--paper);
 }

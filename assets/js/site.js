@@ -313,8 +313,9 @@
 
       if (!pageCache.has(cacheKey)) {
         const request = window.fetch(cacheKey, {
-          // Navigation pages are static; let the browser reuse the warmed copy.
-          cache: "force-cache",
+          // Revalidate the warmed copy so a route never restores stale chrome
+          // (especially the footer/canvas) after a deploy or back navigation.
+          cache: "no-cache",
           headers: { Accept: "text/html" }
         }).then(async (response) => {
           if (!response.ok) {
@@ -388,6 +389,60 @@
 
           return card;
         });
+    }
+
+    // Keep the fixed chrome in sync when a full page shell is swapped in place.
+    // Article pages have a different footer and do not ship the ASCII canvas,
+    // so leaving either element mounted would leak article state into About.
+    function importChromeElement(source, destination) {
+      const element = document.importNode(source, true);
+
+      element.querySelectorAll("[href], [src]").forEach((node) => {
+        ["href", "src"].forEach((attribute) => {
+          const value = node.getAttribute(attribute);
+          if (!value || value.startsWith("#") || value.startsWith("data:")) return;
+
+          try {
+            node.setAttribute(attribute, new URL(value, destination.href).href);
+          } catch {
+            // Keep the original URL if an unusual asset URL cannot resolve.
+          }
+        });
+      });
+
+      return element;
+    }
+
+    function syncPageChrome(nextDocument, destination) {
+      const nextFooter = nextDocument.querySelector("footer");
+      const currentFooter = document.querySelector("footer");
+      if (nextFooter && currentFooter) {
+        currentFooter.replaceWith(importChromeElement(nextFooter, destination));
+      }
+
+      // Keep a mounted canvas alive while navigating so its animation does not
+      // restart. Direct article loads have no canvas, so restore it when the
+      // next shell requires one and load the field script once.
+      const nextCanvas = nextDocument.querySelector("[data-ascii-manifold]");
+      const currentCanvas = document.querySelector("[data-ascii-manifold]");
+      if (!nextCanvas || currentCanvas) return;
+
+      const importedCanvas = document.importNode(nextCanvas, true);
+      const header = document.querySelector(".site-header");
+      document.body.insertBefore(importedCanvas, header || document.body.firstChild);
+
+      const asciiScript = [...nextDocument.scripts].find((script) => (
+        script.src.includes("/ascii-field.js")
+      ));
+      if (!asciiScript || document.querySelector('script[src*="/ascii-field.js"]')) {
+        window.initializeAsciiField?.();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = new URL(asciiScript.getAttribute("src"), destination.href).href;
+      script.defer = true;
+      document.body.append(script);
     }
 
     function updateInlineShell(nextDocument, destination) {
@@ -529,6 +584,7 @@
         pageSwapped = true;
         document.body.className = nextDocument.body.className;
         currentMain.replaceWith(importedMain);
+        syncPageChrome(nextDocument, destination);
 
         document.title = nextDocument.title;
         updateDescription(nextDocument);
