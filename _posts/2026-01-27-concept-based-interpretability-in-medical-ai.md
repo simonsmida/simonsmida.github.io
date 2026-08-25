@@ -3,12 +3,13 @@ title: "Concept-Based Interpretability in Medical AI"
 date: 2026-01-27
 layout: article
 read_time: 8
-hero_art: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/hero.svg?v=2
-hero_alt: "Sparse concept clusters emerging from a continuous representation field"
+hero_art: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/concept-based-interpretability-hero.png?v=1
+hero_art_type: image
+hero_alt: "A layered representation field resolving into distinct concept structures"
 categories: [notes]
 excerpt: "A structured outline for a comprehensive survey on concept-based interpretability methods in medical AI."
 header:
-  teaser: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/cxai.png
+  teaser: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/concept-based-interpretability-hero.png
 tldr: "A structured outline for a comprehensive survey on concept-based interpretability methods in medical AI."
 ---
 

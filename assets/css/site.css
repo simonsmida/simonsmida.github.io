@@ -1098,9 +1098,18 @@ footer {
   opacity: .78;
 }
 
+.article-hero-art-image img {
+  opacity: 1;
+}
+
 :root[data-theme="midnight-navy"] .article-hero-art img {
   filter: brightness(1.65) saturate(.7);
   opacity: .72;
+}
+
+:root[data-theme="midnight-navy"] .article-hero-art-image img {
+  filter: none;
+  opacity: 1;
 }
 
 .article-content {

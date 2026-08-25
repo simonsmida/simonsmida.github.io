@@ -44,7 +44,7 @@
     <header class="article-header">
       <a class="article-back" href="/writing.html">← Writing</a>
       {% if page.hero_art %}
-      <figure class="article-hero-art">
+      <figure class="article-hero-art{% if page.hero_art_type == 'image' %} article-hero-art-image{% endif %}">
         <img src="{{ page.hero_art }}" alt="{{ page.hero_alt | default: 'Abstract conceptual illustration' }}">
       </figure>
       {% endif %}
