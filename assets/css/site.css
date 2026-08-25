@@ -1047,6 +1047,17 @@ footer {
   visibility: hidden;
 }
 
+.article-page .ascii-picker {
+  display: none;
+}
+
+/* If a client-side swap is interrupted, an article footer can briefly remain
+   mounted under a landing/content body. Keep that fallback visually correct. */
+.landing-page footer .article-footer-mark,
+.content-page footer .article-footer-mark {
+  display: none;
+}
+
 .article-page .site-header {
   background: var(--paper);
 }
