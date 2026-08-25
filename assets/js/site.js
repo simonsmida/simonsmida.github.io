@@ -85,6 +85,8 @@
   }
 
   function initializeAsciiPicker() {
+    if (!document.querySelector("[data-ascii-manifold]")) return;
+
     const header = document.querySelector(".site-header");
     if (!header || header.querySelector("[data-ascii-picker]")) return;
 
