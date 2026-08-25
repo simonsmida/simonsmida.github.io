@@ -1,17 +1,12 @@
-title: ... to myself (and anyone else)
-description: A collection of notes, ideas, and essays on various topics (but mostly machine learning, philosophy, life, universe and everything).
+title: Šimon Šmída
+description: Research, writing, and interactive projects about deep learning, interpretability, and medical AI.
 url: https://simonsmida.github.io
+
 author:
-  name: Simon Smida
-
-masthead_url: /notes/
-
-remote_theme: mmistakes/minimal-mistakes
+  name: Šimon Šmída
 
 plugins:
-  - jekyll-include-cache
   - jekyll-feed
-  - jekyll-seo-tag
   - jekyll-sitemap
 
 permalink: /notes/:title/
@@ -21,24 +16,11 @@ defaults:
       path: ""
       type: posts
     values:
-      layout: single
-      author_profile: false
-      read_time: true
+      layout: article
 
-atom_feed:
-  hide: true
-
-footer:
-  links:
-    - label: "Personal Website"
-      icon: "fas fa-globe"
-      url: "https://simonsmida.github.io"
-    - label: "GitHub"
-      icon: "fab fa-github"
-      url: "https://github.com/simonsmida"
-    - label: "Newsletter"
-      icon: "fas fa-envelope"
-      url: "https://buttondown.email/simonsmida"
-    - label: "RSS"
-      icon: "fas fa-rss"
-      url: "/feed.xml"
+exclude:
+  - backup
+  - redesign-prototype
+  - redesign-prototype-backup-before-inline-tabs-2026-08-25
+  - _templates
+  - README.md

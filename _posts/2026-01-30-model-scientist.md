@@ -1,6 +1,8 @@
 ---
 title: "The Model as Scientist"
 date: 2026-01-30
+layout: article
+read_time: 7
 categories: [notes]
 excerpt: "By opening black-box bio foundational model, researchers discovered that AI relies on DNA fragment lengths to detect Alzheimer's, a signal that outperformed traditional biomarkers (methylation) and proved AI can teach us new biology."
 header:

@@ -1,6 +1,8 @@
 ---
 title: "Concept-Based Interpretability in Medical AI"
 date: 2026-01-27
+layout: article
+read_time: 8
 categories: [notes]
 excerpt: "A structured outline for a comprehensive survey on concept-based interpretability methods in medical AI."
 header:

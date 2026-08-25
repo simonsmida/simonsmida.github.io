@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Šimon Šmída</title>
+  <desc id="desc">A minimal latent-node mark</desc>
+  <style>
+    .bg { fill: #f6f2eb; }
+    .line { fill: none; stroke: #c8b79f; stroke-width: 1.2; }
+    .node { fill: #9a7956; }
+    .core { fill: #28231e; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #171918; }
+      .line { stroke: #806c54; }
+      .node { fill: #c0a078; }
+      .core { fill: #eee9df; }
+    }
+  </style>
+  <rect class="bg" width="64" height="64" rx="14"/>
+  <g class="line" opacity=".78">
+    <ellipse cx="32" cy="32" rx="23" ry="10" transform="rotate(-25 32 32)"/>
+    <ellipse cx="32" cy="32" rx="22" ry="9" transform="rotate(35 32 32)"/>
+    <circle cx="32" cy="32" r="18"/>
+  </g>
+  <g class="node">
+    <circle cx="14" cy="27" r="2.1"/>
+    <circle cx="47" cy="19" r="1.7"/>
+    <circle cx="48" cy="44" r="2.2"/>
+    <circle cx="23" cy="48" r="1.5"/>
+  </g>
+  <circle class="core" cx="32" cy="32" r="4"/>
+</svg>
