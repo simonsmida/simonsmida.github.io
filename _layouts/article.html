@@ -43,15 +43,7 @@
   <main class="article-main" id="main-content">
     <header class="article-header">
       <p class="article-date">{% if page.read_time %}{{ page.read_time }} min read{% endif %}</p>
-      {% if page.hero_inline == 'concept-field' %}
-      <figure class="article-hero-art hero-art">
-        {% include article-heroes/concept-field.svg %}
-      </figure>
-      {% elsif page.hero_inline == 'model-landscape' %}
-      <figure class="article-hero-art hero-art">
-        {% include article-heroes/model-landscape.svg %}
-      </figure>
-      {% elsif page.hero_art %}
+      {% if page.hero_art %}
       <figure class="article-hero-art{% if page.hero_art_type == 'image' %} article-hero-art-image{% endif %}">
         <img src="{{ page.hero_art }}" alt="{{ page.hero_alt | default: 'Abstract conceptual illustration' }}">
       </figure>

@@ -1083,21 +1083,9 @@ footer {
 }
 
 .article-hero-art {
-  width: min(100%, 1400px);
+  width: min(100%, 900px);
   margin: 0 auto clamp(32px, 5vw, 56px);
   color: var(--muted);
-}
-
-.article-hero-art svg {
-  width: 100%;
-  height: auto;
-  display: block;
-  overflow: visible;
-}
-
-.article-hero-art.hero-art {
-  width: min(100%, 900px);
-  margin-bottom: clamp(24px, 3vw, 36px);
 }
 
 .article-hero-art img {
