@@ -42,7 +42,7 @@
 
   <main class="article-main" id="main-content">
     <header class="article-header">
-      <p class="article-date"><time datetime="{{ page.date | date_to_xmlschema }}">Published {{ page.date | date: "%B %-d, %Y" }}</time></p>
+      <p class="article-date">{% if page.read_time %}{{ page.read_time }} min read{% endif %}</p>
       {% if page.hero_inline == 'concept-field' %}
       <figure class="article-hero-art hero-art">
         {% include article-heroes/concept-field.svg %}
@@ -57,7 +57,7 @@
       </figure>
       {% endif %}
       <h1>{{ page.title }}</h1>
-      <p class="article-meta">{% if page.read_time %}{{ page.read_time }} min read{% endif %}</p>
+      <p class="article-meta"><time datetime="{{ page.date | date_to_xmlschema }}">Published {{ page.date | date: "%B %-d, %Y" }}</time></p>
       <p class="article-lede">{{ page.excerpt }}</p>
     </header>
 
