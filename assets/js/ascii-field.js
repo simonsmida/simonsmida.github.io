@@ -608,7 +608,7 @@
       ));
     }
 
-    // Cards act as quiet destinations for streams pulled from the field.
+    // Visible cards become attractors inside the existing character field.
     function readFuelTargets(bounds) {
       const cards = [...document.querySelectorAll(
         ".hero-tab-panel .content-card, .content-page .content-card, .mobile-tab-section .content-card"
@@ -628,6 +628,7 @@
           card,
           index,
           left: rect.left,
+          right: rect.right,
           width: rect.width,
           top,
           bottom
@@ -635,164 +636,148 @@
       });
     }
 
-    function cubicPoint(start, controlA, controlB, end, progress) {
-      const inverse = 1 - progress;
-      const inverseSquared = inverse * inverse;
-      const progressSquared = progress * progress;
-
-      return {
-        x: inverseSquared * inverse * start.x
-          + 3 * inverseSquared * progress * controlA.x
-          + 3 * inverse * progressSquared * controlB.x
-          + progressSquared * progress * end.x,
-        y: inverseSquared * inverse * start.y
-          + 3 * inverseSquared * progress * controlA.y
-          + 3 * inverse * progressSquared * controlB.y
-          + progressSquared * progress * end.y
-      };
-    }
-
-    function getFuelGeometry(target, isCompact) {
-      const centerY = (target.top + target.bottom) * .5;
-      const endpointDepth = isCompact
-        ? Math.min(38, target.width * .18)
-        : Math.min(72, target.width * .12);
-      const endpointX = clamp(target.left + endpointDepth, 0, viewportWidth);
-      const span = Math.min(isCompact ? 125 : 280, Math.max(28, endpointX));
-
-      return {
-        centerY,
-        endpointX,
-        span,
-        sourceX: Math.max(4, endpointX - span)
-      };
-    }
-
-    // Gently bend the base field into the same currents that feed the cards.
-    function fuelAttractionAt(x, y, timestamp, isCompact) {
-      let driftX = 0;
-      let driftY = 0;
-      let intensityBoost = 0;
-
+    function updateFuelStrengths() {
       fuelTargets.forEach((target) => {
-        const geometry = getFuelGeometry(target, isCompact);
-        if (x < geometry.sourceX || x > geometry.endpointX) return;
-
-        const progress = clamp(
-          (x - geometry.sourceX) / Math.max(1, geometry.span)
-        );
-        const strength = fuelStrengths.get(target.card) || 0;
-        const sourceDrift = Math.sin(
-          timestamp * .00013 + target.index * 1.17
-        ) * (isCompact ? 8 : 20);
-        const centerY = geometry.centerY + sourceDrift * (1 - progress);
-        const radius = (isCompact ? 38 : 66) * (1 - progress * .62);
-        const proximity = gaussian((y - centerY) / Math.max(12, radius), 2.1);
-        const arrival = smoothstep(0, .24, progress);
-        const influence = proximity * arrival;
-
-        driftX += influence * (1.4 + strength * 3.8);
-        driftY += (centerY - y) * influence * (.065 + strength * .09);
-        intensityBoost += influence * (.07 + strength * .17);
-      });
-
-      return { driftX, driftY, intensityBoost };
-    }
-
-    function drawFuelStreams(timestamp, bounds, isCompact, characters) {
-      if (!fuelTargets.length) return;
-
-      const streamTime = reducedMotion.matches ? 0 : timestamp * .00003;
-      context.save();
-      context.fillStyle = fieldColor;
-      context.shadowColor = fieldColor;
-
-      fuelTargets.forEach((target) => {
-        const { centerY, endpointX, sourceX, span } = getFuelGeometry(
-          target,
-          isCompact
-        );
-        const isActive = target.card.matches(":hover") || target.card.matches(":focus-within");
+        const isActive = target.card.matches(":hover")
+          || target.card.matches(":focus-within");
         const requestedStrength = isActive ? 1 : 0;
         const previousStrength = fuelStrengths.get(target.card) || 0;
         const strength = reducedMotion.matches
           ? requestedStrength
-          : previousStrength + (requestedStrength - previousStrength) * .14;
-        const strandCount = isCompact ? 3 : 5;
-        const baseGlyphCount = isCompact ? 9 : 13;
-        const totalGlyphCount = baseGlyphCount + (isCompact ? 3 : 6);
+          : previousStrength + (requestedStrength - previousStrength) * .12;
 
         fuelStrengths.set(target.card, strength);
+      });
+    }
 
-        for (let strand = 0; strand < strandCount; strand += 1) {
-          const strandOffset = strand - (strandCount - 1) * .5;
-          const drift = Math.sin(
-            timestamp * .00016 + target.index * .83 + strand * .71
-          ) * (isCompact ? 1.8 : 4.5);
-          const start = {
-            x: sourceX,
-            y: centerY + strandOffset * (isCompact ? 10 : 16) + drift
-          };
-          const end = {
-            x: endpointX,
-            y: centerY + strandOffset * (isCompact ? 1.2 : 2)
-          };
-          const controlA = {
-            x: sourceX + span * .28,
-            y: start.y + drift * .7
-          };
-          const controlB = {
-            x: endpointX - span * .34,
-            y: centerY + strandOffset * (isCompact ? 3 : 5) - drift * .45
-          };
+    // Deform the real field glyphs into organic currents entering each card.
+    function fuelAttractionAt(x, y, timestamp, isCompact) {
+      let strongest = null;
 
-          for (let glyph = 0; glyph < totalGlyphCount; glyph += 1) {
-            const extraGlyph = glyph >= baseGlyphCount;
-            const seed = gridNoise(
-              target.index * 41 + strand * 13 + glyph * 3.1,
-              strand * 17 + glyph * 5.7
-            );
-            const speed = .72 + seed * .34;
-            const progress = (
-              glyph / totalGlyphCount
-              + streamTime * speed
-              + strand * .047
-              + target.index * .031
-            ) % 1;
-            const point = cubicPoint(start, controlA, controlB, end, progress);
-            const wobble = Math.sin(
-              timestamp * .00028 + seed * Math.PI * 2 + progress * 8
-            ) * (1 - progress) * (isCompact ? .8 : 1.5);
-            const visibility = Math.max(
-              readabilityAt(point.x, point.y),
-              .34 + strength * .38
-            );
-            const arrival = .48 + progress * .52;
-            const extraVisibility = extraGlyph ? strength : 1;
-            const alpha = (.055 + arrival * .075 + strength * .3)
-              * visibility
-              * extraVisibility;
-            const characterIndex = Math.min(
-              characters.length - 1,
-              Math.floor((seed * .56 + progress * .44) * characters.length)
-            );
+      fuelTargets.forEach((target) => {
+        const strength = fuelStrengths.get(target.card) || 0;
+        const centerY = (target.top + target.bottom) * .5;
+        const inlineCards = target.left > viewportWidth * .28;
+        let candidate;
 
-            if (alpha < .008) continue;
+        if (inlineCards) {
+          const sinkX = Math.min(
+            target.right,
+            target.left + Math.min(isCompact ? 34 : 52, target.width * .1)
+          );
+          const sourceX = Math.max(0, target.left - (isCompact ? 170 : 410));
+          if (x < sourceX || x > sinkX) return;
 
-            context.globalAlpha = alpha;
-            context.shadowBlur = strength > .08 ? strength * 5 : 0;
-            context.fillText(
-              characters[characterIndex],
-              point.x,
-              point.y + wobble
-            );
-          }
+          const baseProgress = clamp(
+            (x - sourceX) / Math.max(1, sinkX - sourceX)
+          );
+          const travel = reducedMotion.matches
+            ? baseProgress
+            : (baseProgress + timestamp * .0000062) % 1;
+          const slowBreath = Math.sin(
+            timestamp * .0001 + target.index * 1.31
+          ) * (isCompact ? 15 : 34);
+          const curveAt = (progress) => centerY
+            + slowBreath * (1 - progress)
+            + Math.sin(
+              progress * 5.2 - timestamp * .000075 + target.index * .73
+            ) * (1 - progress) * (isCompact ? 7 : 14);
+          const radiusAt = (progress) => (isCompact ? 46 : 76)
+            * (1 - progress * .82);
+          const currentY = curveAt(baseProgress);
+          const radius = radiusAt(baseProgress);
+          const proximity = gaussian(
+            (y - currentY) / Math.max(isCompact ? 11 : 15, radius),
+            1.65
+          );
+          const filament = .64 + .36 * Math.pow(Math.abs(Math.sin(
+            (y - currentY) * .13 + baseProgress * 8 - timestamp * .00012
+          )), 2.4);
+          const influence = proximity
+            * filament
+            * smoothstep(0, .18, baseProgress);
+          const lane = (y - currentY) / Math.max(1, radius);
+          const mappedX = sourceX + travel * (sinkX - sourceX);
+          const mappedY = curveAt(travel) + lane * radiusAt(travel);
+
+          candidate = {
+            influence,
+            driftX: (mappedX - x) * influence,
+            driftY: (mappedY - y) * influence,
+            intensityBoost: influence * (.2 + strength * .3),
+            visibilityFloor: influence * (.3 + strength * .56),
+            salience: strength * influence
+          };
+        } else {
+          const aboveCard = y <= centerY;
+          const sinkY = aboveCard ? target.top + 18 : target.bottom - 18;
+          const sourceY = aboveCard
+            ? target.top - (isCompact ? 95 : 145)
+            : target.bottom + (isCompact ? 95 : 145);
+          const minimumY = Math.min(sourceY, sinkY);
+          const maximumY = Math.max(sourceY, sinkY);
+          if (y < minimumY || y > maximumY) return;
+
+          const rawProgress = aboveCard
+            ? (y - sourceY) / Math.max(1, sinkY - sourceY)
+            : (sourceY - y) / Math.max(1, sourceY - sinkY);
+          const baseProgress = clamp(rawProgress);
+          const travel = reducedMotion.matches
+            ? baseProgress
+            : (baseProgress + timestamp * .0000058) % 1;
+          const portSpacing = isCompact ? 86 : 142;
+          const portIndex = Math.round((x - target.left - portSpacing * .5) / portSpacing);
+          const portX = clamp(
+            target.left + portSpacing * (.5 + portIndex),
+            target.left + 24,
+            target.right - 24
+          );
+          const curveAt = (progress) => portX + Math.sin(
+            progress * 4.7 + timestamp * .00009 + portIndex * .81
+          ) * (1 - progress) * (isCompact ? 9 : 16);
+          const radiusAt = (progress) => (isCompact ? 40 : 58)
+            * (1 - progress * .62);
+          const currentX = curveAt(baseProgress);
+          const radius = radiusAt(baseProgress);
+          const proximity = gaussian(
+            (x - currentX) / Math.max(10, radius),
+            1.9
+          );
+          const filament = .66 + .34 * Math.pow(Math.abs(Math.sin(
+            (x - currentX) * .12 + baseProgress * 7 + timestamp * .00011
+          )), 2.2);
+          const influence = proximity
+            * filament
+            * smoothstep(0, .2, baseProgress);
+          const lane = (x - currentX) / Math.max(1, radius);
+          const mappedX = curveAt(travel) + lane * radiusAt(travel);
+          const mappedY = aboveCard
+            ? sourceY + travel * (sinkY - sourceY)
+            : sourceY - travel * (sourceY - sinkY);
+
+          candidate = {
+            influence,
+            driftX: (mappedX - x) * influence,
+            driftY: (mappedY - y) * influence,
+            intensityBoost: influence * (.16 + strength * .24),
+            visibilityFloor: influence * (.25 + strength * .48),
+            salience: strength * influence
+          };
+        }
+
+        if (!strongest || candidate.influence > strongest.influence) {
+          strongest = candidate;
         }
       });
 
-      context.globalAlpha = 1;
-      context.shadowBlur = 0;
-      context.restore();
+      return strongest || {
+        driftX: 0,
+        driftY: 0,
+        intensityBoost: 0,
+        visibilityFloor: 0,
+        influence: 0,
+        salience: 0
+      };
     }
 
     function readabilityAt(x, y) {
@@ -868,6 +853,7 @@
         readFuelTargets(bounds);
         lastFuelRead = timestamp;
       }
+      updateFuelStrengths();
 
       context.save();
       context.beginPath();
@@ -884,13 +870,22 @@
           const field = fieldFunction(normalizedX, normalizedY, phase, column, row);
           const fuel = fuelAttractionAt(x, y, timestamp, isCompact);
           const readability = readabilityAt(x, y);
+          const effectiveReadability = Math.max(
+            readability,
+            fuel.visibilityFloor
+          );
           const intensity = clamp(
-            field.intensity * (.76 + readability * .46) + fuel.intensityBoost
+            field.intensity * (.76 + effectiveReadability * .46)
+              + fuel.intensityBoost
           );
           const random = gridNoise(column + 47, row + 19);
           const shouldSkip = intensity < .1
-            || random > .5 + intensity * .5
-            || (readability < .24 && gridNoise(column + 91, row + 7) > .3);
+            || random > Math.max(
+              .5 + intensity * .5,
+              .34 + fuel.influence * .62
+            )
+            || (effectiveReadability < .24
+              && gridNoise(column + 91, row + 7) > .3);
 
           if (shouldSkip) continue;
 
@@ -901,7 +896,10 @@
           const glyphShade = .68
             + (characterIndex / Math.max(1, characters.length - 1)) * .32;
 
-          context.globalAlpha = (.03 + intensity * .44) * readability * glyphShade;
+          context.globalAlpha = (.03 + intensity * .44)
+            * effectiveReadability
+            * glyphShade
+            * (1 + fuel.salience * .72);
           context.shadowColor = fieldColor;
           context.shadowBlur = intensity > .8 ? 7 : 0;
           context.fillText(
@@ -911,8 +909,6 @@
           );
         }
       }
-
-      drawFuelStreams(timestamp, bounds, isCompact, characters);
 
       context.globalAlpha = 1;
       context.shadowBlur = 0;
