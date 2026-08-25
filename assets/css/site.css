@@ -1046,7 +1046,7 @@ footer {
   text-align: center;
 }
 
-.article-back {
+.article-date {
   display: inline-block;
   width: min(100%, 780px);
   margin: 0 auto 30px;
@@ -1056,11 +1056,6 @@ footer {
   font-weight: 650;
   letter-spacing: .075em;
   text-transform: uppercase;
-  transition: color 160ms ease;
-}
-
-.article-back:hover {
-  color: var(--ink);
 }
 
 .article-header h1 {
@@ -1714,7 +1709,7 @@ footer {
     padding: 76px 16px 56px;
   }
 
-  .article-back {
+  .article-date {
     margin-bottom: 24px;
   }
 
