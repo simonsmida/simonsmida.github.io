@@ -1083,7 +1083,7 @@ footer {
 }
 
 .article-hero-art {
-  width: min(100%, 900px);
+  width: min(100%, 760px);
   margin: 0 auto clamp(32px, 5vw, 56px);
   color: var(--muted);
 }
