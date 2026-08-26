@@ -38,8 +38,6 @@
     [".hero-copy h1", .08],
     [".hero-copy .intro", .12],
     [".hero-details", .12],
-    [".hero-tab-panel:not([hidden])", .18],
-    [".mobile-tab-section", .18],
     [".ascii-picker-menu:not([hidden])", .08]
   ];
 
@@ -753,14 +751,12 @@
             influence,
             pathStrength,
             arrival,
-            driftX: (mappedX - x) * influence,
-            driftY: (mappedY - y) * influence,
-            intensityBoost: influence * (
-              .13 + arrival * .23 + strength * (.18 + arrival * .2)
-            ),
-            visibilityFloor: influence * (
-              .24 + arrival * .24 + strength * (.25 + arrival * .22)
-            ),
+            // Keep the base field stable. Only glyphs already near the stream
+            // receive a restrained pull toward the card.
+            driftX: (mappedX - x) * influence * .34,
+            driftY: (mappedY - y) * influence * .34,
+            intensityBoost: 0,
+            visibilityFloor: 0,
             colorStrength: pathStrength
               * arrival
               * (.52 + strength * .48),
@@ -837,14 +833,12 @@
             influence,
             pathStrength,
             arrival,
-            driftX: (mappedX - x) * influence,
-            driftY: (mappedY - y) * influence,
-            intensityBoost: influence * (
-              .12 + arrival * .2 + strength * (.16 + arrival * .18)
-            ),
-            visibilityFloor: influence * (
-              .22 + arrival * .2 + strength * (.22 + arrival * .2)
-            ),
+            // Keep the base field stable. Only glyphs already near the stream
+            // receive a restrained pull toward the card.
+            driftX: (mappedX - x) * influence * .34,
+            driftY: (mappedY - y) * influence * .34,
+            intensityBoost: 0,
+            visibilityFloor: 0,
             colorStrength: pathStrength
               * arrival
               * (.52 + strength * .48),

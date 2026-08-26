@@ -1,5 +1,5 @@
 ---
-title: "The Model as Scientist"
+title: "The Model as a Scientist"
 date: 2026-01-30
 layout: article
 read_time: 7

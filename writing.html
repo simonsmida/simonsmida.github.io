@@ -1,3 +1,6 @@
+---
+permalink: /writing.html
+---
 <!doctype html>
 <html lang="en" data-theme="slate-blue">
 <head>
@@ -7,7 +10,7 @@
   <title>Šimon Šmída</title>
   <link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg?v=1">
   <link rel="mask-icon" href="./assets/icons/favicon.svg?v=1" color="#688194">
-  <link rel="stylesheet" href="./assets/css/site.css?v=57">
+  <link rel="stylesheet" href="./assets/css/site.css?v=58">
 </head>
 <body class="content-page">
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -73,6 +76,21 @@
             <p>How interpretability helped reveal a DNA fragment-length signal for Alzheimer’s detection—and turn a model into a source of scientific hypotheses.</p>
           </div>
         </article>
+
+        {% assign interpretability_draft = site.posts | where: "slug", "ai-interpretability" | first %}
+        {% if interpretability_draft %}
+        <!-- This card appears when serving with --unpublished; the draft stays unpublished. -->
+        <article class="content-card" id="interpretability-map">
+          <a class="card-media" href="{{ interpretability_draft.url | relative_url }}" aria-label="Read A Map of AI Interpretability Research">
+            <img src="./assets/notes/2026-06-23-ai-interpretability/thumbnail.png" alt="Illustrated map of questions and methods in AI interpretability" width="2048" height="2048" loading="lazy">
+          </a>
+          <div class="card-body">
+            <div class="card-meta"><time datetime="{{ interpretability_draft.date | date: '%Y-%m-%d' }}">{{ interpretability_draft.date | date: "%b %-d, %Y" }}</time><span>Draft</span></div>
+            <h2><a href="{{ interpretability_draft.url | relative_url }}">A Map of AI Interpretability Research</a></h2>
+            <p>{{ interpretability_draft.excerpt }}</p>
+          </div>
+        </article>
+        {% endif %}
       </section>
 
       <button class="view-more" type="button" data-view-more aria-controls="writing-list" aria-expanded="false" hidden>
@@ -87,6 +105,6 @@
   </footer>
 
   <script src="./assets/js/site.js?v=40" defer></script>
-  <script src="./assets/js/ascii-field.js?v=43" defer></script>
+  <script src="./assets/js/ascii-field.js?v=44" defer></script>
 </body>
 </html>

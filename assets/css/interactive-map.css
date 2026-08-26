@@ -1,0 +1,125 @@
+.interactive-map {
+  margin: 1.5rem 0 2rem;
+}
+
+.interactive-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.interactive-map__fallback,
+.interactive-map__error {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.interactive-map svg [data-map-region],
+.interactive-map svg [data-map-region] > * {
+  cursor: pointer;
+}
+
+.interactive-map svg path[data-map-region],
+.interactive-map svg rect[data-map-region],
+.interactive-map svg circle[data-map-region],
+.interactive-map svg ellipse[data-map-region],
+.interactive-map svg polygon[data-map-region],
+.interactive-map svg polyline[data-map-region],
+.interactive-map svg [data-map-region] > path,
+.interactive-map svg [data-map-region] > rect,
+.interactive-map svg [data-map-region] > circle,
+.interactive-map svg [data-map-region] > ellipse,
+.interactive-map svg [data-map-region] > polygon,
+.interactive-map svg [data-map-region] > polyline {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    filter 160ms ease,
+    transform 160ms ease;
+}
+
+.interactive-map svg path[data-map-region]:hover,
+.interactive-map svg path[data-map-region]:focus-visible,
+.interactive-map svg rect[data-map-region]:hover,
+.interactive-map svg rect[data-map-region]:focus-visible,
+.interactive-map svg circle[data-map-region]:hover,
+.interactive-map svg circle[data-map-region]:focus-visible,
+.interactive-map svg ellipse[data-map-region]:hover,
+.interactive-map svg ellipse[data-map-region]:focus-visible,
+.interactive-map svg polygon[data-map-region]:hover,
+.interactive-map svg polygon[data-map-region]:focus-visible,
+.interactive-map svg polyline[data-map-region]:hover,
+.interactive-map svg polyline[data-map-region]:focus-visible,
+.interactive-map svg [data-map-region]:hover > path,
+.interactive-map svg [data-map-region]:focus-visible > path,
+.interactive-map svg [data-map-region]:hover > rect,
+.interactive-map svg [data-map-region]:focus-visible > rect,
+.interactive-map svg [data-map-region]:hover > circle,
+.interactive-map svg [data-map-region]:focus-visible > circle,
+.interactive-map svg [data-map-region]:hover > ellipse,
+.interactive-map svg [data-map-region]:focus-visible > ellipse,
+.interactive-map svg [data-map-region]:hover > polygon,
+.interactive-map svg [data-map-region]:focus-visible > polygon,
+.interactive-map svg [data-map-region]:hover > polyline,
+.interactive-map svg [data-map-region]:focus-visible > polyline {
+  animation: interactive-map-wiggle 900ms ease-in-out infinite;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.16));
+  transform: scale(1.05);
+}
+
+.interactive-map svg [data-map-region]:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.55);
+  outline-offset: 3px;
+}
+
+.interactive-map svg [data-map-disabled] {
+  cursor: default;
+}
+
+[data-map-section] {
+  scroll-margin-top: 5rem;
+}
+
+.interactive-map__todo {
+  margin: -0.75rem 0 2rem;
+  font-size: 0.85rem;
+}
+
+.interactive-map__todo summary {
+  cursor: pointer;
+}
+
+.interactive-map__todo table {
+  margin-top: 0.75rem;
+}
+
+@keyframes interactive-map-wiggle {
+  0%,
+  100% {
+    transform: scale(1.05) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.05) rotate(0.4deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(-0.4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interactive-map svg [data-map-region],
+  .interactive-map svg [data-map-region] > * {
+    transition: none;
+  }
+
+  .interactive-map svg [data-map-region]:hover,
+  .interactive-map svg [data-map-region]:focus-visible,
+  .interactive-map svg [data-map-region]:hover > * ,
+  .interactive-map svg [data-map-region]:focus-visible > * {
+    animation: none;
+  }
+}
+
