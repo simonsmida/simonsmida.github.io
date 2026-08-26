@@ -642,7 +642,7 @@ footer {
 .hero-tab-list[data-motion="entering"] > .content-card {
   opacity: 0;
   animation: inline-card-in 230ms var(--ease-out) both;
-  animation-delay: calc(var(--card-index, 0) * 46ms);
+  animation-delay: calc(var(--card-index, 0) * 200ms);
   will-change: opacity, transform;
 }
 
