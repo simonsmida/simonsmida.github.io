@@ -94,7 +94,7 @@
     picker.className = "ascii-picker";
     picker.dataset.asciiPicker = "";
     picker.innerHTML = `
-      <button class="ascii-picker-button" type="button" data-ascii-trigger aria-expanded="false" aria-controls="ascii-style-menu">
+      <button class="ascii-picker-button" type="button" data-ascii-trigger aria-expanded="false" aria-controls="ascii-style-menu" aria-label="Choose representation field" title="Choose representation field">
         <span class="ascii-picker-mark" data-ascii-mark aria-hidden="true">∿</span>
         <span class="ascii-picker-copy"><span>Field</span><span data-ascii-current>Latent manifold</span></span>
       </button>
@@ -125,6 +125,7 @@
       document.documentElement.dataset.asciiStyle = style.value;
       currentLabel.textContent = style.label;
       currentMark.textContent = style.mark;
+      trigger.setAttribute("aria-label", `Representation field: ${style.label}`);
 
       picker.querySelectorAll("[data-ascii-option]").forEach((option) => {
         option.setAttribute(
@@ -417,6 +418,18 @@
     }
 
     function syncPageChrome(nextDocument, destination) {
+      const header = document.querySelector(".site-header");
+      const nextSiteMark = nextDocument.querySelector(".site-mark");
+      const currentSiteMark = document.querySelector(".site-mark");
+
+      if (nextSiteMark && currentSiteMark) {
+        currentSiteMark.replaceWith(importChromeElement(nextSiteMark, destination));
+      } else if (nextSiteMark && header) {
+        header.prepend(importChromeElement(nextSiteMark, destination));
+      } else {
+        currentSiteMark?.remove();
+      }
+
       const nextFooter = nextDocument.querySelector("footer");
       const currentFooter = document.querySelector("footer");
       if (nextFooter && currentFooter) {
@@ -428,10 +441,14 @@
       // next shell requires one and load the field script once.
       const nextCanvas = nextDocument.querySelector("[data-ascii-manifold]");
       const currentCanvas = document.querySelector("[data-ascii-manifold]");
-      if (!nextCanvas || currentCanvas) return;
+      if (!nextCanvas) return;
+
+      if (currentCanvas) {
+        window.initializeAsciiPicker?.();
+        return;
+      }
 
       const importedCanvas = document.importNode(nextCanvas, true);
-      const header = document.querySelector(".site-header");
       document.body.insertBefore(importedCanvas, header || document.body.firstChild);
       window.initializeAsciiPicker?.();
 

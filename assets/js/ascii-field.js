@@ -37,7 +37,6 @@
   const LANDING_PROTECTION = [
     [".hero-copy h1", .08],
     [".hero-copy .intro", .12],
-    [".hero-copy .hero-quote", .12],
     [".hero-details", .12],
     [".hero-tab-panel:not([hidden])", .18],
     [".mobile-tab-section", .18],
@@ -595,7 +594,8 @@
   function initializeAsciiField() {
     const canvas = document.querySelector("[data-ascii-manifold]");
     const context = canvas?.getContext("2d", { alpha: true });
-    if (!canvas || !context) return;
+    if (!canvas || !context || canvas.dataset.asciiFieldReady === "true") return;
+    canvas.dataset.asciiFieldReady = "true";
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let viewportWidth = 0;
@@ -1083,5 +1083,6 @@
     });
   }
 
+  window.initializeAsciiField = initializeAsciiField;
   initializeAsciiField();
 })();
