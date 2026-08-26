@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en" data-theme="slate-blue">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Research by Šimon Šmída on interpretability, representation learning, and medical AI.">
+  <title>Šimon Šmída</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg?v=1">
+  <link rel="mask-icon" href="./assets/icons/favicon.svg?v=1" color="#688194">
+  <link rel="stylesheet" href="./assets/css/site.css?v=12">
+</head>
+<body class="content-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <canvas class="ascii-manifold" data-ascii-manifold aria-hidden="true"></canvas>
+
+  <header class="site-header">
+    <nav aria-label="Primary navigation">
+      <a href="./index.html">About</a>
+      <a href="./research.html" aria-current="page">Research</a>
+      <a href="./writing.html">Writing</a>
+      <a href="./projects.html">Projects</a>
+    </nav>
+
+    <div class="theme-picker">
+      <button class="theme-button" type="button" data-theme-trigger aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode">
+        <svg class="theme-icon theme-sun" aria-hidden="true" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3.8"/>
+          <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/>
+        </svg>
+        <svg class="theme-icon theme-moon" aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-main" id="main-content">
+    <header class="page-intro">
+      <h1>Research</h1>
+      <p>My research focuses on interpretability of deep learning models, with an emphasis on medical imaging and representation learning.</p>
+      <svg class="mini-field representation-field" data-field="mini" viewBox="0 0 220 220" aria-hidden="true">
+        <g class="field-orbits">
+          <ellipse cx="110" cy="110" rx="88" ry="38" transform="rotate(24 110 110)"/>
+          <ellipse cx="110" cy="110" rx="80" ry="52" transform="rotate(-38 110 110)"/>
+          <circle cx="110" cy="110" r="72"/>
+        </g>
+        <g data-field-particles></g>
+        <circle class="field-core" cx="110" cy="110" r="4"/>
+      </svg>
+    </header>
+
+    <!-- Copy a content-card to add a paper. Cards after the first three use View more. -->
+    <div class="content-list-region">
+      <section class="card-grid" id="research-list" data-card-list data-item-label="research" aria-label="Selected research">
+        <article class="content-card" id="sparse-autoencoders">
+          <a class="card-media" href="#sparse-autoencoders" aria-label="Sparse Autoencoders for Histopathology Foundation Models">
+            <img src="../assets/notes/2026-06-23-ai-interpretability/thumbnail.png" alt="A visual map connecting different areas of AI interpretability" width="1254" height="1254">
+          </a>
+          <div class="card-body">
+            <div class="card-meta"><time datetime="2026-05-14">2026</time></div>
+            <h2><a href="#sparse-autoencoders">Sparse Autoencoders for Expert-Assisted Interpretation of Histopathology Foundation Model Embeddings</a></h2>
+            <p>We investigate whether sparse features can expose clinically meaningful concepts encoded in pathology foundation-model embeddings.</p>
+          </div>
+        </article>
+
+        <article class="content-card" id="concept-medical-ai">
+          <a class="card-media" href="#concept-medical-ai" aria-label="Concept-Based Interpretability in Medical AI">
+            <img src="../assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/cxai.png" alt="Concept-based explainable AI diagram for medical imaging" width="1024" height="1024" loading="lazy">
+          </a>
+          <div class="card-body">
+            <div class="card-meta"><time datetime="2026-01-27">2026</time></div>
+            <h2><a href="#concept-medical-ai">Concept-Level Explanations in Medical AI</a></h2>
+            <p>How concepts can connect model representations to clinically meaningful explanations—and how to test whether those concepts are actually used.</p>
+          </div>
+        </article>
+
+        <article class="content-card" id="model-scientist">
+          <a class="card-media" href="#model-scientist" aria-label="The Model as Scientist">
+            <img src="../assets/notes/2026-01-30-model-scientist/ai-scientist-thumb.png" alt="Illustration of an AI system helping reveal a biological signal" width="1673" height="892" loading="lazy">
+          </a>
+          <div class="card-body">
+            <div class="card-meta"><span>Ongoing</span></div>
+            <h2><a href="#model-scientist">On the Transferability of Latent Concepts Across Histopathology Datasets</a></h2>
+            <p>We ask whether learned pathology concepts preserve their meaning when the dataset, tissue distribution, or model changes.</p>
+          </div>
+        </article>
+
+        <article class="content-card" id="visualizing-invisible">
+          <a class="card-media" href="#visualizing-invisible" aria-label="Visualizing the Invisible: Tools for Pathology Model Interpretability">
+            <img src="../assets/notes/2026-06-23-ai-interpretability/saliency-maps.png" alt="Saliency maps used to inspect pathology model predictions" width="1024" height="1024" loading="lazy">
+          </a>
+          <div class="card-body">
+            <div class="card-meta"><span>Ongoing</span></div>
+            <h2><a href="#visualizing-invisible">Visualizing the Invisible: Tools for Pathology Model Interpretability</a></h2>
+            <p>Interactive tools for inspecting what pathology models attend to, represent, and rely on when making predictions.</p>
+          </div>
+        </article>
+
+        <!-- Temporary cards for testing the expanded list. -->
+        <article class="content-card" id="placeholder-causal-representations">
+          <a class="card-media" href="#placeholder-causal-representations" aria-label="Causal Structure in Learned Representations">
+            <img src="../assets/notes/2026-01-30-model-scientist/ai-scientist-thumb.png" alt="Abstract diagram representing causal structure in a learned model" width="1673" height="892" loading="lazy">
+          </a>
+          <div class="card-body">
+            <div class="card-meta"><span>Placeholder</span></div>
+            <h2><a href="#placeholder-causal-representations">Causal Structure in Learned Representations</a></h2>
+            <p>A placeholder paper for testing how additional research entries behave in the expanded list.</p>
+          </div>
+        </article>
+
+        <article class="content-card" id="placeholder-concept-transfer">
+          <a class="card-media" href="#placeholder-concept-transfer" aria-label="Measuring Concept Transfer Across Models">
+            <img src="../assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/cxai.png" alt="Abstract visual of concepts transferring between models" width="1024" height="1024" loading="lazy">
+          </a>
+          <div class="card-body">
+            <div class="card-meta"><span>Placeholder</span></div>
+            <h2><a href="#placeholder-concept-transfer">Measuring Concept Transfer Across Models</a></h2>
+            <p>A placeholder paper for testing long research lists and their internal scroll behavior.</p>
+          </div>
+        </article>
+      </section>
+
+      <button class="view-more" type="button" data-view-more aria-controls="research-list" aria-expanded="false" hidden>
+        <span data-view-more-label>View more research</span>
+        <span class="view-more-icon" aria-hidden="true">↓</span>
+      </button>
+    </div>
+  </main>
+
+  <footer>
+    <span>© 2026 Šimon Šmída</span>
+    <div class="footer-links">
+      <a href="https://github.com/simonsmida">GitHub ↗</a>
+      <span>Prague, Czechia</span>
+    </div>
+  </footer>
+
+  <script src="./assets/js/site.js?v=12" defer></script>
+  <script src="./assets/js/ascii-field.js?v=12" defer></script>
+</body>
+</html>

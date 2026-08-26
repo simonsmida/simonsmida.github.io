@@ -15,6 +15,7 @@ Markdown and rendered by GitHub Pages with the shared article layout.
 - `assets/css/site.css` — Layout, themes, cards, and article typography.
 - `assets/js/site.js` — Theme, navigation, and card behavior.
 - `assets/js/ascii-field.js` — Animated ASCII backgrounds.
+- `archive/` — Local historical drafts and prototype snapshots; excluded from the build.
 
 ## Add an article
 

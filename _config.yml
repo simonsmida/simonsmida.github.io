@@ -19,8 +19,6 @@ defaults:
       layout: article
 
 exclude:
-  - backup
-  - redesign-prototype
-  - redesign-prototype-backup-before-inline-tabs-2026-08-25
+  - archive
   - _templates
   - README.md
