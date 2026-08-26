@@ -597,6 +597,8 @@ footer {
 }
 
 .hero-tab-panel-head h2 {
+  position: relative;
+  isolation: isolate;
   margin: 0;
   color: var(--ink);
   font-size: 10px;
@@ -605,8 +607,23 @@ footer {
   line-height: 1;
 }
 
+/* Give the small panel labels a soft clearing around the glyphs so the field
+   remains visible nearby without reducing their legibility. */
+.hero-tab-panel-head h2::before,
+.hero-tab-more::before {
+  position: absolute;
+  z-index: -1;
+  inset: -7px -10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 58%, transparent);
+  filter: blur(10px);
+  content: "";
+  pointer-events: none;
+}
+
 .hero-tab-list {
   display: grid;
+  align-content: start;
   gap: 10px;
 }
 
@@ -624,8 +641,9 @@ footer {
 
 .hero-tab-list[data-motion="entering"] > .content-card {
   opacity: 0;
-  animation: inline-card-in 220ms var(--ease-out) both;
-  animation-delay: calc(var(--card-index, 0) * 34ms);
+  animation: inline-card-in 230ms var(--ease-out) both;
+  animation-delay: calc(var(--card-index, 0) * 46ms);
+  will-change: opacity, transform;
 }
 
 .hero-tab-list .content-card {
@@ -690,6 +708,8 @@ footer {
 }
 
 .hero-tab-more {
+  position: relative;
+  isolation: isolate;
   display: inline-block;
   margin: 13px 8px 0;
   color: var(--muted);
@@ -1004,18 +1024,18 @@ footer {
    their smaller area otherwise makes the glass effect hard to notice. Keep a
    quiet surface present at rest so the field stays soft behind the text. */
 .hero-tab-list .content-card::before {
-  opacity: .9;
+  opacity: .64;
   background:
     radial-gradient(
-      90% 150% at 0% 0%,
-      color-mix(in srgb, var(--surface) 64%, transparent),
-      transparent 70%
+      120% 150% at 50% 0%,
+      color-mix(in srgb, var(--surface) 24%, transparent),
+      transparent 76%
     ),
     linear-gradient(
       118deg,
-      color-mix(in srgb, var(--surface) 46%, transparent),
-      color-mix(in srgb, var(--surface) 25%, transparent) 64%,
-      color-mix(in srgb, var(--line) 11%, transparent)
+      color-mix(in srgb, var(--surface) 20%, transparent),
+      color-mix(in srgb, var(--surface) 16%, transparent) 64%,
+      color-mix(in srgb, var(--line) 8%, transparent)
     );
   -webkit-backdrop-filter: blur(18px) saturate(1.08);
   backdrop-filter: blur(18px) saturate(1.08);
@@ -1024,8 +1044,8 @@ footer {
 .hero-tab-list .content-card {
   background: linear-gradient(
     112deg,
-    color-mix(in srgb, var(--surface) 68%, transparent),
-    color-mix(in srgb, var(--surface) 44%, transparent)
+    color-mix(in srgb, var(--surface) 31%, transparent),
+    color-mix(in srgb, var(--surface) 27%, transparent)
   );
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--line) 42%, transparent),
@@ -1039,8 +1059,8 @@ footer {
 .hero-tab-list .content-card:focus-within {
   background: linear-gradient(
     112deg,
-    color-mix(in srgb, var(--surface) 82%, transparent),
-    color-mix(in srgb, var(--surface) 58%, transparent)
+    color-mix(in srgb, var(--surface) 52%, transparent),
+    color-mix(in srgb, var(--surface) 45%, transparent)
   );
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--line) 55%, transparent),
@@ -1518,7 +1538,7 @@ footer {
 
   .landing-page.inline-content-active .hero-tab-panel {
     max-width: none;
-    height: 312px;
+    height: 420px;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
   }
