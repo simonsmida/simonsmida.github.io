@@ -986,20 +986,37 @@ footer {
    their smaller area otherwise makes the glass effect hard to notice. Keep a
    quiet surface present at rest so the field stays soft behind the text. */
 .hero-tab-list .content-card::before {
-  opacity: .58;
-  -webkit-backdrop-filter: blur(13px) saturate(1.04);
-  backdrop-filter: blur(13px) saturate(1.04);
+  opacity: .82;
+  background:
+    radial-gradient(
+      90% 150% at 0% 0%,
+      color-mix(in srgb, var(--surface) 26%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(
+      118deg,
+      color-mix(in srgb, var(--surface) 15%, transparent),
+      color-mix(in srgb, var(--surface) 6%, transparent) 64%,
+      color-mix(in srgb, var(--line) 5%, transparent)
+    );
+  -webkit-backdrop-filter: blur(16px) saturate(1.06);
+  backdrop-filter: blur(16px) saturate(1.06);
 }
 
 .hero-tab-list .content-card:hover,
 .hero-tab-list .content-card:focus-within {
+  background: linear-gradient(
+    112deg,
+    color-mix(in srgb, var(--surface) 12%, transparent),
+    color-mix(in srgb, var(--surface) 6%, transparent)
+  );
   -webkit-backdrop-filter: blur(13px) saturate(1.05);
   backdrop-filter: blur(13px) saturate(1.05);
 }
 
 .hero-tab-list .content-card:hover::before,
 .hero-tab-list .content-card:focus-within::before {
-  opacity: .9;
+  opacity: 1;
 }
 
 .card-media {
