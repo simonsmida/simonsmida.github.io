@@ -982,6 +982,19 @@ footer {
   opacity: .72;
 }
 
+/* The compact cards beside About need a little more surface response because
+   their smaller area otherwise makes the glass effect hard to notice. */
+.hero-tab-list .content-card:hover,
+.hero-tab-list .content-card:focus-within {
+  -webkit-backdrop-filter: blur(13px) saturate(1.05);
+  backdrop-filter: blur(13px) saturate(1.05);
+}
+
+.hero-tab-list .content-card:hover::before,
+.hero-tab-list .content-card:focus-within::before {
+  opacity: .9;
+}
+
 .card-media {
   position: relative;
   width: 86px;

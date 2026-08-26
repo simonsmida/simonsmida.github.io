@@ -443,6 +443,33 @@
       return pathname.endsWith("/") || pathname.endsWith("/index.html");
     }
 
+    // Landing-page tabs are views of the same shell. Keep that state in the
+    // hash so a refresh restores the inline panel instead of opening the full index.
+    function inlineDestinationFromUrl(url) {
+      if (!isHomeRoute(url.pathname) || !url.hash) return null;
+
+      const route = url.hash
+        .slice(1)
+        .replace(/^\//, "")
+        .replace(/\.html$/, "");
+      if (!["research", "writing", "projects"].includes(route)) return null;
+
+      return new URL(`/${route}.html`, url.origin);
+    }
+
+    function landingHistoryUrl(destination) {
+      const url = new URL(window.location.href);
+      if (isHomeRoute(destination.pathname)) {
+        url.hash = "";
+        url.search = "";
+        return url.href;
+      }
+
+      url.hash = `#${destination.pathname.replace(/^\//, "").replace(/\.html$/, "")}`;
+      url.search = "";
+      return url.href;
+    }
+
     function importCards(nextDocument, destination, limit = 3) {
       return [...nextDocument.querySelectorAll(".content-card")]
         .slice(0, limit)
@@ -616,7 +643,7 @@
       updateNavigation(nextDocument);
 
       if (pushState) {
-        window.history.pushState({}, "", destination.href);
+        window.history.pushState({}, "", landingHistoryUrl(destination));
       }
 
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -794,7 +821,10 @@
 
     const mobileSectionsReady = initializeMobileSections();
 
-    function scrollToMobileRoute(destination, { pushState = true } = {}) {
+    function scrollToMobileRoute(
+      destination,
+      { pushState = true, behavior = "smooth" } = {}
+    ) {
       if (!window.matchMedia("(max-width: 640px)").matches) return false;
 
       const hero = document.querySelector(".hero[data-mobile-route]");
@@ -810,8 +840,10 @@
       const isHome = isHomeRoute(destination.pathname);
       document.body.classList.toggle("inline-content-active", !isHome);
       updateMobileNavigation(destination.pathname);
-      if (pushState) window.history.pushState({}, "", destination.href);
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (pushState) {
+        window.history.pushState({}, "", landingHistoryUrl(destination));
+      }
+      target.scrollIntoView({ behavior, block: "start" });
       return true;
     }
 
@@ -860,10 +892,39 @@
       prefetch(link);
     });
 
+    const initialInlineDestination = inlineDestinationFromUrl(
+      new URL(window.location.href)
+    );
+    if (initialInlineDestination) {
+      mobileSectionsReady.then(() => {
+        if (window.matchMedia("(max-width: 640px)").matches) {
+          scrollToMobileRoute(initialInlineDestination, {
+            pushState: false,
+            behavior: "auto"
+          });
+        } else {
+          loadPage(initialInlineDestination, { pushState: false });
+        }
+      });
+    }
+
     window.addEventListener("popstate", () => {
       const destination = new URL(window.location.href);
-      if (document.body.classList.contains("landing-page") && scrollToMobileRoute(destination, { pushState: false })) {
-        return;
+      if (document.body.classList.contains("landing-page")) {
+        const inlineDestination = inlineDestinationFromUrl(destination);
+        if (inlineDestination) {
+          if (window.matchMedia("(max-width: 640px)").matches) {
+            mobileSectionsReady.then(() => scrollToMobileRoute(
+              inlineDestination,
+              { pushState: false }
+            ));
+          } else {
+            loadPage(inlineDestination, { pushState: false });
+          }
+          return;
+        }
+
+        if (scrollToMobileRoute(destination, { pushState: false })) return;
       }
       loadPage(destination, { pushState: false });
     });
