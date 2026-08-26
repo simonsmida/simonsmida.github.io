@@ -304,6 +304,34 @@
     });
   }
 
+  /* Match a selected article thumbnail to its destination hero. Browsers that
+     do not support cross-document View Transitions simply ignore the name. */
+  function initializeSharedArticleTransitions() {
+    function clearTransitionNames() {
+      document.querySelectorAll("[data-view-transition-name]").forEach((media) => {
+        media.style.removeProperty("view-transition-name");
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+
+      const link = event.target.closest(".content-card a[href]");
+      const card = link?.closest(".content-card");
+      const media = card?.querySelector("[data-view-transition-name]");
+      const isModifiedClick = event.metaKey
+        || event.ctrlKey
+        || event.shiftKey
+        || event.altKey;
+
+      if (!media || event.button !== 0 || isModifiedClick) return;
+      clearTransitionNames();
+      media.style.viewTransitionName = media.dataset.viewTransitionName;
+    });
+
+    window.addEventListener("pageshow", clearTransitionNames);
+  }
+
   /* Client-side navigation keeps the header and background mounted. */
 
   function initializeClientNavigation() {
@@ -311,6 +339,52 @@
       ...document.querySelectorAll(".site-header nav a[href]")
     ];
     const pageCache = new Map();
+    const navigation = document.querySelector(".site-header nav");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let navigationIndicator = null;
+
+    function syncNavigationIndicator({ initial = false } = {}) {
+      if (!navigation || !navigationIndicator) return;
+
+      const activeLink = navigationLinks.find((link) => (
+        link.getAttribute("aria-current") === "page" && link.offsetWidth > 0
+      ));
+
+      if (!activeLink) {
+        navigationIndicator.classList.remove("is-ready");
+        return;
+      }
+
+      const navigationRect = navigation.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+      const overhang = 3;
+
+      navigation.style.setProperty(
+        "--nav-indicator-x",
+        `${linkRect.left - navigationRect.left - overhang}px`
+      );
+      navigation.style.setProperty(
+        "--nav-indicator-width",
+        `${linkRect.width + overhang * 2}px`
+      );
+
+      if (initial) {
+        requestAnimationFrame(() => navigationIndicator?.classList.add("is-ready"));
+      } else {
+        navigationIndicator.classList.add("is-ready");
+      }
+    }
+
+    function initializeNavigationIndicator() {
+      if (!navigation) return;
+
+      navigationIndicator = document.createElement("span");
+      navigationIndicator.className = "site-nav-indicator";
+      navigationIndicator.setAttribute("aria-hidden", "true");
+      navigation.append(navigationIndicator);
+      navigation.classList.add("has-motion-indicator");
+      syncNavigationIndicator({ initial: true });
+    }
 
     async function fetchPage(destination) {
       const cacheKey = destination.href;
@@ -352,6 +426,8 @@
           link.removeAttribute("aria-current");
         }
       });
+
+      syncNavigationIndicator();
     }
 
     function updateDescription(nextDocument) {
@@ -496,8 +572,44 @@
       return true;
     }
 
-    function commitInlineShell(nextDocument, destination, pushState) {
-      if (!updateInlineShell(nextDocument, destination)) return false;
+    function waitForPanelExit(panel) {
+      if (reducedMotion.matches || panel.hidden) return Promise.resolve();
+
+      panel.dataset.motion = "leaving";
+      return new Promise((resolve) => {
+        let settled = false;
+
+        function finish() {
+          if (settled) return;
+          settled = true;
+          panel.removeEventListener("transitionend", handleTransitionEnd);
+          resolve();
+        }
+
+        function handleTransitionEnd(event) {
+          if (event.target === panel && event.propertyName === "opacity") finish();
+        }
+
+        panel.addEventListener("transitionend", handleTransitionEnd);
+        window.setTimeout(finish, 170);
+      });
+    }
+
+    async function commitInlineShell(nextDocument, destination, pushState) {
+      const panel = document.querySelector("[data-inline-panel]");
+      if (!panel) return false;
+
+      await waitForPanelExit(panel);
+
+      const incomingPanel = !isHomeRoute(destination.pathname);
+      if (incomingPanel && !reducedMotion.matches) {
+        panel.dataset.motion = "entering";
+      }
+
+      if (!updateInlineShell(nextDocument, destination)) {
+        delete panel.dataset.motion;
+        return false;
+      }
 
       document.title = nextDocument.title;
       updateDescription(nextDocument);
@@ -509,6 +621,15 @@
 
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
       window.dispatchEvent(new CustomEvent("site-route-change"));
+
+      if (incomingPanel && !reducedMotion.matches) {
+        // Commit the starting state before allowing the panel to settle.
+        panel.getBoundingClientRect();
+        requestAnimationFrame(() => delete panel.dataset.motion);
+      } else {
+        delete panel.dataset.motion;
+      }
+
       return true;
     }
 
@@ -522,6 +643,8 @@
         if (current) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
       });
+
+      syncNavigationIndicator();
     }
 
     function initializeMobileSections() {
@@ -643,7 +766,7 @@
         const nextDocument = await fetchPage(destination);
         const useInlineShell = document.body.classList.contains("landing-page");
         const committed = useInlineShell
-          ? commitInlineShell(nextDocument, destination, pushState)
+          ? await commitInlineShell(nextDocument, destination, pushState)
           : commitPage(nextDocument, destination, pushState);
 
         if (!committed) {
@@ -663,6 +786,11 @@
       if (destination.pathname === window.location.pathname) return;
       fetchPage(destination).catch(() => {});
     }
+
+    initializeNavigationIndicator();
+    window.addEventListener("resize", () => {
+      requestAnimationFrame(() => syncNavigationIndicator());
+    }, { passive: true });
 
     const mobileSectionsReady = initializeMobileSections();
 
@@ -751,5 +879,6 @@
   initializeAsciiPicker();
   initializeFieldGraphics();
   initializeCardLists();
+  initializeSharedArticleTransitions();
   initializeClientNavigation();
 })();
