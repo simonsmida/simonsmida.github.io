@@ -610,6 +610,24 @@ footer {
   gap: 10px;
 }
 
+@keyframes inline-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-tab-list[data-motion="entering"] > .content-card {
+  opacity: 0;
+  animation: inline-card-in 220ms var(--ease-out) both;
+  animation-delay: calc(var(--card-index, 0) * 34ms);
+}
+
 .hero-tab-list .content-card {
   min-height: 0;
   height: 104px;
@@ -990,14 +1008,14 @@ footer {
   background:
     radial-gradient(
       90% 150% at 0% 0%,
-      color-mix(in srgb, var(--surface) 42%, transparent),
+      color-mix(in srgb, var(--surface) 64%, transparent),
       transparent 70%
     ),
     linear-gradient(
       118deg,
-      color-mix(in srgb, var(--surface) 27%, transparent),
-      color-mix(in srgb, var(--surface) 13%, transparent) 64%,
-      color-mix(in srgb, var(--line) 8%, transparent)
+      color-mix(in srgb, var(--surface) 46%, transparent),
+      color-mix(in srgb, var(--surface) 25%, transparent) 64%,
+      color-mix(in srgb, var(--line) 11%, transparent)
     );
   -webkit-backdrop-filter: blur(18px) saturate(1.08);
   backdrop-filter: blur(18px) saturate(1.08);
@@ -1006,30 +1024,30 @@ footer {
 .hero-tab-list .content-card {
   background: linear-gradient(
     112deg,
-    color-mix(in srgb, var(--surface) 17%, transparent),
-    color-mix(in srgb, var(--surface) 8%, transparent)
+    color-mix(in srgb, var(--surface) 68%, transparent),
+    color-mix(in srgb, var(--surface) 44%, transparent)
   );
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--line) 16%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--line) 7%, transparent),
-    0 8px 22px color-mix(in srgb, var(--shadow) 8%, transparent);
-  -webkit-backdrop-filter: blur(14px) saturate(1.06);
-  backdrop-filter: blur(14px) saturate(1.06);
+    inset 0 1px 0 color-mix(in srgb, var(--line) 42%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--line) 18%, transparent),
+    0 8px 22px color-mix(in srgb, var(--shadow) 12%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  backdrop-filter: blur(20px) saturate(1.08);
 }
 
 .hero-tab-list .content-card:hover,
 .hero-tab-list .content-card:focus-within {
   background: linear-gradient(
     112deg,
-    color-mix(in srgb, var(--surface) 24%, transparent),
-    color-mix(in srgb, var(--surface) 12%, transparent)
+    color-mix(in srgb, var(--surface) 82%, transparent),
+    color-mix(in srgb, var(--surface) 58%, transparent)
   );
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--line) 24%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--line) 10%, transparent),
-    0 10px 26px color-mix(in srgb, var(--shadow) 12%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(1.1);
-  backdrop-filter: blur(18px) saturate(1.1);
+    inset 0 1px 0 color-mix(in srgb, var(--line) 55%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--line) 22%, transparent),
+    0 10px 26px color-mix(in srgb, var(--shadow) 16%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.1);
+  backdrop-filter: blur(22px) saturate(1.1);
 }
 
 .hero-tab-list .content-card:hover::before,
@@ -1500,11 +1518,15 @@ footer {
 
   .landing-page.inline-content-active .hero-tab-panel {
     max-width: none;
+    height: 312px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
 
   /* Keep the panel heading and View all link visible while cards scroll. */
   .hero-tab-list {
-    max-height: 446px;
+    min-height: 0;
+    max-height: none;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: none;

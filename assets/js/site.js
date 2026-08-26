@@ -580,6 +580,7 @@
         document.body.classList.remove("inline-content-active");
         panel.hidden = true;
         list.replaceChildren();
+        list.removeAttribute("data-motion");
         more.hidden = true;
         return true;
       }
@@ -589,8 +590,14 @@
       const cards = importCards(nextDocument, destination, Number.POSITIVE_INFINITY);
       if (!cards.length || !sourceTitle) return false;
 
+      cards.forEach((card, index) => {
+        card.style.setProperty("--card-index", index);
+      });
+
       title.textContent = sourceTitle.textContent;
       list.replaceChildren(...cards);
+      if (reducedMotion.matches) list.removeAttribute("data-motion");
+      else list.dataset.motion = "entering";
       more.href = destination.href;
       more.textContent = `View all ${sourceTitle.textContent.toLowerCase()} ↗`;
       more.hidden = false;
@@ -624,7 +631,8 @@
 
     async function commitInlineShell(nextDocument, destination, pushState) {
       const panel = document.querySelector("[data-inline-panel]");
-      if (!panel) return false;
+      const list = panel?.querySelector("[data-inline-list]");
+      if (!panel || !list) return false;
 
       await waitForPanelExit(panel);
 
@@ -653,6 +661,7 @@
         // Commit the starting state before allowing the panel to settle.
         panel.getBoundingClientRect();
         requestAnimationFrame(() => delete panel.dataset.motion);
+        window.setTimeout(() => list.removeAttribute("data-motion"), 440);
       } else {
         delete panel.dataset.motion;
       }
