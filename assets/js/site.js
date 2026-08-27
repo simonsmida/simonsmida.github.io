@@ -54,127 +54,6 @@
     });
   }
 
-  /* ASCII style picker */
-
-  const ASCII_STORAGE_KEY = "simon-ascii-style";
-  const ASCII_STYLES = [
-    { value: "manifold", label: "Latent manifold", mark: "∿" },
-    { value: "topography", label: "Latent topography", mark: "≋" },
-    { value: "activation", label: "Activation fields", mark: "∧" },
-    { value: "attention", label: "Transformer attention", mark: "×" },
-    { value: "embedding", label: "Point cloud", mark: "∴" },
-    { value: "pathology", label: "Computational pathology", mark: "◍" },
-    { value: "loss", label: "Loss landscape", mark: "⌁" },
-    { value: "cubes", label: "Feature cubes", mark: "◇" },
-    { value: "flow", label: "Information flow", mark: "→" },
-    { value: "network", label: "Neural network", mark: "⋈" },
-    { value: "latent", label: "Latent space", mark: "◌" },
-    { value: "orbit", label: "Orbit field", mark: "⊙" },
-    { value: "cosmic", label: "Cosmic neural web", mark: "✦" }
-  ];
-
-  function readSavedAsciiStyle() {
-    try {
-      const savedStyle = window.localStorage.getItem(ASCII_STORAGE_KEY);
-      return ASCII_STYLES.some(({ value }) => value === savedStyle)
-        ? savedStyle
-        : ASCII_STYLES[0].value;
-    } catch {
-      return ASCII_STYLES[0].value;
-    }
-  }
-
-  function initializeAsciiPicker() {
-    if (!document.querySelector("[data-ascii-manifold]")) return;
-
-    const header = document.querySelector(".site-header");
-    if (!header || header.querySelector("[data-ascii-picker]")) return;
-
-    const picker = document.createElement("div");
-    picker.className = "ascii-picker";
-    picker.dataset.asciiPicker = "";
-    picker.innerHTML = `
-      <button class="ascii-picker-button" type="button" data-ascii-trigger aria-expanded="false" aria-controls="ascii-style-menu" aria-label="Choose representation field" title="Choose representation field">
-        <span class="ascii-picker-mark" data-ascii-mark aria-hidden="true">∿</span>
-        <span class="ascii-picker-copy"><span>Field</span><span data-ascii-current>Latent manifold</span></span>
-      </button>
-      <div class="ascii-picker-menu" id="ascii-style-menu" role="menu" hidden>
-        ${ASCII_STYLES.map(({ value, label, mark }) => `
-          <button type="button" role="menuitemradio" data-ascii-option="${value}" aria-checked="false">
-            <span aria-hidden="true">${mark}</span>${label}
-          </button>
-        `).join("")}
-      </div>
-    `;
-    header.prepend(picker);
-
-    const trigger = picker.querySelector("[data-ascii-trigger]");
-    const menu = picker.querySelector(".ascii-picker-menu");
-    const currentLabel = picker.querySelector("[data-ascii-current]");
-    const currentMark = picker.querySelector("[data-ascii-mark]");
-
-    function closeMenu() {
-      menu.hidden = true;
-      trigger.setAttribute("aria-expanded", "false");
-    }
-
-    function applyStyle(value, { save = true } = {}) {
-      const style = ASCII_STYLES.find((item) => item.value === value);
-      if (!style) return;
-
-      document.documentElement.dataset.asciiStyle = style.value;
-      currentLabel.textContent = style.label;
-      currentMark.textContent = style.mark;
-      trigger.setAttribute("aria-label", `Representation field: ${style.label}`);
-
-      picker.querySelectorAll("[data-ascii-option]").forEach((option) => {
-        option.setAttribute(
-          "aria-checked",
-          String(option.dataset.asciiOption === style.value)
-        );
-      });
-
-      if (save) {
-        try {
-          window.localStorage.setItem(ASCII_STORAGE_KEY, style.value);
-        } catch {
-          // The picker still works when storage is unavailable.
-        }
-      }
-
-      window.dispatchEvent(new CustomEvent("site-ascii-change"));
-    }
-
-    trigger.addEventListener("click", () => {
-      const willOpen = menu.hidden;
-      menu.hidden = !willOpen;
-      trigger.setAttribute("aria-expanded", String(willOpen));
-    });
-
-    picker.querySelectorAll("[data-ascii-option]").forEach((option) => {
-      option.addEventListener("click", () => {
-        applyStyle(option.dataset.asciiOption);
-        closeMenu();
-        trigger.focus();
-      });
-    });
-
-    document.addEventListener("click", (event) => {
-      if (!picker.contains(event.target)) closeMenu();
-    });
-    picker.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeMenu();
-        trigger.focus();
-      }
-    });
-
-    applyStyle(readSavedAsciiStyle(), { save: false });
-  }
-
-  // Route recovery can add the canvas after this script has already run.
-  window.initializeAsciiPicker = initializeAsciiPicker;
-
   /* Decorative SVG fields */
 
   const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
@@ -548,13 +427,11 @@
       if (!nextCanvas) return;
 
       if (currentCanvas) {
-        window.initializeAsciiPicker?.();
         return;
       }
 
       const importedCanvas = document.importNode(nextCanvas, true);
       document.body.insertBefore(importedCanvas, header || document.body.firstChild);
-      window.initializeAsciiPicker?.();
 
       const asciiScript = [...nextDocument.scripts].find((script) => (
         script.src.includes("/ascii-field.js")
@@ -956,7 +833,6 @@
   }
 
   initializeTheme();
-  initializeAsciiPicker();
   initializeFieldGraphics();
   initializeCardLists();
   initializeSharedArticleTransitions();

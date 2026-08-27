@@ -296,107 +296,6 @@ footer {
 }
 
 /* Theme toggle */
-
-.ascii-picker {
-  position: relative;
-  z-index: 2;
-  flex: 0 0 auto;
-  font-family: var(--sans);
-}
-
-.ascii-picker-button {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 0 8px 0 0;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.ascii-picker-mark {
-  width: 28px;
-  display: inline-grid;
-  place-items: center;
-  color: var(--accent);
-  font: 18px/1 var(--serif);
-}
-
-.ascii-picker-copy {
-  display: grid;
-  gap: 1px;
-  text-align: left;
-}
-
-.ascii-picker-copy > span:first-child {
-  color: var(--subtle);
-  font-size: 8px;
-  font-weight: 650;
-  letter-spacing: .12em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.ascii-picker-copy > span:last-child {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .035em;
-  line-height: 1.25;
-  white-space: nowrap;
-}
-
-.ascii-picker-menu {
-  position: absolute;
-  z-index: 80;
-  top: calc(100% + 8px);
-  left: 0;
-  width: 184px;
-  max-height: min(65vh, 520px);
-  display: grid;
-  gap: 2px;
-  padding: 6px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--surface) 62%, transparent);
-  box-shadow: 0 14px 38px color-mix(in srgb, var(--shadow) 72%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(1.05);
-  backdrop-filter: blur(18px) saturate(1.05);
-}
-
-.ascii-picker-menu[hidden] {
-  display: none;
-}
-
-.ascii-picker-menu button {
-  min-height: 38px;
-  display: grid;
-  grid-template-columns: 25px minmax(0, 1fr);
-  align-items: center;
-  padding: 0 9px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--muted);
-  font: 600 11px/1.2 var(--sans);
-  text-align: left;
-  cursor: pointer;
-}
-
-.ascii-picker-menu button:hover,
-.ascii-picker-menu button:focus-visible,
-.ascii-picker-menu button[aria-checked="true"] {
-  background: color-mix(in srgb, var(--surface) 36%, transparent);
-  color: var(--ink);
-}
-
-.ascii-picker-menu button > span {
-  color: var(--accent);
-  font: 16px/1 var(--serif);
-}
-
 .theme-picker {
   position: fixed;
   z-index: 80;
@@ -1256,10 +1155,6 @@ footer {
   visibility: hidden;
 }
 
-.article-page .ascii-picker {
-  display: none;
-}
-
 /* If a client-side swap is interrupted, an article footer can briefly remain
    mounted under a landing/content body. Keep that fallback visually correct. */
 .landing-page footer .article-footer-mark,
@@ -1700,25 +1595,6 @@ footer {
   .article-page .site-mark {
     position: absolute;
     left: var(--wide-gutter);
-  }
-
-  .site-header .ascii-picker {
-    position: absolute;
-    left: var(--wide-gutter);
-  }
-
-  .ascii-picker-button {
-    width: 44px;
-    justify-content: center;
-    padding: 0;
-  }
-
-  .ascii-picker-copy {
-    display: none;
-  }
-
-  .ascii-picker-menu {
-    top: calc(100% + 7px);
   }
 
   .site-header nav {

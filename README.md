@@ -14,7 +14,7 @@ Markdown and rendered by GitHub Pages with the shared article layout.
 - `_templates/note.md` — Starting point for a new article.
 - `assets/css/site.css` — Layout, themes, cards, and article typography.
 - `assets/js/site.js` — Theme, navigation, and card behavior.
-- `assets/js/ascii-field.js` — Animated ASCII backgrounds.
+- `assets/js/ascii-field.js` — The single animated latent-manifold field used by the site.
 - `archive/` — Local historical drafts and prototype snapshots; excluded from the build.
 
 ## Add an article
