@@ -109,6 +109,7 @@
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const fuelStrengths = new WeakMap();
+    const flowPhases = new WeakMap();
     let viewportWidth = 0;
     let viewportHeight = 0;
     let fieldColorRgb = [100, 127, 147];
@@ -118,6 +119,7 @@
     let animationFrame = 0;
     let lastPaint = -Infinity;
     let lastLayoutRead = -Infinity;
+    let lastFlowTimestamp = 0;
     let resizeTimer = 0;
 
     function readPalette() {
@@ -168,20 +170,29 @@
       });
     }
 
-    function updateFuelStrengths() {
+    function updateFuelStrengths(timestamp) {
+      const elapsed = lastFlowTimestamp
+        ? Math.min(80, Math.max(0, timestamp - lastFlowTimestamp))
+        : 0;
+      lastFlowTimestamp = timestamp;
+
       fuelTargets.forEach((target) => {
         const active = target.card.matches(":hover")
           || target.card.matches(":focus-within");
         const goal = active ? 1 : 0;
         const current = fuelStrengths.get(target.card) || 0;
-        fuelStrengths.set(
-          target.card,
-          reducedMotion.matches ? goal : current + (goal - current) * .12
-        );
+        const strength = reducedMotion.matches
+          ? goal
+          : current + (goal - current) * .12;
+        fuelStrengths.set(target.card, strength);
+
+        const phase = flowPhases.get(target.card) || 0;
+        const speed = reducedMotion.matches ? 0 : .00034 + strength * .00032;
+        flowPhases.set(target.card, phase + elapsed * speed);
       });
     }
 
-    function fuelAttractionAt(x, y, timestamp, compact) {
+    function fuelAttractionAt(x, y, compact) {
       let strongest = null;
 
       fuelTargets.forEach((target) => {
@@ -195,7 +206,8 @@
         if (x < sourceX || x > sinkX) return;
 
         const progress = clamp((x - sourceX) / Math.max(1, sinkX - sourceX));
-        const curvePhase = timestamp * .000065 + target.index * .91;
+        const phase = flowPhases.get(target.card) || 0;
+        const curvePhase = phase * .2 + target.index * .91;
         const curveAt = (position) => {
           const envelope = .28 + .72 * (1 - Math.pow(position, .74));
           const broad = Math.sin(position * Math.PI * 1.55 + curvePhase) * (compact ? 26 : 72);
@@ -212,16 +224,22 @@
         const radius = radiusAt(progress);
         const lane = (y - currentY) / Math.max(1, radius);
         const pathStrength = gaussian(lane, 3.2) * smoothstep(0, .16, progress);
-        const flowSpeed = .0000062 * (1 + strength * 1.7);
-        const travel = reducedMotion.matches
-          ? progress
-          : (progress + timestamp * flowSpeed) % 1;
-        // A stream only moves toward the card. When a particle cycle wraps,
-        // keeping the current position prevents a visible push back into the field.
-        const arrivalProgress = Math.max(progress, travel);
+        // Animate a gentle wave along the stream. The accumulated phase keeps
+        // hover and unhover transitions continuous instead of jumping.
+        const wave = reducedMotion.matches
+          ? .5
+          : .5 + .5 * Math.sin(progress * 8.4 - phase + target.index * 1.7);
+        // Attraction is strictly forward: chars can slow down after unhovering,
+        // but they never receive a reverse push away from the card.
+        const advance = clamp(
+          .14 + strength * .16 + wave * (.06 + strength * .05),
+          0,
+          .65
+        );
+        const arrivalProgress = progress + (1 - progress) * advance;
         const mappedX = sourceX + arrivalProgress * (sinkX - sourceX);
         const mappedY = curveAt(arrivalProgress) + lane * radiusAt(arrivalProgress);
-        const arrival = smoothstep(.08, .96, arrivalProgress);
+        const arrival = smoothstep(.08, .96, progress);
         const attraction = .34 + strength * .14;
         const candidate = {
           influence: gaussian((y - currentY) / Math.max(compact ? 11 : 15, radius), 1.65)
@@ -294,7 +312,7 @@
         readFuelTargets(bounds);
         lastLayoutRead = timestamp;
       }
-      updateFuelStrengths();
+      updateFuelStrengths(timestamp);
       context.clearRect(0, 0, viewportWidth, viewportHeight);
       context.font = `500 ${compact ? 10 : 11}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
 
@@ -311,7 +329,7 @@
           const x = column * cellSize;
           const normalizedX = (x / viewportWidth) * 2 - 1;
           const field = manifoldField(normalizedX, normalizedY, phase, column, row);
-          const fuel = fuelAttractionAt(x, y, timestamp, compact);
+          const fuel = fuelAttractionAt(x, y, compact);
           const readability = readabilityAt(x, y);
           // Add a low-energy stream on top of the field instead of erasing the
           // field around cards. Hovering raises its energy without changing its path.
