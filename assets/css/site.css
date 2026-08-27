@@ -977,6 +977,13 @@ footer {
   transition: box-shadow var(--motion-micro) var(--ease-out);
 }
 
+/* Pre-composite standalone list cards so their glass surface is ready during
+   a route swap instead of appearing one paint behind the card. */
+.content-page .content-card,
+.content-page .content-card::before {
+  will-change: backdrop-filter;
+}
+
 /* A low-opacity glass layer reveals the field beneath the card on hover. */
 .content-card::before {
   position: absolute;
@@ -1139,7 +1146,7 @@ footer {
     "summary meta";
   align-content: center;
   column-gap: 24px;
-  padding: 17px 18px 17px 0;
+  padding: 17px 18px 17px 10px;
 }
 
 .card-body h2 {
@@ -1357,6 +1364,19 @@ footer {
 
 .article-hero-art-image img {
   opacity: 1;
+}
+
+/* Interactive maps can occupy the same hero slot as a static illustration. */
+.article-hero-map .interactive-map {
+  margin: 0;
+}
+
+.article-hero-map .interactive-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(34svh, 360px);
+  object-fit: contain;
 }
 
 :root[data-theme="midnight-navy"] .article-hero-art img {

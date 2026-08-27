@@ -2,29 +2,16 @@
 title: "🗺️ A Map of AI Interpretability Research"
 date: 2026-06-23
 read_time: 12
-hero_art: /assets/notes/2026-06-23-ai-interpretability/thumbnail.png
-hero_art_type: image
 hero_alt: "Illustrated map of questions and methods in AI interpretability"
 categories: [notes]
 excerpt: "Interpretability is not a single problem. Different methods answer fundamentally different questions about neural networks."
 tldr: "Most interpretability methods are trying to answer different questions. Attribution explains predictions, probes study representations, concept methods connect models to human concepts, and mechanistic interpretability attempts to recover the underlying computation."
 header:
   teaser: /assets/notes/2026-06-23-ai-interpretability/thumbnail.png
-published: false
+published: true
 interactive_map: true
+map_src: /assets/notes/2026-06-23-ai-interpretability/banner-map.svg
 ---
-
-<div
-  class="interactive-map"
-  data-interactive-map
-  data-map-src="{{ '/assets/notes/2026-06-23-ai-interpretability/banner-map.svg' | relative_url }}"
-  data-map-ignore="legend"
-  aria-label="Interactive map of AI interpretability research">
-  <p class="interactive-map__fallback">
-    <a href="{{ '/assets/notes/2026-06-23-ai-interpretability/banner-map.svg' | relative_url }}">Open the interpretability map</a>
-  </p>
-</div>
-
 
 ## TL;DR
 

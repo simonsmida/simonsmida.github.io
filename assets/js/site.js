@@ -428,6 +428,7 @@
       });
 
       syncNavigationIndicator();
+      requestAnimationFrame(() => syncNavigationIndicator());
     }
 
     function updateDescription(nextDocument) {
@@ -634,10 +635,18 @@
       const list = panel?.querySelector("[data-inline-list]");
       if (!panel || !list) return false;
 
-      await waitForPanelExit(panel);
-
       const incomingPanel = !isHomeRoute(destination.pathname);
-      if (incomingPanel && !reducedMotion.matches) {
+      const panelAlreadyVisible = document.body.classList.contains("inline-content-active");
+      const crossingPanelBoundary = incomingPanel !== panelAlreadyVisible;
+
+      // Keep the panel mounted while moving between content sections. The
+      // cards can re-enter independently, while the View all link stays in
+      // place and simply updates its destination and label.
+      if (crossingPanelBoundary) {
+        await waitForPanelExit(panel);
+      }
+
+      if (crossingPanelBoundary && incomingPanel && !reducedMotion.matches) {
         panel.dataset.motion = "entering";
       }
 
@@ -657,7 +666,7 @@
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
       window.dispatchEvent(new CustomEvent("site-route-change"));
 
-      if (incomingPanel && !reducedMotion.matches) {
+      if (crossingPanelBoundary && incomingPanel && !reducedMotion.matches) {
         // Commit the starting state before allowing the panel to settle.
         panel.getBoundingClientRect();
         requestAnimationFrame(() => delete panel.dataset.motion);
@@ -681,6 +690,7 @@
       });
 
       syncNavigationIndicator();
+      requestAnimationFrame(() => syncNavigationIndicator());
     }
 
     function initializeMobileSections() {
