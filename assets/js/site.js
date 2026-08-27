@@ -29,15 +29,18 @@
   }
 
   function updateFavicon(theme) {
-    const link = document.querySelector("[data-theme-favicon]");
-    if (!link) return;
+    const currentLink = document.querySelector("[data-theme-favicon]");
+    if (!currentLink) return;
 
     const nextHref = theme === DARK_THEME
-      ? link.dataset.darkHref
-      : link.dataset.lightHref;
-    if (nextHref && link.getAttribute("href") !== nextHref) {
-      link.setAttribute("href", nextHref);
-    }
+      ? currentLink.dataset.darkHref
+      : currentLink.dataset.lightHref;
+    if (!nextHref || currentLink.getAttribute("href") === nextHref) return;
+
+    // Replacing the node prompts Safari/WebKit to repaint the favicon now.
+    const nextLink = currentLink.cloneNode(true);
+    nextLink.setAttribute("href", nextHref);
+    currentLink.replaceWith(nextLink);
   }
 
   function applyTheme(theme, { save = true } = {}) {
