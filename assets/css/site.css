@@ -1549,8 +1549,7 @@ footer {
   }
 }
 
-/* Constrained windows use the same single-section flow as mobile. */
-@media (max-width: 1100px) {
+@media (max-width: 640px) {
   :root {
     --header-height: 70px;
     --footer-height: 46px;

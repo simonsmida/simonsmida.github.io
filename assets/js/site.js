@@ -7,8 +7,8 @@
   const LIGHT_THEME = "slate-blue";
   const DARK_THEME = "midnight-navy";
   const THEMES = new Set([LIGHT_THEME, DARK_THEME]);
-  // Below this width the inline About + cards layout becomes cramped.
-  const COMPACT_LAYOUT_QUERY = "(max-width: 1100px)";
+  const COMPACT_LAYOUT_QUERY = "(max-width: 640px)";
+  const INLINE_LAYOUT_QUERY = "(min-width: 1101px)";
 
   function readSavedTheme() {
     try {
@@ -704,7 +704,8 @@
 
       try {
         const nextDocument = await fetchPage(destination);
-        const useInlineShell = document.body.classList.contains("landing-page");
+        const useInlineShell = document.body.classList.contains("landing-page")
+          && window.matchMedia(INLINE_LAYOUT_QUERY).matches;
         const committed = useInlineShell
           ? await commitInlineShell(nextDocument, destination, pushState)
           : commitPage(nextDocument, destination, pushState);
@@ -774,6 +775,15 @@
       } else {
         loadPage(destination, { pushState: false });
       }
+    });
+
+    // If an inline desktop route is already active when the window narrows,
+    // promote it to the matching standalone page before the layout gets tight.
+    const inlineLayout = window.matchMedia(INLINE_LAYOUT_QUERY);
+    inlineLayout.addEventListener?.("change", () => {
+      if (!document.body.classList.contains("landing-page")) return;
+      const destination = inlineDestinationFromUrl(new URL(window.location.href));
+      if (destination) loadPage(destination, { pushState: false });
     });
 
     navigationLinks.forEach((link) => {
