@@ -7,6 +7,8 @@
   const LIGHT_THEME = "slate-blue";
   const DARK_THEME = "midnight-navy";
   const THEMES = new Set([LIGHT_THEME, DARK_THEME]);
+  // Below this width the inline About + cards layout becomes cramped.
+  const COMPACT_LAYOUT_QUERY = "(max-width: 1100px)";
 
   function readSavedTheme() {
     try {
@@ -633,7 +635,7 @@
 
         if ("IntersectionObserver" in window) {
           const observer = new IntersectionObserver((entries) => {
-            if (!window.matchMedia("(max-width: 640px)").matches) return;
+            if (!window.matchMedia(COMPACT_LAYOUT_QUERY).matches) return;
 
             const visible = entries
               .filter((entry) => entry.isIntersecting)
@@ -736,7 +738,7 @@
       destination,
       { pushState = true, behavior = "smooth" } = {}
     ) {
-      if (!window.matchMedia("(max-width: 640px)").matches) return false;
+      if (!window.matchMedia(COMPACT_LAYOUT_QUERY).matches) return false;
 
       const hero = document.querySelector(".hero[data-mobile-route]");
       const sections = [hero, ...document.querySelectorAll(".mobile-tab-section")]
@@ -786,7 +788,7 @@
 
         if (
           document.body.classList.contains("landing-page")
-          && window.matchMedia("(max-width: 640px)").matches
+          && window.matchMedia(COMPACT_LAYOUT_QUERY).matches
         ) {
           event.preventDefault();
           mobileSectionsReady.then(() => {
@@ -808,7 +810,7 @@
     );
     if (initialInlineDestination) {
       mobileSectionsReady.then(() => {
-        if (window.matchMedia("(max-width: 640px)").matches) {
+        if (window.matchMedia(COMPACT_LAYOUT_QUERY).matches) {
           scrollToMobileRoute(initialInlineDestination, {
             pushState: false,
             behavior: "auto"
@@ -824,7 +826,7 @@
       if (document.body.classList.contains("landing-page")) {
         const inlineDestination = inlineDestinationFromUrl(destination);
         if (inlineDestination) {
-          if (window.matchMedia("(max-width: 640px)").matches) {
+          if (window.matchMedia(COMPACT_LAYOUT_QUERY).matches) {
             mobileSectionsReady.then(() => scrollToMobileRoute(
               inlineDestination,
               { pushState: false }

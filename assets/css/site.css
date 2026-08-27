@@ -1441,7 +1441,7 @@ footer {
 
 /* Responsive layout */
 
-@media (min-width: 861px) {
+@media (min-width: 1101px) {
   .site-header nav {
     transform: translateX(clamp(8px, 1.1vw, 18px));
   }
@@ -1473,7 +1473,7 @@ footer {
   }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1100px) {
   :root {
     --header-height: 76px;
     --wide-gutter: 18px;
@@ -1549,7 +1549,8 @@ footer {
   }
 }
 
-@media (max-width: 640px) {
+/* Constrained windows use the same single-section flow as mobile. */
+@media (max-width: 1100px) {
   :root {
     --header-height: 70px;
     --footer-height: 46px;
