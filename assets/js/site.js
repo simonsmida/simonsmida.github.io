@@ -760,6 +760,22 @@
       return true;
     }
 
+    // Keep the current section coherent when a window crosses the breakpoint.
+    const compactLayout = window.matchMedia(COMPACT_LAYOUT_QUERY);
+    compactLayout.addEventListener?.("change", () => {
+      const destination = inlineDestinationFromUrl(new URL(window.location.href));
+      if (!destination) return;
+
+      if (compactLayout.matches) {
+        mobileSectionsReady.then(() => scrollToMobileRoute(destination, {
+          pushState: false,
+          behavior: "auto"
+        }));
+      } else {
+        loadPage(destination, { pushState: false });
+      }
+    });
+
     navigationLinks.forEach((link) => {
       link.addEventListener("pointerenter", () => prefetch(link), { once: true });
       link.addEventListener("focus", () => prefetch(link), { once: true });
