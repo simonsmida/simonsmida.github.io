@@ -10,9 +10,7 @@
   const LANDING_PROTECTION = [
     [".hero-copy h1", .08],
     [".hero-copy .intro", .12],
-    [".hero-details", .12],
-    [".hero-tab-panel:not([hidden])", .18],
-    [".mobile-tab-section", .18]
+    [".hero-details", .12]
   ];
   const CONTENT_PROTECTION = [
     [".page-intro h1", .1],
@@ -193,7 +191,7 @@
           target.right,
           target.left + Math.min(compact ? 34 : 52, (target.right - target.left) * .1)
         );
-        const sourceX = Math.max(0, target.left - (compact ? 170 : 410));
+        const sourceX = Math.max(0, target.left - (compact ? 240 : 560));
         if (x < sourceX || x > sinkX) return;
 
         const progress = clamp((x - sourceX) / Math.max(1, sinkX - sourceX));
@@ -214,19 +212,26 @@
         const radius = radiusAt(progress);
         const lane = (y - currentY) / Math.max(1, radius);
         const pathStrength = gaussian(lane, 3.2) * smoothstep(0, .16, progress);
+        const flowSpeed = .0000062 * (1 + strength * 1.7);
         const travel = reducedMotion.matches
           ? progress
-          : (progress + timestamp * .0000062) % 1;
-        const mappedX = sourceX + travel * (sinkX - sourceX);
-        const mappedY = curveAt(travel) + lane * radiusAt(travel);
+          : (progress + timestamp * flowSpeed) % 1;
+        // A stream only moves toward the card. When a particle cycle wraps,
+        // keeping the current position prevents a visible push back into the field.
+        const arrivalProgress = Math.max(progress, travel);
+        const mappedX = sourceX + arrivalProgress * (sinkX - sourceX);
+        const mappedY = curveAt(arrivalProgress) + lane * radiusAt(arrivalProgress);
+        const arrival = smoothstep(.08, .96, arrivalProgress);
+        const attraction = .34 + strength * .14;
         const candidate = {
           influence: gaussian((y - currentY) / Math.max(compact ? 11 : 15, radius), 1.65)
             * smoothstep(0, .18, progress),
-          driftX: (mappedX - x) * pathStrength * .34,
-          driftY: (mappedY - y) * pathStrength * .34,
+          driftX: (mappedX - x) * pathStrength * attraction,
+          driftY: (mappedY - y) * pathStrength * attraction,
           pathStrength,
-          colorStrength: pathStrength * smoothstep(.08, .96, travel) * (.52 + strength * .48),
-          salience: strength * pathStrength * (.4 + smoothstep(.08, .96, travel) * .6)
+          hoverStrength: strength,
+          colorStrength: pathStrength * arrival * (.14 + strength * .72),
+          salience: strength * pathStrength * (.4 + arrival * .6)
         };
 
         if (!strongest || candidate.influence > strongest.influence) strongest = candidate;
@@ -234,7 +239,7 @@
 
       return strongest || {
         influence: 0, driftX: 0, driftY: 0, pathStrength: 0,
-        colorStrength: 0, salience: 0
+        colorStrength: 0, salience: 0, hoverStrength: 0
       };
     }
 
@@ -308,9 +313,14 @@
           const field = manifoldField(normalizedX, normalizedY, phase, column, row);
           const fuel = fuelAttractionAt(x, y, timestamp, compact);
           const readability = readabilityAt(x, y);
-          const intensity = clamp(field.intensity * (.76 + readability * .46));
+          // Add a low-energy stream on top of the field instead of erasing the
+          // field around cards. Hovering raises its energy without changing its path.
+          const streamEnergy = fuel.pathStrength * (.12 + fuel.hoverStrength * .12);
+          const intensity = clamp(
+            field.intensity * (.76 + readability * .46) + streamEnergy
+          );
           const random = gridNoise(column + 47, row + 19);
-          const density = fuel.pathStrength * (.72 + fuel.colorStrength * .28);
+          const density = fuel.pathStrength * (.78 + fuel.hoverStrength * .22);
           if (
             intensity < .1
             || random > Math.max(.5 + intensity * .5, .3 + density * .68)
@@ -326,7 +336,7 @@
           const alpha = (.03 + intensity * .44)
             * readability
             * glyphShade
-            * (1 + fuel.pathStrength * .24)
+            * (1 + fuel.pathStrength * (.42 + fuel.hoverStrength * .22))
             * (1 + fuel.salience * .82);
           const color = fuel.colorStrength > .008
             ? mixColor(fieldColorRgb, accentColorRgb, fuel.colorStrength)
