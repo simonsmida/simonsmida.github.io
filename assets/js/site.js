@@ -28,11 +28,24 @@
     button.setAttribute("title", label);
   }
 
+  function updateFavicon(theme) {
+    const link = document.querySelector("[data-theme-favicon]");
+    if (!link) return;
+
+    const nextHref = theme === DARK_THEME
+      ? link.dataset.darkHref
+      : link.dataset.lightHref;
+    if (nextHref && link.getAttribute("href") !== nextHref) {
+      link.setAttribute("href", nextHref);
+    }
+  }
+
   function applyTheme(theme, { save = true } = {}) {
     if (!THEMES.has(theme)) return;
 
     document.documentElement.dataset.theme = theme;
     updateThemeButton(theme);
+    updateFavicon(theme);
 
     if (save) {
       try {
