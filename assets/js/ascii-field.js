@@ -102,49 +102,89 @@
   }
 
   /*
-   * A dithered representation vortex: a sparse stream enters from the left,
-   * folds into an asymmetric spiral, and concentrates around a quiet core.
+   * A dithered representation vortex. Rotating arms gather a sparse incoming
+   * stream while faint, deforming contours keep the surrounding field alive.
    */
   function vortexField(x, y, phase, column, row) {
     const px = (x + 1) * .5;
     const py = (y + 1) * .5;
-    const centerX = .7 + Math.cos(phase * .8) * .008;
-    const centerY = .49 + Math.sin(phase) * .008;
+    const centerX = .7 + Math.cos(phase * .42) * .009;
+    const centerY = .49 + Math.sin(phase * .5) * .009;
     const dx = (px - centerX) * 1.12;
     const dy = (py - centerY) * 1.7;
     const radius = Math.hypot(dx, dy);
     const angle = Math.atan2(dy, dx);
-    const spiralPhase = radius * 30 - angle * 4.2 - phase * 1.4;
-    const spiral = Math.pow(Math.max(0, Math.cos(spiralPhase)), 10)
+    const rotatingAngle = angle
+      - phase * 1.08
+      + Math.sin(radius * 8.5 - phase * .34) * .11;
+    const spiralPhase = radius * 33 - rotatingAngle * 5.1;
+    const spiral = Math.pow(Math.max(0, Math.cos(spiralPhase)), 9)
       * gaussian((radius - .24) / .21, 1);
-    const ringRadius = .205 + Math.sin(angle * 3 - phase) * .022;
-    const ring = gaussian((radius - ringRadius) / .052, 1);
+    const innerSpiral = Math.pow(
+      Math.max(0, Math.cos(radius * 43 - rotatingAngle * 3.2 + 1.4)),
+      12
+    ) * gaussian((radius - .115) / .13, 1);
+    const ringRadius = .205 + Math.sin(rotatingAngle * 3 + phase * .28) * .024;
+    const ring = gaussian((radius - ringRadius) / .05, 1);
     const core = gaussian(radius / .052, 1);
     const streamY = centerY
-      + Math.sin((px - .1) * 7.5 - phase) * (.11 + Math.max(0, centerX - px) * .08);
+      + Math.sin((px - .1) * 7.5 - phase * .8)
+        * (.11 + Math.max(0, centerX - px) * .08);
     const streamWidth = .055 + Math.max(0, centerX - px) * .03;
     const streamEnvelope = smoothstep(.06, .3, px) * (1 - smoothstep(.63, .75, px));
     const stream = gaussian((py - streamY) / streamWidth, 1) * streamEnvelope;
     const filaments = Math.pow(
-      Math.max(0, Math.cos((py - streamY) * 76 + px * 9)),
+      Math.max(0, Math.cos((py - streamY) * 76 + px * 9 - phase * 1.1)),
       14
     );
     const satellite = gaussian((radius - .39) / .13, 1)
-      * Math.pow(Math.max(0, Math.cos(angle * 7 + phase * .55)), 8);
+      * Math.pow(Math.max(0, Math.cos(rotatingAngle * 7 + phase * .25)), 8);
+
+    // Two sparse contour families form a continuous, slowly flexing fabric.
+    // Their low energy keeps them peripheral until the eye rests on the field.
+    const fabricY = .5
+      + Math.sin(px * 4.1 - phase * .48) * .15
+      + Math.sin(px * 9.2 + phase * .23) * .035;
+    const fabricDistance = py - fabricY;
+    const fabricContours = Math.pow(
+      Math.max(0, Math.cos(
+        fabricDistance * 51
+        + Math.sin(px * 5.4 + phase * .31) * 1.35
+        - phase * .72
+      )),
+      16
+    );
+    const fabricCross = Math.pow(
+      Math.max(0, Math.cos(
+        (px + Math.sin(py * 5.2 - phase * .37) * .075) * 43
+        + phase * .42
+      )),
+      20
+    );
+    const fabricBreath = .72
+      + .28 * Math.sin(px * 5.8 - py * 4.4 + phase * .52);
+    const fabric = (fabricContours * .13 + fabricCross * .047)
+      * fabricBreath
+      * (1 - core * .62);
     const footprint = smoothstep(.03, .16, px) * (1 - smoothstep(.92, 1, px));
     const texture = .72 + gridNoise(column * 1.7 + 23, row * 1.3 + 61) * .42;
     const energy = spiral * .56
-      + ring * .5
+      + innerSpiral * .32
+      + ring * .48
       + core * .78
       + stream * (.22 + filaments * .38)
-      + satellite * .18;
+      + satellite * .18
+      + fabric;
     const tangentX = -dy / Math.max(.045, radius);
     const tangentY = dx / Math.max(.045, radius);
+    const rotationalSpeed = 2.4 + spiral * 3.6 + innerSpiral * 2.1 + ring * 1.8;
+    const fabricDriftX = Math.sin(py * 6.2 + phase * .62) * 2.8;
+    const fabricDriftY = Math.cos(px * 5.1 - phase * .47) * 2.1;
 
     return {
       intensity: (.035 + energy * 1.18) * footprint * texture,
-      driftX: tangentX * (1.1 + ring * 1.7) + stream * 1.2,
-      driftY: tangentY * (.7 + spiral * 1.1)
+      driftX: tangentX * rotationalSpeed + fabricDriftX * (fabric + .045) + stream * 1.4,
+      driftY: tangentY * rotationalSpeed * .78 + fabricDriftY * (fabric + .045)
     };
   }
 
@@ -367,7 +407,7 @@
       const rows = Math.ceil(viewportHeight / cellSize) + 1;
       const phase = reducedMotion.matches
         ? 0
-        : timestamp * (isVortex ? .000046 : .000078);
+        : timestamp * (isVortex ? .000085 : .000078);
       const bounds = getDrawingBounds();
 
       if (timestamp - lastLayoutRead >= 100) {
@@ -396,7 +436,7 @@
           const readability = readabilityAt(x, y);
           // Add a low-energy stream on top of the field instead of erasing the
           // field around cards. Hovering raises its energy without changing its path.
-          const flowBoost = isVortex ? 1.22 : 1;
+          const flowBoost = isVortex ? 1.35 : 1;
           const streamEnergy = fuel.pathStrength
             * (.12 + fuel.hoverStrength * .12)
             * flowBoost;
@@ -406,7 +446,7 @@
           const random = gridNoise(column + 47, row + 19);
           const density = fuel.pathStrength
             * (.78 + fuel.hoverStrength * .22)
-            * (isVortex ? 1.1 : 1);
+            * (isVortex ? 1.16 : 1);
           if (
             intensity < .1
             || random > Math.max(.5 + intensity * .5, .3 + density * .68)
