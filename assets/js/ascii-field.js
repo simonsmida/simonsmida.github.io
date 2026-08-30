@@ -1,12 +1,12 @@
 (() => {
   "use strict";
 
-  /*
-   * The site uses one representation field: a quiet, animated latent manifold.
-   * This file intentionally contains only the renderer and its small helpers.
-   */
-
-  const GLYPHS = ["·", "∙", ".", ":", ";", "+", "=", "*", "x", "#", "%", "@"];
+  /* Two quiet views of the same representation field share one renderer. */
+  const FIELD_STYLES = new Set(["manifold", "vortex"]);
+  const GLYPHS = {
+    manifold: ["·", "∙", ".", ":", ";", "+", "=", "*", "x", "#", "%", "@"],
+    vortex: ["·", "·", "∙", ".", ":", "+", "*"]
+  };
   const LANDING_PROTECTION = [
     [".hero-copy h1", .08],
     [".hero-copy .intro", .12],
@@ -99,6 +99,63 @@
       driftX: Math.sin(y * 4.2 + phase) * 2.2,
       driftY: Math.cos(x * 3.6 - phase * .65) * 1.3
     };
+  }
+
+  /*
+   * A dithered representation vortex: a sparse stream enters from the left,
+   * folds into an asymmetric spiral, and concentrates around a quiet core.
+   */
+  function vortexField(x, y, phase, column, row) {
+    const px = (x + 1) * .5;
+    const py = (y + 1) * .5;
+    const centerX = .7 + Math.cos(phase * .8) * .008;
+    const centerY = .49 + Math.sin(phase) * .008;
+    const dx = (px - centerX) * 1.12;
+    const dy = (py - centerY) * 1.7;
+    const radius = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx);
+    const spiralPhase = radius * 30 - angle * 4.2 - phase * 1.4;
+    const spiral = Math.pow(Math.max(0, Math.cos(spiralPhase)), 10)
+      * gaussian((radius - .24) / .21, 1);
+    const ringRadius = .205 + Math.sin(angle * 3 - phase) * .022;
+    const ring = gaussian((radius - ringRadius) / .052, 1);
+    const core = gaussian(radius / .052, 1);
+    const streamY = centerY
+      + Math.sin((px - .1) * 7.5 - phase) * (.11 + Math.max(0, centerX - px) * .08);
+    const streamWidth = .055 + Math.max(0, centerX - px) * .03;
+    const streamEnvelope = smoothstep(.06, .3, px) * (1 - smoothstep(.63, .75, px));
+    const stream = gaussian((py - streamY) / streamWidth, 1) * streamEnvelope;
+    const filaments = Math.pow(
+      Math.max(0, Math.cos((py - streamY) * 76 + px * 9)),
+      14
+    );
+    const satellite = gaussian((radius - .39) / .13, 1)
+      * Math.pow(Math.max(0, Math.cos(angle * 7 + phase * .55)), 8);
+    const footprint = smoothstep(.03, .16, px) * (1 - smoothstep(.92, 1, px));
+    const texture = .72 + gridNoise(column * 1.7 + 23, row * 1.3 + 61) * .42;
+    const energy = spiral * .56
+      + ring * .5
+      + core * .78
+      + stream * (.22 + filaments * .38)
+      + satellite * .18;
+    const tangentX = -dy / Math.max(.045, radius);
+    const tangentY = dx / Math.max(.045, radius);
+
+    return {
+      intensity: (.035 + energy * 1.18) * footprint * texture,
+      driftX: tangentX * (1.1 + ring * 1.7) + stream * 1.2,
+      driftY: tangentY * (.7 + spiral * 1.1)
+    };
+  }
+
+  const FIELD_FUNCTIONS = {
+    manifold: manifoldField,
+    vortex: vortexField
+  };
+
+  function readFieldStyle() {
+    const requested = document.documentElement.dataset.asciiStyle;
+    return FIELD_STYLES.has(requested) ? requested : "manifold";
   }
 
   function initializeAsciiField() {
@@ -301,10 +358,16 @@
 
     function draw(timestamp = 0) {
       const compact = viewportWidth < 700;
-      const cellSize = compact ? 13 : 15;
+      const style = readFieldStyle();
+      const isVortex = style === "vortex";
+      const glyphs = GLYPHS[style];
+      const fieldFunction = FIELD_FUNCTIONS[style];
+      const cellSize = isVortex ? (compact ? 9 : 10) : (compact ? 13 : 15);
       const columns = Math.ceil(viewportWidth / cellSize) + 1;
       const rows = Math.ceil(viewportHeight / cellSize) + 1;
-      const phase = reducedMotion.matches ? 0 : timestamp * .000078;
+      const phase = reducedMotion.matches
+        ? 0
+        : timestamp * (isVortex ? .000046 : .000078);
       const bounds = getDrawingBounds();
 
       if (timestamp - lastLayoutRead >= 100) {
@@ -314,7 +377,7 @@
       }
       updateFuelStrengths(timestamp);
       context.clearRect(0, 0, viewportWidth, viewportHeight);
-      context.font = `500 ${compact ? 10 : 11}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+      context.font = `500 ${isVortex ? (compact ? 6.5 : 7.2) : (compact ? 10 : 11)}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
 
       context.save();
       context.beginPath();
@@ -328,17 +391,22 @@
         for (let column = 0; column < columns; column += 1) {
           const x = column * cellSize;
           const normalizedX = (x / viewportWidth) * 2 - 1;
-          const field = manifoldField(normalizedX, normalizedY, phase, column, row);
+          const field = fieldFunction(normalizedX, normalizedY, phase, column, row);
           const fuel = fuelAttractionAt(x, y, compact);
           const readability = readabilityAt(x, y);
           // Add a low-energy stream on top of the field instead of erasing the
           // field around cards. Hovering raises its energy without changing its path.
-          const streamEnergy = fuel.pathStrength * (.12 + fuel.hoverStrength * .12);
+          const flowBoost = isVortex ? 1.22 : 1;
+          const streamEnergy = fuel.pathStrength
+            * (.12 + fuel.hoverStrength * .12)
+            * flowBoost;
           const intensity = clamp(
             field.intensity * (.76 + readability * .46) + streamEnergy
           );
           const random = gridNoise(column + 47, row + 19);
-          const density = fuel.pathStrength * (.78 + fuel.hoverStrength * .22);
+          const density = fuel.pathStrength
+            * (.78 + fuel.hoverStrength * .22)
+            * (isVortex ? 1.1 : 1);
           if (
             intensity < .1
             || random > Math.max(.5 + intensity * .5, .3 + density * .68)
@@ -346,15 +414,15 @@
           ) continue;
 
           const characterIndex = Math.min(
-            GLYPHS.length - 1,
-            Math.floor(Math.pow(intensity, .82) * GLYPHS.length)
+            glyphs.length - 1,
+            Math.floor(Math.pow(intensity, .82) * glyphs.length)
           );
           const glyphShade = .68
-            + (characterIndex / Math.max(1, GLYPHS.length - 1)) * .32;
+            + (characterIndex / Math.max(1, glyphs.length - 1)) * .32;
           const alpha = (.03 + intensity * .44)
             * readability
             * glyphShade
-            * (1 + fuel.pathStrength * (.42 + fuel.hoverStrength * .22))
+            * (1 + fuel.pathStrength * (.42 + fuel.hoverStrength * .22) * flowBoost)
             * (1 + fuel.salience * .82);
           const color = fuel.colorStrength > .008
             ? mixColor(fieldColorRgb, accentColorRgb, fuel.colorStrength)
@@ -365,7 +433,7 @@
           context.shadowColor = color;
           context.shadowBlur = intensity > .8 ? 7 : 0;
           context.fillText(
-            GLYPHS[characterIndex],
+            glyphs[characterIndex],
             x + field.driftX * intensity + fuel.driftX,
             y + field.driftY * intensity + fuel.driftY
           );
@@ -412,6 +480,9 @@
     });
     window.addEventListener("site-theme-change", () => {
       readPalette();
+      draw(window.performance.now());
+    });
+    window.addEventListener("site-ascii-change", () => {
       draw(window.performance.now());
     });
     reducedMotion.addEventListener?.("change", updateMotion);

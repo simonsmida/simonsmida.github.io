@@ -71,6 +71,121 @@
     });
   }
 
+  /* Representation field selector */
+
+  const FIELD_STORAGE_KEY = "simon-ascii-style";
+  const FIELD_STYLES = [
+    { value: "manifold", label: "Latent manifold", mark: "∿" },
+    { value: "vortex", label: "Representation vortex", mark: "◌" }
+  ];
+
+  function readSavedFieldStyle() {
+    try {
+      const savedStyle = window.localStorage.getItem(FIELD_STORAGE_KEY);
+      return FIELD_STYLES.some(({ value }) => value === savedStyle)
+        ? savedStyle
+        : "manifold";
+    } catch {
+      return "manifold";
+    }
+  }
+
+  function applyFieldStyle(style, { save = true } = {}) {
+    const selected = FIELD_STYLES.find(({ value }) => value === style)
+      || FIELD_STYLES[0];
+    document.documentElement.dataset.asciiStyle = selected.value;
+
+    document.querySelectorAll("[data-field-picker]").forEach((picker) => {
+      picker.querySelector("[data-field-mark]").textContent = selected.mark;
+      picker.querySelector("[data-field-current]").textContent = selected.label;
+      picker.querySelectorAll("[data-field-option]").forEach((option) => {
+        const isCurrent = option.dataset.fieldOption === selected.value;
+        option.setAttribute("aria-checked", String(isCurrent));
+        option.toggleAttribute("data-current", isCurrent);
+      });
+    });
+
+    if (save) {
+      try {
+        window.localStorage.setItem(FIELD_STORAGE_KEY, selected.value);
+      } catch {
+        // The selector still works when browser storage is unavailable.
+      }
+    }
+
+    window.dispatchEvent(new CustomEvent("site-ascii-change", {
+      detail: { style: selected.value }
+    }));
+  }
+
+  function initializeFieldPicker() {
+    const header = document.querySelector(".site-header");
+    const canvas = document.querySelector("[data-ascii-manifold]");
+    if (!header || !canvas) return;
+
+    let picker = header.querySelector("[data-field-picker]");
+    if (!picker) {
+      picker = document.createElement("div");
+      picker.className = "field-picker";
+      picker.dataset.fieldPicker = "";
+      picker.innerHTML = `
+        <button class="field-picker-trigger" type="button" data-field-trigger aria-haspopup="menu" aria-expanded="false">
+          <span class="field-picker-mark" data-field-mark aria-hidden="true"></span>
+          <span class="field-picker-copy"><span>Field</span><span data-field-current></span></span>
+        </button>
+        <div class="field-picker-menu" data-field-menu role="menu" hidden>
+          ${FIELD_STYLES.map(({ value, label, mark }) => `
+            <button type="button" role="menuitemradio" aria-checked="false" data-field-option="${value}">
+              <span aria-hidden="true">${mark}</span><span>${label}</span>
+            </button>
+          `).join("")}
+        </div>
+      `;
+      header.prepend(picker);
+    }
+
+    if (picker.dataset.fieldPickerReady === "true") {
+      applyFieldStyle(readSavedFieldStyle(), { save: false });
+      return;
+    }
+    picker.dataset.fieldPickerReady = "true";
+
+    const trigger = picker.querySelector("[data-field-trigger]");
+    const menu = picker.querySelector("[data-field-menu]");
+    const closeMenu = ({ focus = false } = {}) => {
+      menu.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+      if (focus) trigger.focus();
+    };
+
+    trigger.addEventListener("click", () => {
+      const willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      trigger.setAttribute("aria-expanded", String(willOpen));
+      if (willOpen) {
+        menu.querySelector('[aria-checked="true"]')?.focus();
+      }
+    });
+
+    picker.querySelectorAll("[data-field-option]").forEach((option) => {
+      option.addEventListener("click", () => {
+        applyFieldStyle(option.dataset.fieldOption);
+        closeMenu({ focus: true });
+      });
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      if (!menu.hidden && !picker.contains(event.target)) closeMenu();
+    });
+    picker.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeMenu({ focus: true });
+    });
+
+    applyFieldStyle(readSavedFieldStyle(), { save: false });
+  }
+
+  window.initializeFieldPicker = initializeFieldPicker;
+
   /* Decorative SVG fields */
 
   const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
@@ -441,9 +556,13 @@
       // next shell requires one and load the field script once.
       const nextCanvas = nextDocument.querySelector("[data-ascii-manifold]");
       const currentCanvas = document.querySelector("[data-ascii-manifold]");
-      if (!nextCanvas) return;
+      if (!nextCanvas) {
+        document.querySelector("[data-field-picker]")?.remove();
+        return;
+      }
 
       if (currentCanvas) {
+        initializeFieldPicker();
         return;
       }
 
@@ -455,12 +574,17 @@
       ));
       if (!asciiScript || document.querySelector('script[src*="/ascii-field.js"]')) {
         window.initializeAsciiField?.();
+        initializeFieldPicker();
         return;
       }
 
       const script = document.createElement("script");
       script.src = new URL(asciiScript.getAttribute("src"), destination.href).href;
       script.defer = true;
+      script.addEventListener("load", () => {
+        window.initializeAsciiField?.();
+        initializeFieldPicker();
+      });
       document.body.append(script);
     }
 
@@ -876,6 +1000,7 @@
   }
 
   initializeTheme();
+  initializeFieldPicker();
   initializeFieldGraphics();
   initializeCardLists();
   initializeSharedArticleTransitions();

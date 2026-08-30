@@ -295,6 +295,108 @@ footer {
   font: 13px/1 var(--serif);
 }
 
+/* Representation field selector */
+.field-picker {
+  position: fixed;
+  z-index: 80;
+  top: 17px;
+  left: var(--wide-gutter);
+  color: var(--muted);
+  font-family: var(--sans);
+}
+
+.field-picker-trigger {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px 0 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.field-picker-mark {
+  width: 27px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--accent);
+  font: 22px/1 var(--serif);
+  transition: transform var(--motion-micro) var(--ease-out);
+}
+
+.field-picker-trigger:hover .field-picker-mark,
+.field-picker-trigger[aria-expanded="true"] .field-picker-mark {
+  transform: rotate(12deg);
+}
+
+.field-picker-copy {
+  display: grid;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.field-picker-copy > span:last-child {
+  color: var(--ink);
+  font-size: 10px;
+  letter-spacing: .075em;
+}
+
+.field-picker-menu {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  width: max-content;
+  min-width: 198px;
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--shadow) 70%, transparent);
+  backdrop-filter: blur(18px) saturate(112%);
+  -webkit-backdrop-filter: blur(18px) saturate(112%);
+}
+
+.field-picker-menu[hidden] {
+  display: none;
+}
+
+.field-picker-menu button {
+  width: 100%;
+  min-height: 38px;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: 600 10px/1 var(--sans);
+  letter-spacing: .07em;
+  text-align: left;
+  text-transform: uppercase;
+  transition: background-color var(--motion-micro) var(--ease-out), color var(--motion-micro) var(--ease-out);
+}
+
+.field-picker-menu button:hover,
+.field-picker-menu button[data-current] {
+  background: color-mix(in srgb, var(--surface) 56%, transparent);
+  color: var(--ink);
+}
+
+.field-picker-menu button[data-current] > span:first-child {
+  color: var(--accent);
+}
+
 /* Theme toggle */
 .theme-picker {
   position: fixed;
@@ -1624,6 +1726,26 @@ footer {
     top: 13px;
     bottom: auto;
     margin-left: 0;
+  }
+
+  .field-picker {
+    top: 13px;
+    left: max(12px, env(safe-area-inset-left));
+  }
+
+  .field-picker-trigger {
+    width: 48px;
+    height: 48px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .field-picker-copy {
+    display: none;
+  }
+
+  .field-picker-menu {
+    top: calc(100% - 2px);
   }
 
   .content-page .page-intro {
