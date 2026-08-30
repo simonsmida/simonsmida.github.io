@@ -161,12 +161,25 @@
       )),
       20
     );
+    const radialRipples = Math.pow(
+      Math.max(0, Math.cos(
+        radius * 38
+        - phase * .84
+        + Math.sin(rotatingAngle * 2.4) * .86
+      )),
+      18
+    );
+    const rippleReach = .38 + smoothstep(.12, .82, radius) * .62;
     const fabricBreath = .72
       + .28 * Math.sin(px * 5.8 - py * 4.4 + phase * .52);
-    const fabric = (fabricContours * .13 + fabricCross * .047)
+    const fabric = (
+      fabricContours * .165
+      + fabricCross * .062
+      + radialRipples * rippleReach * .075
+    )
       * fabricBreath
       * (1 - core * .62);
-    const footprint = smoothstep(.03, .16, px) * (1 - smoothstep(.92, 1, px));
+    const footprint = smoothstep(.005, .055, px) * (1 - smoothstep(.965, .998, px));
     const texture = .72 + gridNoise(column * 1.7 + 23, row * 1.3 + 61) * .42;
     const energy = spiral * .56
       + innerSpiral * .32
@@ -448,7 +461,7 @@
             * (.78 + fuel.hoverStrength * .22)
             * (isVortex ? 1.16 : 1);
           if (
-            intensity < .1
+            intensity < (isVortex ? .072 : .1)
             || random > Math.max(.5 + intensity * .5, .3 + density * .68)
             || (readability < .24 && gridNoise(column + 91, row + 7) > .3)
           ) continue;
