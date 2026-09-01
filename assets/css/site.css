@@ -32,7 +32,6 @@
   --field-shadow: 168 184 194;
   --field-tone: 104 132 152;
   --field-light: 58 84 104;
-  --field-fuel: 172 118 62;
   --field-opacity: .9;
 }
 
@@ -49,7 +48,6 @@
   --field-shadow: 46 74 94;
   --field-tone: 104 146 182;
   --field-light: 196 222 240;
-  --field-fuel: 226 180 118;
   --field-opacity: .95;
 }
 

@@ -16,11 +16,11 @@
   const FIELDS = window.SITE_FIELDS;
   const DEFAULT_FIELD = "manifold";
   const FRAME_INTERVAL = 1000 / 30;
+  const FIELD_TIME_SCALE = .72;
   const TONES = 6;
   const MAX_PARTICLES = 320;
   const KNEE = .62;
   const CARD_FLOOR = .26;
-  const STREAM_GLYPHS = ["·", "∙", "•", "✦"];
   const BAYER = [
     0, 32, 8, 40, 2, 34, 10, 42,
     48, 16, 56, 24, 50, 18, 58, 26,
@@ -100,6 +100,7 @@
     let palette = null;
     let atlas = null;
     let streamAtlas = null;
+    let streamGlyphs = [];
     let atlasField = "";
     let zones = [];
     let sinks = [];
@@ -119,8 +120,7 @@
       palette = {
         shadow: parseRgb(style.getPropertyValue("--field-shadow")),
         tone: parseRgb(style.getPropertyValue("--field-tone")),
-        light: parseRgb(style.getPropertyValue("--field-light")),
-        fuel: parseRgb(style.getPropertyValue("--field-fuel"))
+        light: parseRgb(style.getPropertyValue("--field-light"))
       };
     }
 
@@ -158,10 +158,18 @@
         toneColor,
         (level, tone) => .45 + .55 * (level / (field.glyphs.length - 1)) * (.6 + .4 * tone / (TONES - 1))
       );
+      /* Streams are made from the active field's lighter glyphs and palette.
+         They should look like the field being drawn inward, not a second,
+         differently coloured particle effect. */
+      streamGlyphs = field.directional
+        ? ["·", ":", "-", "+", "*"]
+        : field.glyphs.slice(0, Math.min(6, field.glyphs.length));
       streamAtlas = buildAtlas(
-        STREAM_GLYPHS,
-        (tone) => mixRgb(palette.tone, palette.fuel, .78 * tone / (TONES - 1)),
-        (level, tone) => .5 + .5 * tone / (TONES - 1)
+        streamGlyphs,
+        toneColor,
+        (level, tone) => .42
+          + .34 * (level / Math.max(1, streamGlyphs.length - 1))
+          + .24 * tone / (TONES - 1)
       );
       atlasField = field;
     }
@@ -232,15 +240,16 @@
         const rect = deviceRect(element.getBoundingClientRect(), clip);
         if (!rect) return [];
         const radius = Math.min(14 * dpr, (rect.bottom - rect.top) / 2);
-        /* Feed each card from whichever side has the most open space. */
+        /* Feed each card from whichever side has the most open space. The
+           roots terminate throughout the middle band instead of one point. */
         const fromLeft = rect.left >= width - rect.right;
         return [{
           ...rect,
           radius,
           element,
           hover: previous.get(element)?.hover || 0,
-          inletX: fromLeft ? rect.left : rect.right,
-          inletY: (rect.top + rect.bottom) / 2,
+          fromLeft,
+          edgeX: fromLeft ? rect.left : rect.right,
           reach: Math.min(480 * dpr, Math.max(230 * dpr, fromLeft ? rect.left : width - rect.right))
         }];
       });
@@ -293,16 +302,28 @@
      * away from the card, which lets a stream arrive diagonally when the card
      * has little room beside it.
      */
+    function particleTarget(sink, particle) {
+      const cardWidth = sink.right - sink.left;
+      const depth = Math.min(44 * dpr, cardWidth * particle.depth);
+      return {
+        x: sink.fromLeft ? sink.left + depth : sink.right - depth,
+        y: mix(sink.top, sink.bottom, particle.targetY)
+      };
+    }
+
     function spawnParticle(sink) {
       if (particles.length >= MAX_PARTICLES) return;
-      const away = sink.inletX <= (sink.left + sink.right) / 2 ? Math.PI : 0;
+      const targetY = .28 + ((Math.random() + Math.random()) * .5) * .44;
+      const depth = .045 + Math.random() * .045;
+      const target = particleTarget(sink, { targetY, depth });
+      const away = sink.fromLeft ? Math.PI : 0;
       let best = null;
 
       for (let attempt = 0; attempt < 6; attempt += 1) {
-        const angle = away + (Math.random() - .5) * 2.4;
+        const angle = away + (Math.random() - .5) * 1.2;
         const distance = sink.reach * (.55 + Math.random() * .45);
-        const x = sink.inletX + Math.cos(angle) * distance;
-        const y = sink.inletY + Math.sin(angle) * distance;
+        const x = sink.edgeX + Math.cos(angle) * distance;
+        const y = target.y + Math.sin(angle) * distance;
         if (x < 0 || y < 0 || x > width || y > height) continue;
         const openness = maskAt(x, y);
         if (!best || openness > best.openness) best = { x, y, openness };
@@ -315,7 +336,9 @@
         element: sink.element,
         x,
         y,
-        birthDistance: Math.hypot(sink.inletX - x, sink.inletY - y),
+        targetY,
+        depth,
+        birthDistance: Math.hypot(target.x - x, target.y - y),
         age: 0,
         progress: 0,
         seed: Math.random() * 7,
@@ -326,8 +349,8 @@
     function updateStreams(dt, time) {
       for (const sink of sinks) {
         const active = sink.element.matches(":hover, :focus-within") ? 1 : 0;
-        sink.hover += (active - sink.hover) * Math.min(1, dt * 5);
-        const rate = (11 + sink.hover * 52) * dt;
+        sink.hover += (active - sink.hover) * Math.min(1, dt * 2.2);
+        const rate = (5 + sink.hover * 18) * dt;
         for (let spawn = rate; spawn > 0; spawn -= 1) {
           if (spawn >= 1 || Math.random() < spawn) spawnParticle(sink);
         }
@@ -340,17 +363,18 @@
         if (!sink) return false;
         particle.sink = sink;
 
-        const dx = sink.inletX - particle.x;
-        const dy = sink.inletY - particle.y;
+        const target = particleTarget(sink, particle);
+        const dx = target.x - particle.x;
+        const dy = target.y - particle.y;
         const distance = Math.hypot(dx, dy);
         if (distance < 5 * dpr) return false;
 
         const progress = clamp01(1 - distance / Math.max(1, particle.birthDistance));
-        const speed = (52 + sink.hover * 150) * dpr * (.45 + progress * 1.5);
+        const speed = (28 + sink.hover * 18) * dpr * (.58 + progress * .82);
         /* A lateral wave that decays on approach keeps the path alive but
            still converging, never sideways enough to stall the arrival. */
-        const wave = Math.sin(time * 1.5 * particle.sway + particle.seed + progress * 5)
-          * (1 - progress) * .42;
+        const wave = Math.sin(time * .58 * particle.sway + particle.seed + progress * 4.2)
+          * (1 - progress) * .34;
         const stepX = (dx / distance - (dy / distance) * wave) * speed * dt;
         const stepY = (dy / distance + (dx / distance) * wave) * speed * dt;
 
@@ -371,22 +395,29 @@
       });
     }
 
-    /* Two fading echoes behind each particle read as a trail at 30fps. */
+    /* Three fading echoes behind each glyph read as a soft root at 30fps. */
     function drawStreams() {
       for (const particle of particles) {
-        const heat = particle.progress * (.62 + particle.sink.hover * .38);
-        const level = Math.min(STREAM_GLYPHS.length - 1, Math.floor(heat * STREAM_GLYPHS.length));
-        const tone = Math.min(TONES - 1, Math.floor((.25 + heat * .75) * TONES));
+        const salience = clamp01(
+          .18 + particle.progress * .42 + particle.sink.hover * .4
+        );
+        const level = Math.min(
+          streamGlyphs.length - 1,
+          Math.floor(salience * streamGlyphs.length)
+        );
+        const tone = Math.min(TONES - 1, Math.floor((.16 + salience * .7) * TONES));
         const fade = Math.min(1, particle.age * 2.5);
-        const alpha = fade * particle.clarity * (.35 + heat * .65);
+        const alpha = fade
+          * particle.clarity
+          * (.2 + particle.progress * .26 + particle.sink.hover * .34);
         if (alpha < .012) continue;
         const step = Math.hypot(particle.headingX, particle.headingY) || 1;
         const spacing = Math.min(9 * dpr, step * 2.2);
         const backX = (particle.headingX / step) * spacing;
         const backY = (particle.headingY / step) * spacing;
 
-        for (let echo = 2; echo >= 0; echo -= 1) {
-          context.globalAlpha = alpha * (echo === 0 ? 1 : .3 / echo);
+        for (let echo = 3; echo >= 0; echo -= 1) {
+          context.globalAlpha = alpha * (echo === 0 ? 1 : .34 / echo);
           context.drawImage(
             streamAtlas, level * cell, tone * cell, cell, cell,
             Math.round(particle.x - backX * echo - cell / 2),
@@ -493,7 +524,7 @@
       lastPaint = timestamp;
       if (layoutDirty) readLayout();
       updateStreams(dt, timestamp / 1000);
-      paint(timestamp / 1000);
+      paint(timestamp / 1000 * FIELD_TIME_SCALE);
     }
 
     function start() {
