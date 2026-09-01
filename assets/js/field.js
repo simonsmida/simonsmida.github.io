@@ -6,9 +6,8 @@
  * variant once, gradients come from the neighbouring cells, and glyphs are
  * blitted from a pre-rendered atlas instead of being laid out as text.
  *
- * Two things sit on top of the field:
- *   – readability zones, which quiet the field under text and cards
- *   – streams, small particles that drift into the cards and feed them
+ * Readability zones quiet the field beneath text. Cards act as attractors in
+ * that same field, bending existing glyphs into broad, root-like currents.
  */
 (() => {
   "use strict";
@@ -18,7 +17,6 @@
   const FRAME_INTERVAL = 1000 / 30;
   const FIELD_TIME_SCALE = .72;
   const TONES = 6;
-  const MAX_PARTICLES = 320;
   const KNEE = .62;
   const CARD_FLOOR = .26;
   const BAYER = [
@@ -99,8 +97,6 @@
     /* Palette, atlas, layout. */
     let palette = null;
     let atlas = null;
-    let streamAtlas = null;
-    let streamGlyphs = [];
     let atlasField = "";
     let zones = [];
     let sinks = [];
@@ -111,7 +107,6 @@
     let frame = 0;
     let lastPaint = 0;
     let lastTick = 0;
-    let particles = [];
 
     /* ---- Palette and atlas ------------------------------------------------ */
 
@@ -157,19 +152,6 @@
         field.glyphs,
         toneColor,
         (level, tone) => .45 + .55 * (level / (field.glyphs.length - 1)) * (.6 + .4 * tone / (TONES - 1))
-      );
-      /* Streams are made from the active field's lighter glyphs and palette.
-         They should look like the field being drawn inward, not a second,
-         differently coloured particle effect. */
-      streamGlyphs = field.directional
-        ? ["·", ":", "-", "+", "*"]
-        : field.glyphs.slice(0, Math.min(6, field.glyphs.length));
-      streamAtlas = buildAtlas(
-        streamGlyphs,
-        toneColor,
-        (level, tone) => .42
-          + .34 * (level / Math.max(1, streamGlyphs.length - 1))
-          + .24 * tone / (TONES - 1)
       );
       atlasField = field;
     }
@@ -235,7 +217,7 @@
       ));
 
       const previous = new Map(sinks.map((sink) => [sink.element, sink]));
-      sinks = [...document.querySelectorAll(CARD_SELECTOR)].flatMap((element) => {
+      sinks = [...document.querySelectorAll(CARD_SELECTOR)].flatMap((element, index) => {
         const clip = element.closest(SCROLL_CLIP_SELECTOR)?.getBoundingClientRect();
         const rect = deviceRect(element.getBoundingClientRect(), clip);
         if (!rect) return [];
@@ -248,6 +230,8 @@
           radius,
           element,
           hover: previous.get(element)?.hover || 0,
+          phase: previous.get(element)?.phase ?? index * 1.37,
+          seed: previous.get(element)?.seed ?? index * 1.91 + .7,
           fromLeft,
           edgeX: fromLeft ? rect.left : rect.right,
           reach: Math.min(480 * dpr, Math.max(230 * dpr, fromLeft ? rect.left : width - rect.right))
@@ -283,150 +267,81 @@
       layoutDirty = false;
     }
 
-    function maskAt(px, py) {
-      const column = Math.min(columns - 1, Math.max(0, Math.floor(px / cell)));
-      const row = Math.min(rows - 1, Math.max(0, Math.floor(py / cell)));
-      return mask[row * columns + column];
-    }
+    /* ---- Card attraction ------------------------------------------------- */
 
-    /* ---- Streams --------------------------------------------------------- */
-
-    /*
-     * Each card draws a stream through an inlet on its open side. A particle is
-     * born upstream and always moves toward that inlet, gaining speed and
-     * brightness as it arrives. The flow is one-directional by construction:
-     * losing hover only lowers the spawn rate and speed, so particles already
-     * in flight finish their trip instead of drifting back.
-     *
-     * Spawning picks the most open of a few candidates in a wide cone pointing
-     * away from the card, which lets a stream arrive diagonally when the card
-     * has little room beside it.
-     */
-    function particleTarget(sink, particle) {
-      const cardWidth = sink.right - sink.left;
-      const depth = Math.min(44 * dpr, cardWidth * particle.depth);
-      return {
-        x: sink.fromLeft ? sink.left + depth : sink.right - depth,
-        y: mix(sink.top, sink.bottom, particle.targetY)
-      };
-    }
-
-    function spawnParticle(sink) {
-      if (particles.length >= MAX_PARTICLES) return;
-      const targetY = .28 + ((Math.random() + Math.random()) * .5) * .44;
-      const depth = .045 + Math.random() * .045;
-      const target = particleTarget(sink, { targetY, depth });
-      const away = sink.fromLeft ? Math.PI : 0;
-      let best = null;
-
-      for (let attempt = 0; attempt < 6; attempt += 1) {
-        const angle = away + (Math.random() - .5) * 1.2;
-        const distance = sink.reach * (.55 + Math.random() * .45);
-        const x = sink.edgeX + Math.cos(angle) * distance;
-        const y = target.y + Math.sin(angle) * distance;
-        if (x < 0 || y < 0 || x > width || y > height) continue;
-        const openness = maskAt(x, y);
-        if (!best || openness > best.openness) best = { x, y, openness };
-        if (openness > .8) break;
-      }
-      if (!best) return;
-      const { x, y } = best;
-
-      particles.push({
-        element: sink.element,
-        x,
-        y,
-        targetY,
-        depth,
-        birthDistance: Math.hypot(target.x - x, target.y - y),
-        age: 0,
-        progress: 0,
-        seed: Math.random() * 7,
-        sway: .5 + Math.random()
-      });
-    }
-
-    function updateStreams(dt, time) {
+    function updateAttractors(dt) {
       for (const sink of sinks) {
         const active = sink.element.matches(":hover, :focus-within") ? 1 : 0;
-        sink.hover += (active - sink.hover) * Math.min(1, dt * 2.2);
-        const rate = (5 + sink.hover * 18) * dt;
-        for (let spawn = rate; spawn > 0; spawn -= 1) {
-          if (spawn >= 1 || Math.random() < spawn) spawnParticle(sink);
-        }
+        sink.hover += (active - sink.hover) * Math.min(1, dt * 2.1);
+        sink.phase += dt * (.18 + sink.hover * .045);
       }
-
-      /* Sinks are rebuilt whenever layout changes; particles follow their card. */
-      const sinkByElement = new Map(sinks.map((sink) => [sink.element, sink]));
-      particles = particles.filter((particle) => {
-        const sink = sinkByElement.get(particle.element);
-        if (!sink) return false;
-        particle.sink = sink;
-
-        const target = particleTarget(sink, particle);
-        const dx = target.x - particle.x;
-        const dy = target.y - particle.y;
-        const distance = Math.hypot(dx, dy);
-        if (distance < 5 * dpr) return false;
-
-        const progress = clamp01(1 - distance / Math.max(1, particle.birthDistance));
-        const speed = (28 + sink.hover * 18) * dpr * (.58 + progress * .82);
-        /* A lateral wave that decays on approach keeps the path alive but
-           still converging, never sideways enough to stall the arrival. */
-        const wave = Math.sin(time * .58 * particle.sway + particle.seed + progress * 4.2)
-          * (1 - progress) * .34;
-        const stepX = (dx / distance - (dy / distance) * wave) * speed * dt;
-        const stepY = (dy / distance + (dx / distance) * wave) * speed * dt;
-
-        particle.x += stepX;
-        particle.y += stepY;
-        particle.age += dt;
-        particle.progress = progress;
-        particle.headingX = stepX;
-        particle.headingY = stepY;
-        /* Rather than culling particles over text, fade them out there: a
-           stream can then cross the page and only shows in open space. The
-           final stretch into the inlet always stays visible. */
-        const arrival = 1 - smoothstep(12 * dpr, 46 * dpr, distance);
-        particle.clarity = Math.max(maskAt(particle.x, particle.y), arrival);
-
-        return particle.x >= 0 && particle.y >= 0
-          && particle.x <= width && particle.y <= height;
-      });
     }
 
-    /* Three fading echoes behind each glyph read as a soft root at 30fps. */
-    function drawStreams() {
-      for (const particle of particles) {
-        const salience = clamp01(
-          .18 + particle.progress * .42 + particle.sink.hover * .4
-        );
-        const level = Math.min(
-          streamGlyphs.length - 1,
-          Math.floor(salience * streamGlyphs.length)
-        );
-        const tone = Math.min(TONES - 1, Math.floor((.16 + salience * .7) * TONES));
-        const fade = Math.min(1, particle.age * 2.5);
-        const alpha = fade
-          * particle.clarity
-          * (.2 + particle.progress * .26 + particle.sink.hover * .34);
-        if (alpha < .012) continue;
-        const step = Math.hypot(particle.headingX, particle.headingY) || 1;
-        const spacing = Math.min(9 * dpr, step * 2.2);
-        const backX = (particle.headingX / step) * spacing;
-        const backY = (particle.headingY / step) * spacing;
+    function rootPathY(sink, progress) {
+      const center = (sink.top + sink.bottom) / 2;
+      const amplitude = Math.min(72 * dpr, sink.reach * .14);
+      const taper = 1 - progress;
+      return center
+        + Math.sin(progress * Math.PI * 1.24 + sink.seed) * amplitude * taper
+        + Math.sin(progress * Math.PI * 3.1 - sink.seed * .7) * amplitude * .24 * taper;
+    }
 
-        for (let echo = 3; echo >= 0; echo -= 1) {
-          context.globalAlpha = alpha * (echo === 0 ? 1 : .34 / echo);
-          context.drawImage(
-            streamAtlas, level * cell, tone * cell, cell, cell,
-            Math.round(particle.x - backX * echo - cell / 2),
-            Math.round(particle.y - backY * echo - cell / 2),
-            cell, cell
-          );
+    /* Existing field cells are displaced along this curved vector field. The
+       root remains broad at the card, so it feeds a middle band rather than a
+       single inlet. No extra glyphs or particle layer are created. */
+    function attractionAt(px, py) {
+      let strongest = null;
+
+      for (const sink of sinks) {
+        const cardWidth = sink.right - sink.left;
+        const cardHeight = sink.bottom - sink.top;
+        const depth = Math.min(44 * dpr, cardWidth * .075);
+        const targetX = sink.fromLeft ? sink.left + depth : sink.right - depth;
+        const sourceX = sink.fromLeft
+          ? Math.max(0, sink.edgeX - sink.reach)
+          : Math.min(width, sink.edgeX + sink.reach);
+        const spanX = targetX - sourceX;
+        if (Math.abs(spanX) < 1) continue;
+
+        const rawProgress = (px - sourceX) / spanX;
+        if (rawProgress < -.04 || rawProgress > 1.06) continue;
+        const progress = clamp01(rawProgress);
+        const pathY = rootPathY(sink, progress);
+        const rootWidth = mix(
+          Math.min(86 * dpr, cardHeight * .82),
+          Math.max(20 * dpr, cardHeight * .22),
+          progress
+        );
+        const lane = (py - pathY) / Math.max(1, rootWidth);
+        const strength = Math.exp(-lane * lane * 2.25)
+          * smoothstep(0, .14, progress);
+        if (strength < .012) continue;
+
+        const before = rootPathY(sink, Math.max(0, progress - .012));
+        const after = rootPathY(sink, Math.min(1, progress + .012));
+        const tangentX = spanX * .024;
+        const tangentY = after - before;
+        const tangentLength = Math.hypot(tangentX, tangentY) || 1;
+        const pulse = ((progress * 4.2 - sink.phase + sink.seed) % 1 + 1) % 1;
+        const transport = strength * (.26 + pulse * .74);
+        const displacement = cell * (.34 + sink.hover * .16) * transport;
+        const candidate = {
+          strength,
+          hover: sink.hover,
+          progress,
+          dx: tangentX / tangentLength * displacement,
+          dy: tangentY / tangentLength * displacement,
+          salience: strength
+            * (.2 + sink.hover * .5)
+            * (.55 + progress * .45)
+        };
+
+        if (!strongest || candidate.strength > strongest.strength) {
+          strongest = candidate;
         }
       }
-      context.globalAlpha = 1;
+
+      return strongest || { strength: 0, hover: 0, progress: 0, dx: 0, dy: 0, salience: 0 };
     }
 
     /* ---- Field ----------------------------------------------------------- */
@@ -471,6 +386,9 @@
 
           const px = column * cell;
           const py = row * cell;
+          const attraction = halos
+            ? attractionAt(px + cell / 2, py + cell / 2)
+            : { strength: 0, hover: 0, dx: 0, dy: 0, salience: 0 };
           const left = relief[row * columns + Math.max(0, column - 1)];
           const right = relief[row * columns + Math.min(columns - 1, column + 1)];
           const gx = right - left;
@@ -480,7 +398,7 @@
           /* Lit slopes carry heavier glyphs as well as brighter tones. */
           let value = values[index] * (.65 + shade * .7);
           if (halos) value += haloAt(px + cell / 2, py + cell / 2);
-          value *= visible;
+          value *= visible * (1 + attraction.salience * .78);
           /* Soft knee: compress highlights so the heaviest glyphs stay rare
              and the field keeps a readable range of mid tones. */
           if (value > KNEE) value = KNEE + (value - KNEE) * .38;
@@ -489,7 +407,12 @@
           const level = Math.floor(Math.pow(value, .85) * levels + (threshold - .5) * .9);
           if (level < 1) continue;
 
-          const tone = Math.min(TONES - 1, Math.floor(clamp01(shade * .7 + value * .45) * TONES));
+          const tone = Math.min(
+            TONES - 1,
+            Math.floor(clamp01(
+              shade * .7 + value * .45 + attraction.salience * .2
+            ) * TONES)
+          );
 
           let glyph = Math.min(levels - 1, level - 1);
           if (field.directional) {
@@ -499,7 +422,17 @@
             glyph = field.strokeOffsets[octant] + Math.min(1, level >> 2);
           }
 
-          context.drawImage(atlas, glyph * cell, tone * cell, cell, cell, px, py, cell, cell);
+          context.drawImage(
+            atlas,
+            glyph * cell,
+            tone * cell,
+            cell,
+            cell,
+            Math.round(px + attraction.dx),
+            Math.round(py + attraction.dy),
+            cell,
+            cell
+          );
         }
       }
     }
@@ -511,7 +444,6 @@
       sampleField(field, time);
       context.clearRect(0, 0, width, height);
       drawField(field, time);
-      drawStreams();
     }
 
     /* ---- Loop ------------------------------------------------------------ */
@@ -523,14 +455,13 @@
       lastTick = timestamp;
       lastPaint = timestamp;
       if (layoutDirty) readLayout();
-      updateStreams(dt, timestamp / 1000);
+      updateAttractors(dt);
       paint(timestamp / 1000 * FIELD_TIME_SCALE);
     }
 
     function start() {
       window.cancelAnimationFrame(frame);
       if (reducedMotion.matches) {
-        particles = [];
         if (layoutDirty) readLayout();
         paint(0);
         return;
