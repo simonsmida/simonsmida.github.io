@@ -1337,6 +1337,8 @@ footer {
     gap: 10px;
     padding-top: 14px;
     scroll-snap-align: start;
+    scroll-snap-stop: always;
+    scroll-margin-top: var(--header-height);
   }
 
   .hero-tab-panel {
@@ -1347,16 +1349,17 @@ footer {
     display: block;
   }
 
-  /* Each section fills one screen; centring the rows keeps the field visible
-     above and below them instead of leaving a tall gap at the bottom. */
+  /* Each section fills one screen and begins directly below the fixed header. */
   .mobile-tab-section {
     width: calc(100% - 36px);
     min-height: calc(100svh - var(--header-height) - var(--footer-height));
     display: grid;
-    align-content: center;
+    align-content: start;
     margin-inline: auto;
-    padding: 14px 0;
+    padding: 18px 0 24px;
     scroll-snap-align: start;
+    scroll-snap-stop: always;
+    scroll-margin-top: var(--header-height);
   }
 
   .mobile-tab-section-list {
@@ -1391,6 +1394,10 @@ footer {
 
   .site-header nav a:first-child {
     display: none;
+  }
+
+  .site-header nav a {
+    touch-action: manipulation;
   }
 
   .site-nav-indicator {
@@ -1434,9 +1441,22 @@ footer {
   }
 
   .hero-details {
-    gap: 20px;
-    margin-top: 8px;
-    font-size: 11px;
+    display: grid;
+    gap: 7px;
+    margin-top: 10px;
+    font-size: clamp(8px, 2.45vw, 10px);
+    letter-spacing: .055em;
+    line-height: 1.4;
+  }
+
+  .hero-details p {
+    white-space: nowrap;
+  }
+
+  .hero-details span {
+    min-width: 44px;
+    display: inline-block;
+    margin: 0 9px 0 0;
   }
 
   .hero-socials {
@@ -1535,7 +1555,7 @@ footer {
   }
 }
 
-@media (max-height: 620px) {
+@media (max-height: 620px) and (min-width: 641px) {
   :root {
     --header-height: 66px;
     --footer-height: 42px;

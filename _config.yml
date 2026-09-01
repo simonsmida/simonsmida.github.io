@@ -3,7 +3,7 @@ description: Research, writing, and interactive projects about deep learning, in
 url: https://simonsmida.github.io
 
 # Bump to invalidate cached CSS, scripts, and icons after a deploy.
-version: 74
+version: 75
 
 author:
   name: Šimon Šmída

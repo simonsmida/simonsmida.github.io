@@ -196,6 +196,9 @@
     const pages = new Map();
     const indicator = document.createElement("span");
     let mobileSectionsReady = Promise.resolve(false);
+    let mobileScrollFrame = 0;
+    let mobileScrollTarget = null;
+    let mobileScrollTimer = 0;
 
     const isLanding = () => document.body.classList.contains("landing-page");
     const isHomePath = (pathname) => pathname === "/" || pathname.endsWith("/index.html");
@@ -347,6 +350,8 @@
       const root = document.querySelector("[data-mobile-sections]");
       if (!root) return Promise.resolve(false);
 
+      root.replaceChildren();
+
       return Promise.all(SECTIONS.map(async (name) => [name, await fetchPage(sectionUrl(name))]))
         .then((sections) => {
           sections.forEach(([name, sourceDocument]) => {
@@ -366,22 +371,61 @@
             root.append(section);
           });
 
-          const observed = [document.querySelector(".hero[data-route]"), ...root.children];
-          const observer = new IntersectionObserver((entries) => {
-            if (!COMPACT_LAYOUT.matches) return;
-            const visible = entries
-              .filter((entry) => entry.isIntersecting)
-              .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-            if (!visible) return;
-            document.body.classList.toggle("inline-content-active", !isHomePath(visible.target.dataset.route));
-            setCurrent(visible.target.dataset.route);
-          }, { threshold: [.55, .8] });
-          observed.forEach((section) => observer.observe(section));
-
+          requestAnimationFrame(syncMobileSectionFromScroll);
           emit("site-layout-change");
           return true;
         })
         .catch(() => false);
+    }
+
+    /* Keep the selected tab tied to what is actually visible. This avoids an
+       observer choosing the outgoing section halfway through a smooth scroll. */
+    function syncMobileSectionFromScroll() {
+      if (!isLanding() || !COMPACT_LAYOUT.matches) return;
+
+      const sections = [
+        document.querySelector(".hero[data-route]"),
+        ...document.querySelectorAll(".mobile-tab-section"),
+      ].filter(Boolean);
+      if (!sections.length) return;
+
+      const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height || 0;
+      const footerHeight = document.querySelector("footer")?.getBoundingClientRect().height || 0;
+
+      if (mobileScrollTarget) {
+        const arrived = Math.abs(mobileScrollTarget.getBoundingClientRect().top - headerHeight) < 3;
+        if (!arrived) return;
+        mobileScrollTarget = null;
+        window.clearTimeout(mobileScrollTimer);
+      }
+
+      const viewportBottom = window.innerHeight - footerHeight;
+      const visible = sections
+        .map((section) => {
+          const rect = section.getBoundingClientRect();
+          const amount = Math.max(0, Math.min(rect.bottom, viewportBottom) - Math.max(rect.top, headerHeight));
+          return { section, amount };
+        })
+        .sort((a, b) => b.amount - a.amount)[0];
+      if (!visible?.amount) return;
+
+      const pathname = visible.section.dataset.route;
+      document.body.classList.toggle("inline-content-active", !isHomePath(pathname));
+      setCurrent(pathname);
+
+      const section = sectionOf(pathname);
+      const nextLocation = landingUrl(section);
+      if (`${window.location.pathname}${window.location.hash}` !== nextLocation) {
+        window.history.replaceState({}, "", nextLocation);
+      }
+    }
+
+    function queueMobileScrollSync() {
+      if (mobileScrollFrame) return;
+      mobileScrollFrame = requestAnimationFrame(() => {
+        mobileScrollFrame = 0;
+        syncMobileSectionFromScroll();
+      });
     }
 
     function scrollToMobileSection(pathname, { push = true, behavior = "smooth" } = {}) {
@@ -393,17 +437,33 @@
 
       document.body.classList.toggle("inline-content-active", !isHomePath(pathname));
       setCurrent(pathname);
-      if (push) window.history.pushState({}, "", landingUrl(sectionOf(pathname)));
-      target.scrollIntoView({ behavior, block: "start" });
+      const nextLocation = landingUrl(sectionOf(pathname));
+      if (push && `${window.location.pathname}${window.location.hash}` !== nextLocation) {
+        window.history.pushState({}, "", nextLocation);
+      }
+
+      const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height || 0;
+      const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - headerHeight);
+      mobileScrollTarget = target;
+      window.clearTimeout(mobileScrollTimer);
+      mobileScrollTimer = window.setTimeout(() => {
+        mobileScrollTarget = null;
+        syncMobileSectionFromScroll();
+      }, behavior === "smooth" && !REDUCED_MOTION.matches ? 900 : 0);
+      window.scrollTo({ top, behavior: REDUCED_MOTION.matches ? "auto" : behavior });
       return true;
     }
 
     /* Routing */
 
     let routing = false;
+    let queuedNavigation = null;
 
     async function go(url, { push = true } = {}) {
-      if (routing) return;
+      if (routing) {
+        queuedNavigation = { url, push };
+        return;
+      }
       routing = true;
       const section = sectionOf(url.pathname) || sectionFromHash(url);
       const home = !section;
@@ -411,6 +471,7 @@
       try {
         if (isLanding() && COMPACT_LAYOUT.matches) {
           await mobileSectionsReady;
+          if (queuedNavigation) return;
           if (scrollToMobileSection(section ? sectionUrl(section).pathname : "/", { push })) return;
         }
 
@@ -426,6 +487,11 @@
         window.location.assign(url.href);
       } finally {
         routing = false;
+        if (queuedNavigation) {
+          const next = queuedNavigation;
+          queuedNavigation = null;
+          go(next.url, { push: next.push });
+        }
       }
     }
 
@@ -447,7 +513,8 @@
       link.addEventListener("pointerenter", () => prefetch(link), { once: true });
       link.addEventListener("click", (event) => {
         if (event.defaultPrevented || isModifiedClick(event)) return;
-        if (link.getAttribute("aria-current") === "page") {
+        const mobileLanding = isLanding() && COMPACT_LAYOUT.matches;
+        if (link.getAttribute("aria-current") === "page" && !mobileLanding) {
           event.preventDefault();
           return;
         }
@@ -458,6 +525,13 @@
     });
 
     window.addEventListener("popstate", () => go(new URL(window.location.href), { push: false }));
+    window.addEventListener("scroll", queueMobileScrollSync, { passive: true });
+    window.addEventListener("resize", queueMobileScrollSync, { passive: true });
+    window.addEventListener("pointerdown", () => {
+      if (!COMPACT_LAYOUT.matches) return;
+      mobileScrollTarget = null;
+      window.clearTimeout(mobileScrollTimer);
+    }, { passive: true });
 
     /* When the window crosses a layout breakpoint, present the current
        section in the form that layout uses. */
