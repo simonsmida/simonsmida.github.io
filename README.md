@@ -1,21 +1,35 @@
 # simonsmida.github.io
 
-Personal site for Šimon Šmída. The main pages are plain HTML; writing is kept in
-Markdown and rendered by GitHub Pages with the shared article layout.
+Personal site for Šimon Šmída. The main pages are plain HTML with shared
+Jekyll includes; writing is kept in Markdown and rendered by GitHub Pages with
+the article layout.
 
 ## Structure
 
-- `index.html` — About and the compact desktop tab view.
-- `research.html` — Research cards.
-- `writing.html` — Writing cards.
-- `projects.html` — Interactive projects.
+- `index.html` — About, with the section panel and the compact stacked view.
+- `research.html`, `writing.html`, `projects.html` — Card lists.
 - `_posts/` — Article source files in Markdown.
-- `_layouts/article.html` — Shared article page structure.
+- `_layouts/article.html` — Article page structure.
+- `_includes/` — Shared head, header, footer, and script tags.
 - `_templates/note.md` — Starting point for a new article.
 - `assets/css/site.css` — Layout, themes, cards, and article typography.
-- `assets/js/site.js` — Theme, navigation, and card behavior.
-- `assets/js/ascii-field.js` — The single animated latent-manifold field used by the site.
-- `archive/` — Local historical drafts and prototype snapshots; excluded from the build.
+- `assets/js/site.js` — Theme, field picker, card lists, and client-side navigation.
+- `assets/js/fields.js` — The background field variants (pure sampling functions).
+- `assets/js/field.js` — The field renderer: glyph atlas, dithering, readability zones, card streams.
+- `archive/` — Historical drafts and prototype snapshots; excluded from the build.
+- `experiments/` — Local visual studies; excluded from the build.
+
+## Background field
+
+`fields.js` defines each variant as a `sample(x, y, t, out, i, aspect)` function
+writing an ink `value` and a `relief` height per cell. `field.js` samples the
+active variant on a grid every frame, shades it from the relief gradient,
+dithers it into glyphs, and blits the glyphs from a pre-rendered atlas. Text and
+cards are protected by readability zones, and small particle streams flow into
+each card (faster while the card is hovered).
+
+To add a variant, add an entry to `SITE_FIELDS` in `fields.js`; the picker
+lists it automatically.
 
 ## Add an article
 
@@ -24,14 +38,15 @@ Markdown and rendered by GitHub Pages with the shared article layout.
 3. Put local visuals in `assets/notes/YYYY-MM-DD-article-slug/`.
 4. Add one matching card to `writing.html`.
 
-Markdown images automatically use the wider article visual treatment. For a
-custom SVG, Canvas, or D3 interaction, copy `_templates/article/` and keep its
-article-specific media and JavaScript inside that folder.
-
 ## Add research or a project
 
 Copy one complete `content-card` block in `research.html` or `projects.html`,
 then update its link, thumbnail or symbol, metadata, title, and summary.
+
+## Deploy
+
+Bump `version` in `_config.yml` when CSS, scripts, or icons change so browsers
+fetch the new files, then push to `main`.
 
 ## Local preview
 

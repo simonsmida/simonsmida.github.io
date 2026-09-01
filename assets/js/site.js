@@ -1,1008 +1,491 @@
+/*
+ * Site behaviour: theme, background field picker, expandable card lists,
+ * article thumbnail transitions, and client-side navigation between the
+ * About, Research, Writing, and Projects views.
+ */
 (() => {
   "use strict";
 
-  /* Theme */
-
-  const THEME_STORAGE_KEY = "simon-site-palette";
   const LIGHT_THEME = "slate-blue";
   const DARK_THEME = "midnight-navy";
-  const THEMES = new Set([LIGHT_THEME, DARK_THEME]);
-  const COMPACT_LAYOUT_QUERY = "(max-width: 640px)";
-  const INLINE_LAYOUT_QUERY = "(min-width: 1101px)";
+  const THEME_STORAGE_KEY = "site-theme";
+  const FIELD_STORAGE_KEY = "site-field";
+  const COMPACT_LAYOUT = window.matchMedia("(max-width: 640px)");
+  const INLINE_LAYOUT = window.matchMedia("(min-width: 1101px)");
+  const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const SECTIONS = ["research", "writing", "projects"];
 
-  function readSavedTheme() {
+  const emit = (name, detail) => window.dispatchEvent(new CustomEvent(name, { detail }));
+  const isModifiedClick = (event) => (
+    event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0
+  );
+
+  function remember(key, value) {
     try {
-      const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-      return THEMES.has(savedTheme) ? savedTheme : LIGHT_THEME;
+      window.localStorage.setItem(key, value);
     } catch {
-      return LIGHT_THEME;
+      /* Preferences still apply for the current visit without storage. */
     }
   }
 
-  function updateThemeButton(theme) {
-    const button = document.querySelector("[data-theme-trigger]");
-    if (!button) return;
+  /* ---- Theme ------------------------------------------------------------ */
 
+  function applyTheme(theme) {
     const isDark = theme === DARK_THEME;
     const label = isDark ? "Switch to light mode" : "Switch to dark mode";
+    document.documentElement.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]').content = isDark ? "#101d27" : "#eef2f3";
+
+    const button = document.querySelector("[data-theme-trigger]");
     button.setAttribute("aria-pressed", String(isDark));
     button.setAttribute("aria-label", label);
     button.setAttribute("title", label);
-  }
 
-  function updateFavicon(theme) {
-    document.querySelectorAll("[data-theme-favicon]").forEach((currentLink) => {
-      const nextHref = theme === DARK_THEME
-        ? currentLink.dataset.darkHref
-        : currentLink.dataset.lightHref;
-      if (!nextHref || currentLink.getAttribute("href") === nextHref) return;
+    /* Browsers repaint the tab icon reliably when the link element itself is
+       replaced, not only when its href changes. */
+    const icon = document.querySelector("[data-theme-icon]");
+    const nextIcon = icon.cloneNode(true);
+    nextIcon.href = isDark ? icon.dataset.dark : icon.dataset.light;
+    icon.replaceWith(nextIcon);
 
-      // Replacing the node prompts Safari/WebKit to repaint the favicon now.
-      const nextLink = currentLink.cloneNode(true);
-      nextLink.setAttribute("href", nextHref);
-      currentLink.replaceWith(nextLink);
-    });
-  }
-
-  function applyTheme(theme, { save = true } = {}) {
-    if (!THEMES.has(theme)) return;
-
-    document.documentElement.dataset.theme = theme;
-    updateThemeButton(theme);
-    updateFavicon(theme);
-
-    if (save) {
-      try {
-        window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-      } catch {
-        // Theme switching still works when browser storage is unavailable.
-      }
-    }
-
-    window.dispatchEvent(new CustomEvent("site-theme-change"));
+    remember(THEME_STORAGE_KEY, theme);
+    emit("site-theme-change", { theme });
   }
 
   function initializeTheme() {
-    applyTheme(readSavedTheme(), { save: false });
-
-    document.querySelector("[data-theme-trigger]")?.addEventListener("click", () => {
-      const currentTheme = document.documentElement.dataset.theme;
-      applyTheme(currentTheme === DARK_THEME ? LIGHT_THEME : DARK_THEME);
+    applyTheme(document.documentElement.dataset.theme === DARK_THEME ? DARK_THEME : LIGHT_THEME);
+    document.querySelector("[data-theme-trigger]").addEventListener("click", () => {
+      applyTheme(document.documentElement.dataset.theme === DARK_THEME ? LIGHT_THEME : DARK_THEME);
     });
   }
 
-  /* Representation field selector */
-
-  const FIELD_STORAGE_KEY = "simon-ascii-style";
-  const FIELD_STYLES = [
-    { value: "manifold", label: "Latent manifold", mark: "∿" },
-    { value: "vortex", label: "Representation vortex", mark: "◌" }
-  ];
-
-  function readSavedFieldStyle() {
-    try {
-      const savedStyle = window.localStorage.getItem(FIELD_STORAGE_KEY);
-      return FIELD_STYLES.some(({ value }) => value === savedStyle)
-        ? savedStyle
-        : "manifold";
-    } catch {
-      return "manifold";
-    }
-  }
-
-  function applyFieldStyle(style, { save = true } = {}) {
-    const selected = FIELD_STYLES.find(({ value }) => value === style)
-      || FIELD_STYLES[0];
-    document.documentElement.dataset.asciiStyle = selected.value;
-
-    document.querySelectorAll("[data-field-picker]").forEach((picker) => {
-      picker.querySelector("[data-field-mark]").textContent = selected.mark;
-      picker.querySelector("[data-field-current]").textContent = selected.label;
-      picker.querySelectorAll("[data-field-option]").forEach((option) => {
-        const isCurrent = option.dataset.fieldOption === selected.value;
-        option.setAttribute("aria-checked", String(isCurrent));
-        option.toggleAttribute("data-current", isCurrent);
-      });
-    });
-
-    if (save) {
-      try {
-        window.localStorage.setItem(FIELD_STORAGE_KEY, selected.value);
-      } catch {
-        // The selector still works when browser storage is unavailable.
-      }
-    }
-
-    window.dispatchEvent(new CustomEvent("site-ascii-change", {
-      detail: { style: selected.value }
-    }));
-  }
+  /* ---- Background field picker ------------------------------------------- */
 
   function initializeFieldPicker() {
-    const header = document.querySelector(".site-header");
-    const canvas = document.querySelector("[data-ascii-manifold]");
-    if (!header || !canvas) return;
-
-    let picker = header.querySelector("[data-field-picker]");
-    if (!picker) {
-      picker = document.createElement("div");
-      picker.className = "field-picker";
-      picker.dataset.fieldPicker = "";
-      picker.innerHTML = `
-        <button class="field-picker-trigger" type="button" data-field-trigger aria-haspopup="menu" aria-expanded="false">
-          <span class="field-picker-mark" data-field-mark aria-hidden="true"></span>
-          <span class="field-picker-copy"><span>Field</span><span data-field-current></span></span>
-        </button>
-        <div class="field-picker-menu" data-field-menu role="menu" hidden>
-          ${FIELD_STYLES.map(({ value, label, mark }) => `
-            <button type="button" role="menuitemradio" aria-checked="false" data-field-option="${value}">
-              <span aria-hidden="true">${mark}</span><span>${label}</span>
-            </button>
-          `).join("")}
-        </div>
-      `;
-      header.prepend(picker);
-    }
-
-    if (picker.dataset.fieldPickerReady === "true") {
-      applyFieldStyle(readSavedFieldStyle(), { save: false });
-      return;
-    }
-    picker.dataset.fieldPickerReady = "true";
+    const picker = document.querySelector("[data-field-picker]");
+    const fields = window.SITE_FIELDS;
+    if (!picker || !fields) return;
 
     const trigger = picker.querySelector("[data-field-trigger]");
     const menu = picker.querySelector("[data-field-menu]");
-    const closeMenu = ({ focus = false } = {}) => {
+    const mark = picker.querySelector("[data-field-mark]");
+    const current = picker.querySelector("[data-field-current]");
+
+    menu.replaceChildren(...Object.entries(fields).map(([name, field]) => {
+      const option = document.createElement("button");
+      option.type = "button";
+      option.role = "menuitemradio";
+      option.dataset.fieldOption = name;
+      option.innerHTML = `<span aria-hidden="true">${field.mark}</span><span>${field.label}</span>`;
+      return option;
+    }));
+
+    function apply(name, { save = true } = {}) {
+      const field = fields[name] ? name : Object.keys(fields)[0];
+      document.documentElement.dataset.field = field;
+      mark.textContent = fields[field].mark;
+      current.textContent = fields[field].label;
+      menu.querySelectorAll("[data-field-option]").forEach((option) => {
+        option.setAttribute("aria-checked", String(option.dataset.fieldOption === field));
+      });
+      if (save) remember(FIELD_STORAGE_KEY, field);
+      emit("site-field-change", { field });
+    }
+
+    function close({ focus = false } = {}) {
       menu.hidden = true;
       trigger.setAttribute("aria-expanded", "false");
       if (focus) trigger.focus();
-    };
+    }
 
     trigger.addEventListener("click", () => {
-      const willOpen = menu.hidden;
-      menu.hidden = !willOpen;
-      trigger.setAttribute("aria-expanded", String(willOpen));
-      if (willOpen) {
-        menu.querySelector('[aria-checked="true"]')?.focus();
-      }
+      const open = menu.hidden;
+      menu.hidden = !open;
+      trigger.setAttribute("aria-expanded", String(open));
+      if (open) menu.querySelector('[aria-checked="true"]')?.focus();
     });
-
-    picker.querySelectorAll("[data-field-option]").forEach((option) => {
-      option.addEventListener("click", () => {
-        applyFieldStyle(option.dataset.fieldOption);
-        closeMenu({ focus: true });
-      });
+    menu.addEventListener("click", (event) => {
+      const option = event.target.closest("[data-field-option]");
+      if (!option) return;
+      apply(option.dataset.fieldOption);
+      close({ focus: true });
     });
-
     document.addEventListener("pointerdown", (event) => {
-      if (!menu.hidden && !picker.contains(event.target)) closeMenu();
+      if (!menu.hidden && !picker.contains(event.target)) close();
     });
     picker.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeMenu({ focus: true });
+      if (event.key === "Escape") close({ focus: true });
     });
 
-    applyFieldStyle(readSavedFieldStyle(), { save: false });
+    apply(document.documentElement.dataset.field, { save: false });
   }
 
-  window.initializeFieldPicker = initializeFieldPicker;
-
-  /* Decorative SVG fields */
-
-  const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
-
-  function createSeededRandom(initialSeed) {
-    let seed = initialSeed >>> 0;
-
-    return () => {
-      seed += 0x6d2b79f5;
-      let value = seed;
-      value = Math.imul(value ^ (value >>> 15), value | 1);
-      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
-      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  function initializeFieldGraphics(root = document) {
-    root.querySelectorAll("[data-field]").forEach((svg, fieldIndex) => {
-      if (svg.dataset.fieldReady === "true") return;
-
-      const particleGroup = svg.querySelector("[data-field-particles]");
-      if (!particleGroup) return;
-
-      svg.dataset.fieldReady = "true";
-
-      const center = 110;
-      const radius = 91;
-      const particleCount = 72;
-      const linkCount = 21;
-      const random = createSeededRandom(1701 + fieldIndex * 3571);
-      const points = [];
-
-      for (let index = 0; index < particleCount; index += 1) {
-        const distance = Math.pow(random(), .68) * radius;
-        const angle = random() * Math.PI * 2 + distance * .028;
-        const wobble = 1 + .16 * Math.sin(angle * 3 + distance * .045);
-
-        points.push({
-          x: center + Math.cos(angle) * distance * wobble,
-          y: center + Math.sin(angle) * distance * .62 / wobble
-        });
-      }
-
-      const linkGroup = document.createElementNS(SVG_NAMESPACE, "g");
-      linkGroup.setAttribute("aria-hidden", "true");
-
-      for (let index = 0; index < linkCount; index += 1) {
-        const firstIndex = Math.floor(random() * points.length);
-        const secondIndex = (firstIndex + 1 + Math.floor(random() * 13)) % points.length;
-        const first = points[firstIndex];
-        const second = points[secondIndex];
-        const line = document.createElementNS(SVG_NAMESPACE, "line");
-
-        line.setAttribute("class", "field-link");
-        line.setAttribute("x1", first.x.toFixed(2));
-        line.setAttribute("y1", first.y.toFixed(2));
-        line.setAttribute("x2", second.x.toFixed(2));
-        line.setAttribute("y2", second.y.toFixed(2));
-        linkGroup.append(line);
-      }
-
-      particleGroup.before(linkGroup);
-
-      points.forEach((point, index) => {
-        const particle = document.createElementNS(SVG_NAMESPACE, "circle");
-        const isEmphasized = index % 29 === 0;
-
-        particle.setAttribute("class", "field-particle");
-        particle.setAttribute("cx", point.x.toFixed(2));
-        particle.setAttribute("cy", point.y.toFixed(2));
-        particle.setAttribute(
-          "r",
-          (isEmphasized ? 2.05 : .45 + random() * 1.05).toFixed(2)
-        );
-        particle.setAttribute(
-          "opacity",
-          (isEmphasized ? .72 : .16 + random() * .46).toFixed(2)
-        );
-        particleGroup.append(particle);
-      });
-    });
-  }
-
-  /* Expandable lists */
+  /* ---- Expandable card lists ---------------------------------------------- */
 
   const INITIAL_CARD_COUNT = 3;
 
   function initializeCardLists(root = document) {
     root.querySelectorAll("[data-card-list]").forEach((list) => {
-      const cards = [...list.querySelectorAll(":scope > .content-card")];
-      const button = list.parentElement?.querySelector(
-        `[data-view-more][aria-controls="${list.id}"]`
-      );
-
+      const button = root.querySelector(`[data-view-more][aria-controls="${list.id}"]`);
+      const cards = list.querySelectorAll(":scope > .content-card");
       if (!button) return;
-
       if (cards.length <= INITIAL_CARD_COUNT) {
-        list.removeAttribute("data-expanded");
         button.hidden = true;
         return;
       }
 
       const label = button.querySelector("[data-view-more-label]");
       const icon = button.querySelector(".view-more-icon");
-      const itemLabel = list.dataset.itemLabel || "items";
-      const scrollRegion = list.closest(".content-list-region");
-
-      function render(expanded) {
+      const render = (expanded) => {
         list.dataset.expanded = String(expanded);
-        if (!expanded && scrollRegion) scrollRegion.scrollTop = 0;
-        button.setAttribute("aria-expanded", String(expanded));
         button.hidden = false;
-
-        if (label) {
-          label.textContent = expanded ? "Show less" : `View more ${itemLabel}`;
-        }
-
-        if (icon) {
-          icon.textContent = expanded ? "↑" : "↓";
-        }
-      }
+        button.setAttribute("aria-expanded", String(expanded));
+        label.textContent = expanded ? "Show less" : `View more ${list.dataset.itemLabel || "items"}`;
+        icon.textContent = expanded ? "↑" : "↓";
+        if (!expanded) list.closest(".content-list-region")?.scrollTo({ top: 0 });
+        emit("site-layout-change");
+      };
 
       render(false);
-      button.addEventListener("click", () => {
-        render(list.dataset.expanded !== "true");
-      });
+      button.addEventListener("click", () => render(list.dataset.expanded !== "true"));
     });
   }
 
-  /* Match a selected article thumbnail to its destination hero. Browsers that
-     do not support cross-document View Transitions simply ignore the name. */
-  function initializeSharedArticleTransitions() {
-    function clearTransitionNames() {
+  /* ---- Article thumbnail transitions --------------------------------------- */
+
+  /* The clicked thumbnail shares a view-transition name with the article hero
+     so browsers with cross-document View Transitions morph between them. */
+  function initializeArticleTransitions() {
+    /* Chrome rejects its own transition promise whenever it decides to skip a
+       cross-document transition. The navigation itself is unaffected, so keep
+       that one rejection out of the console and let every other error through. */
+    window.addEventListener("unhandledrejection", (event) => {
+      if (event.reason?.name === "AbortError" && event.reason.message === "Transition was skipped") {
+        event.preventDefault();
+      }
+    });
+
+    const clearNames = () => {
       document.querySelectorAll("[data-view-transition-name]").forEach((media) => {
         media.style.removeProperty("view-transition-name");
       });
-    }
+    };
 
     document.addEventListener("click", (event) => {
-      if (!(event.target instanceof Element)) return;
-
-      const link = event.target.closest(".content-card a[href]");
-      const card = link?.closest(".content-card");
-      const media = card?.querySelector("[data-view-transition-name]");
-      const isModifiedClick = event.metaKey
-        || event.ctrlKey
-        || event.shiftKey
-        || event.altKey;
-
-      if (!media || event.button !== 0 || isModifiedClick) return;
-      clearTransitionNames();
+      const link = event.target.closest?.(".content-card a[href]");
+      const media = link?.closest(".content-card")?.querySelector("[data-view-transition-name]");
+      if (!media || isModifiedClick(event)) return;
+      clearNames();
       media.style.viewTransitionName = media.dataset.viewTransitionName;
     });
-
-    window.addEventListener("pageshow", clearTransitionNames);
+    window.addEventListener("pageshow", clearNames);
   }
 
-  /* Client-side navigation keeps the header and background mounted. */
+  /* ---- Client-side navigation ---------------------------------------------- */
 
-  function initializeClientNavigation() {
-    const navigationLinks = [
-      ...document.querySelectorAll(".site-header nav a[href]")
-    ];
-    const pageCache = new Map();
-    const navigation = document.querySelector(".site-header nav");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let navigationIndicator = null;
+  /*
+   * The About page has three presentations of a section:
+   *   – wide screens show the section's cards in a panel beside the biography
+   *   – compact screens stack every section below the biography and scroll
+   *   – anything between swaps in the standalone section page
+   * Section state lives in the URL hash on About so a refresh restores it.
+   */
+  function initializeNavigation() {
+    const nav = document.querySelector("[data-site-nav]");
+    const links = [...nav.querySelectorAll("a[href]")];
+    const pages = new Map();
+    const indicator = document.createElement("span");
+    let mobileSectionsReady = Promise.resolve(false);
 
-    function syncNavigationIndicator({ initial = false } = {}) {
-      if (!navigation || !navigationIndicator) return;
+    const isLanding = () => document.body.classList.contains("landing-page");
+    const isHomePath = (pathname) => pathname === "/" || pathname.endsWith("/index.html");
+    const sectionOf = (pathname) => SECTIONS.find((name) => pathname.endsWith(`/${name}.html`)) || null;
+    const sectionUrl = (name) => new URL(`/${name}.html`, window.location.origin);
 
-      const activeLink = navigationLinks.find((link) => (
-        link.getAttribute("aria-current") === "page" && link.offsetWidth > 0
-      ));
+    function sectionFromHash(url) {
+      const name = url.hash.replace(/^#\/?/, "").replace(/\.html$/, "");
+      return isHomePath(url.pathname) && SECTIONS.includes(name) ? name : null;
+    }
 
-      if (!activeLink) {
-        navigationIndicator.classList.remove("is-ready");
+    async function fetchPage(url) {
+      if (!pages.has(url.pathname)) {
+        pages.set(url.pathname, window.fetch(url.href, { headers: { Accept: "text/html" } })
+          .then(async (response) => {
+            if (!response.ok) throw new Error(`Page request failed: ${response.status}`);
+            return new DOMParser().parseFromString(await response.text(), "text/html");
+          })
+          .catch((error) => {
+            pages.delete(url.pathname);
+            throw error;
+          }));
+      }
+      return pages.get(url.pathname);
+    }
+
+    /* Navigation indicator */
+
+    function syncIndicator() {
+      const active = links.find((link) => link.getAttribute("aria-current") === "page" && link.offsetWidth > 0);
+      if (!active) {
+        indicator.classList.remove("is-ready");
         return;
       }
-
-      const navigationRect = navigation.getBoundingClientRect();
-      const linkRect = activeLink.getBoundingClientRect();
-      const overhang = 3;
-
-      navigation.style.setProperty(
-        "--nav-indicator-x",
-        `${linkRect.left - navigationRect.left - overhang}px`
-      );
-      navigation.style.setProperty(
-        "--nav-indicator-width",
-        `${linkRect.width + overhang * 2}px`
-      );
-
-      if (initial) {
-        requestAnimationFrame(() => navigationIndicator?.classList.add("is-ready"));
-      } else {
-        navigationIndicator.classList.add("is-ready");
-      }
+      const navRect = nav.getBoundingClientRect();
+      const rect = active.getBoundingClientRect();
+      nav.style.setProperty("--nav-indicator-x", `${rect.left - navRect.left - 3}px`);
+      nav.style.setProperty("--nav-indicator-width", `${rect.width + 6}px`);
+      indicator.classList.add("is-ready");
     }
 
-    function initializeNavigationIndicator() {
-      if (!navigation) return;
-
-      navigationIndicator = document.createElement("span");
-      navigationIndicator.className = "site-nav-indicator";
-      navigationIndicator.setAttribute("aria-hidden", "true");
-      navigation.append(navigationIndicator);
-      navigation.classList.add("has-motion-indicator");
-      syncNavigationIndicator({ initial: true });
-    }
-
-    async function fetchPage(destination) {
-      const cacheKey = destination.href;
-
-      if (!pageCache.has(cacheKey)) {
-        const request = window.fetch(cacheKey, {
-          // Revalidate the warmed copy so a route never restores stale chrome
-          // (especially the footer/canvas) after a deploy or back navigation.
-          cache: "no-cache",
-          headers: { Accept: "text/html" }
-        }).then(async (response) => {
-          if (!response.ok) {
-            throw new Error(`Page request failed: ${response.status}`);
-          }
-
-          const html = await response.text();
-          return new DOMParser().parseFromString(html, "text/html");
-        });
-
-        pageCache.set(cacheKey, request);
-      }
-
-      return pageCache.get(cacheKey);
-    }
-
-    function updateNavigation(nextDocument) {
-      const nextLinks = [
-        ...nextDocument.querySelectorAll(".site-header nav a[href]")
-      ];
-
-      navigationLinks.forEach((link, index) => {
-        const nextLink = nextLinks[index];
-        if (!nextLink) return;
-
-        link.setAttribute("href", nextLink.getAttribute("href"));
-        if (nextLink.getAttribute("aria-current") === "page") {
-          link.setAttribute("aria-current", "page");
-        } else {
-          link.removeAttribute("aria-current");
-        }
-      });
-
-      syncNavigationIndicator();
-      requestAnimationFrame(() => syncNavigationIndicator());
-    }
-
-    function updateDescription(nextDocument) {
-      const nextDescription = nextDocument.querySelector('meta[name="description"]');
-      const currentDescription = document.querySelector('meta[name="description"]');
-
-      if (nextDescription && currentDescription) {
-        currentDescription.setAttribute("content", nextDescription.content);
-      }
-    }
-
-    function isHomeRoute(pathname) {
-      return pathname.endsWith("/") || pathname.endsWith("/index.html");
-    }
-
-    // Landing-page tabs are views of the same shell. Keep that state in the
-    // hash so a refresh restores the inline panel instead of opening the full index.
-    function inlineDestinationFromUrl(url) {
-      if (!isHomeRoute(url.pathname) || !url.hash) return null;
-
-      const route = url.hash
-        .slice(1)
-        .replace(/^\//, "")
-        .replace(/\.html$/, "");
-      if (!["research", "writing", "projects"].includes(route)) return null;
-
-      return new URL(`/${route}.html`, url.origin);
-    }
-
-    function landingHistoryUrl(destination) {
-      const url = new URL(window.location.href);
-      if (isHomeRoute(destination.pathname)) {
-        url.hash = "";
-        url.search = "";
-        return url.href;
-      }
-
-      url.hash = `#${destination.pathname.replace(/^\//, "").replace(/\.html$/, "")}`;
-      url.search = "";
-      return url.href;
-    }
-
-    function importCards(nextDocument, destination, limit = 3) {
-      return [...nextDocument.querySelectorAll(".content-card")]
-        .slice(0, limit)
-        .map((sourceCard) => {
-          const card = document.importNode(sourceCard, true);
-
-          card.querySelectorAll("[href], [src]").forEach((element) => {
-            ["href", "src"].forEach((attribute) => {
-              const value = element.getAttribute(attribute);
-              if (!value || value.startsWith("#") || value.startsWith("data:")) return;
-
-              try {
-                element.setAttribute(attribute, new URL(value, destination.href).href);
-              } catch {
-                // Keep the original URL if an unusual content URL cannot resolve.
-              }
-            });
-          });
-
-          card.querySelectorAll("img").forEach((image) => {
-            image.loading = "eager";
-            image.decoding = "async";
-          });
-
-          return card;
-        });
-    }
-
-    // Keep the fixed chrome in sync when a full page shell is swapped in place.
-    // Article pages have a different footer and do not ship the ASCII canvas,
-    // so leaving either element mounted would leak article state into About.
-    function importChromeElement(source, destination) {
-      const element = document.importNode(source, true);
-
-      element.querySelectorAll("[href], [src]").forEach((node) => {
-        ["href", "src"].forEach((attribute) => {
-          const value = node.getAttribute(attribute);
-          if (!value || value.startsWith("#") || value.startsWith("data:")) return;
-
-          try {
-            node.setAttribute(attribute, new URL(value, destination.href).href);
-          } catch {
-            // Keep the original URL if an unusual asset URL cannot resolve.
-          }
-        });
-      });
-
-      return element;
-    }
-
-    function syncPageChrome(nextDocument, destination) {
-      const header = document.querySelector(".site-header");
-      const nextSiteMark = nextDocument.querySelector(".site-mark");
-      const currentSiteMark = document.querySelector(".site-mark");
-
-      if (nextSiteMark && currentSiteMark) {
-        currentSiteMark.replaceWith(importChromeElement(nextSiteMark, destination));
-      } else if (nextSiteMark && header) {
-        header.prepend(importChromeElement(nextSiteMark, destination));
-      } else {
-        currentSiteMark?.remove();
-      }
-
-      const nextFooter = nextDocument.querySelector("footer");
-      const currentFooter = document.querySelector("footer");
-      if (nextFooter && currentFooter) {
-        currentFooter.replaceWith(importChromeElement(nextFooter, destination));
-      }
-
-      // Keep a mounted canvas alive while navigating so its animation does not
-      // restart. Direct article loads have no canvas, so restore it when the
-      // next shell requires one and load the field script once.
-      const nextCanvas = nextDocument.querySelector("[data-ascii-manifold]");
-      const currentCanvas = document.querySelector("[data-ascii-manifold]");
-      if (!nextCanvas) {
-        document.querySelector("[data-field-picker]")?.remove();
-        return;
-      }
-
-      if (currentCanvas) {
-        initializeFieldPicker();
-        return;
-      }
-
-      const importedCanvas = document.importNode(nextCanvas, true);
-      document.body.insertBefore(importedCanvas, header || document.body.firstChild);
-
-      const asciiScript = [...nextDocument.scripts].find((script) => (
-        script.src.includes("/ascii-field.js")
-      ));
-      if (!asciiScript || document.querySelector('script[src*="/ascii-field.js"]')) {
-        window.initializeAsciiField?.();
-        initializeFieldPicker();
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = new URL(asciiScript.getAttribute("src"), destination.href).href;
-      script.defer = true;
-      script.addEventListener("load", () => {
-        window.initializeAsciiField?.();
-        initializeFieldPicker();
-      });
-      document.body.append(script);
-    }
-
-    function updateInlineShell(nextDocument, destination) {
-      const panel = document.querySelector("[data-inline-panel]");
-      const list = panel?.querySelector("[data-inline-list]");
-      const title = panel?.querySelector("[data-inline-title]");
-      const more = panel?.querySelector("[data-inline-more]");
-      if (!panel || !list || !title || !more) return false;
-
-      if (isHomeRoute(destination.pathname)) {
-        document.body.classList.remove("inline-content-active");
-        panel.hidden = true;
-        list.replaceChildren();
-        list.removeAttribute("data-motion");
-        more.hidden = true;
-        return true;
-      }
-
-      const sourceTitle = nextDocument.querySelector(".page-intro h1");
-      // Keep the inline panel compact, but let its card field reveal the full collection.
-      const cards = importCards(nextDocument, destination, Number.POSITIVE_INFINITY);
-      if (!cards.length || !sourceTitle) return false;
-
-      cards.forEach((card, index) => {
-        card.style.setProperty("--card-index", index);
-      });
-
-      title.textContent = sourceTitle.textContent;
-      list.replaceChildren(...cards);
-      if (reducedMotion.matches) list.removeAttribute("data-motion");
-      else list.dataset.motion = "entering";
-      more.href = destination.href;
-      more.textContent = `View all ${sourceTitle.textContent.toLowerCase()} ↗`;
-      more.hidden = false;
-      document.body.classList.add("inline-content-active");
-      panel.hidden = false;
-      return true;
-    }
-
-    function waitForPanelExit(panel) {
-      if (reducedMotion.matches || panel.hidden) return Promise.resolve();
-
-      panel.dataset.motion = "leaving";
-      return new Promise((resolve) => {
-        let settled = false;
-
-        function finish() {
-          if (settled) return;
-          settled = true;
-          panel.removeEventListener("transitionend", handleTransitionEnd);
-          resolve();
-        }
-
-        function handleTransitionEnd(event) {
-          if (event.target === panel && event.propertyName === "opacity") finish();
-        }
-
-        panel.addEventListener("transitionend", handleTransitionEnd);
-        window.setTimeout(finish, 170);
-      });
-    }
-
-    async function commitInlineShell(nextDocument, destination, pushState) {
-      const panel = document.querySelector("[data-inline-panel]");
-      const list = panel?.querySelector("[data-inline-list]");
-      if (!panel || !list) return false;
-
-      const incomingPanel = !isHomeRoute(destination.pathname);
-      const panelAlreadyVisible = document.body.classList.contains("inline-content-active");
-      const crossingPanelBoundary = incomingPanel !== panelAlreadyVisible;
-
-      // Keep the panel mounted while moving between content sections. The
-      // cards can re-enter independently, while the View all link stays in
-      // place and simply updates its destination and label.
-      if (crossingPanelBoundary) {
-        await waitForPanelExit(panel);
-      }
-
-      if (crossingPanelBoundary && incomingPanel && !reducedMotion.matches) {
-        panel.dataset.motion = "entering";
-      }
-
-      if (!updateInlineShell(nextDocument, destination)) {
-        delete panel.dataset.motion;
-        return false;
-      }
-
-      document.title = nextDocument.title;
-      updateDescription(nextDocument);
-      updateNavigation(nextDocument);
-
-      if (pushState) {
-        window.history.pushState({}, "", landingHistoryUrl(destination));
-      }
-
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-      window.dispatchEvent(new CustomEvent("site-route-change"));
-
-      if (crossingPanelBoundary && incomingPanel && !reducedMotion.matches) {
-        // Commit the starting state before allowing the panel to settle.
-        panel.getBoundingClientRect();
-        requestAnimationFrame(() => delete panel.dataset.motion);
-        window.setTimeout(() => list.removeAttribute("data-motion"), 440);
-      } else {
-        delete panel.dataset.motion;
-      }
-
-      return true;
-    }
-
-    function updateMobileNavigation(pathname) {
-      navigationLinks.forEach((link) => {
-        const linkPath = new URL(link.href, window.location.href).pathname;
-        const current = isHomeRoute(pathname)
-          ? isHomeRoute(linkPath)
-          : linkPath === pathname;
-
+    function setCurrent(pathname) {
+      links.forEach((link) => {
+        const linkPath = new URL(link.href).pathname;
+        const current = isHomePath(pathname) ? isHomePath(linkPath) : linkPath === pathname;
         if (current) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
       });
-
-      syncNavigationIndicator();
-      requestAnimationFrame(() => syncNavigationIndicator());
+      syncIndicator();
+      requestAnimationFrame(syncIndicator);
     }
 
-    function initializeMobileSections() {
-      const sectionRoot = document.querySelector("[data-mobile-sections]");
-      if (!sectionRoot || !document.body.classList.contains("landing-page")) {
-        return Promise.resolve(false);
+    /* Document updates */
+
+    function importCards(sourceDocument, sourceUrl) {
+      return [...sourceDocument.querySelectorAll(".content-card")].map((source) => {
+        const card = document.importNode(source, true);
+        card.querySelectorAll("[href], [src]").forEach((element) => {
+          for (const attribute of ["href", "src"]) {
+            const value = element.getAttribute(attribute);
+            if (value && !value.startsWith("#")) {
+              element.setAttribute(attribute, new URL(value, sourceUrl).href);
+            }
+          }
+        });
+        card.querySelectorAll("img").forEach((image) => { image.loading = "eager"; });
+        return card;
+      });
+    }
+
+    function applyMetadata(nextDocument) {
+      document.title = nextDocument.title;
+      document.querySelector('meta[name="description"]').content = (
+        nextDocument.querySelector('meta[name="description"]')?.content || ""
+      );
+    }
+
+    function landingUrl(name) {
+      return name ? `/#${name}` : "/";
+    }
+
+    /* Wide About: cards render in the panel beside the biography. */
+
+    async function showInlineSection(name, nextDocument, { push }) {
+      const panel = document.querySelector("[data-inline-panel]");
+      const list = panel.querySelector("[data-inline-list]");
+      const title = nextDocument?.querySelector(".page-intro h1")?.textContent;
+      const cards = nextDocument ? importCards(nextDocument, sectionUrl(name)) : [];
+      const wasOpen = !panel.hidden;
+      const willOpen = Boolean(name && cards.length && title);
+      if (name && !willOpen) return false;
+
+      if (wasOpen && !REDUCED_MOTION.matches) {
+        panel.dataset.motion = "leaving";
+        await new Promise((resolve) => window.setTimeout(resolve, 140));
       }
 
-      const destinations = navigationLinks
-        .map((link) => new URL(link.href, window.location.href))
-        .filter((destination) => destination.origin === window.location.origin)
-        .filter((destination) => !isHomeRoute(destination.pathname));
+      if (willOpen) {
+        cards.forEach((card, index) => card.style.setProperty("--card-index", index));
+        panel.querySelector("[data-inline-title]").textContent = title;
+        list.replaceChildren(...cards);
+        const more = panel.querySelector("[data-inline-more]");
+        more.href = sectionUrl(name).pathname;
+        more.textContent = `View all ${title.toLowerCase()} ↗`;
+        applyMetadata(nextDocument);
+      } else {
+        list.replaceChildren();
+        document.title = "Šimon Šmída";
+      }
 
-      return Promise.all(destinations.map(async (destination) => ({
-        destination,
-        document: await fetchPage(destination)
-      }))).then((sections) => {
-        sections.forEach(({ destination, document: sourceDocument }) => {
-          const cards = importCards(sourceDocument, destination);
-          const sourceTitle = sourceDocument.querySelector(".page-intro h1");
-          if (!cards.length || !sourceTitle) return;
+      document.body.classList.toggle("inline-content-active", willOpen);
+      panel.hidden = !willOpen;
+      panel.dataset.motion = willOpen && !REDUCED_MOTION.matches ? "entering" : "";
+      if (willOpen) list.dataset.motion = REDUCED_MOTION.matches ? "" : "entering";
+      panel.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        delete panel.dataset.motion;
+        window.setTimeout(() => delete list.dataset.motion, 900);
+      });
 
-          const section = document.createElement("section");
-          section.className = "mobile-tab-section";
-          section.dataset.mobileRoute = destination.pathname;
-          section.dataset.mobileTitle = sourceTitle.textContent;
-          section.setAttribute("aria-labelledby", `mobile-${sourceTitle.textContent.toLowerCase()}-title`);
-
-          const inner = document.createElement("div");
-          inner.className = "mobile-tab-section-inner";
-
-          const heading = document.createElement("h2");
-          heading.id = `mobile-${sourceTitle.textContent.toLowerCase()}-title`;
-          heading.textContent = sourceTitle.textContent;
-          inner.append(heading);
-
-          const list = document.createElement("div");
-          list.className = "mobile-tab-section-list";
-          cards.forEach((card) => list.append(card));
-          inner.append(list);
-          section.append(inner);
-          sectionRoot.append(section);
-        });
-
-        const hero = document.querySelector(".hero[data-mobile-route]");
-        const observedSections = [hero, ...sectionRoot.querySelectorAll(".mobile-tab-section")]
-          .filter(Boolean);
-
-        if ("IntersectionObserver" in window) {
-          const observer = new IntersectionObserver((entries) => {
-            if (!window.matchMedia(COMPACT_LAYOUT_QUERY).matches) return;
-
-            const visible = entries
-              .filter((entry) => entry.isIntersecting)
-              .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
-            if (!visible) return;
-
-            const pathname = visible.target.dataset.mobileRoute;
-            const isHome = isHomeRoute(pathname);
-            document.body.classList.toggle("inline-content-active", !isHome);
-            updateMobileNavigation(pathname);
-          }, { threshold: [.55, .8] });
-
-          observedSections.forEach((section) => observer.observe(section));
-        }
-
-        return true;
-      }).catch(() => false);
+      setCurrent(name ? sectionUrl(name).pathname : "/");
+      if (push) window.history.pushState({}, "", landingUrl(name));
+      emit("site-layout-change");
+      return true;
     }
 
-    function commitPage(nextDocument, destination, pushState) {
+    /* Standalone section pages: swap the main element in place. */
+
+    function swapPage(nextDocument, url, { push }) {
       const nextMain = nextDocument.querySelector("main");
       const currentMain = document.querySelector("main");
       if (!nextMain || !currentMain) return false;
 
-      const importedMain = document.importNode(nextMain, true);
-      let pageSwapped = false;
-
-      function swapPage() {
-        if (pageSwapped) return;
-        pageSwapped = true;
-        document.body.className = nextDocument.body.className;
-        currentMain.replaceWith(importedMain);
-        syncPageChrome(nextDocument, destination);
-
-        document.title = nextDocument.title;
-        updateDescription(nextDocument);
-        updateNavigation(nextDocument);
-
-        if (pushState) {
-          window.history.pushState({}, "", destination.href);
-        }
-
-        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-        initializeFieldGraphics(document);
-        initializeCardLists(document);
-        window.dispatchEvent(new CustomEvent("site-route-change"));
-      }
-
-      function releaseRouteLock() {
-        document.body.removeAttribute("aria-busy");
-        delete document.body.dataset.routeLoading;
-      }
-
-      // Keep tab changes immediate; the persistent ASCII field continues
-      // animating independently behind the newly mounted content.
-      swapPage();
-      releaseRouteLock();
+      document.body.className = nextDocument.body.className;
+      currentMain.replaceWith(document.importNode(nextMain, true));
+      applyMetadata(nextDocument);
+      setCurrent(url.pathname);
+      if (push) window.history.pushState({}, "", url.href);
+      window.scrollTo({ top: 0, behavior: "auto" });
+      initializeCardLists(document);
+      if (isLanding()) mobileSectionsReady = buildMobileSections();
+      emit("site-layout-change");
       return true;
     }
 
-    async function loadPage(destination, { pushState = true } = {}) {
-      if (document.body.dataset.routeLoading === "true") return;
+    /* Compact About: every section is stacked below the biography. */
 
-      document.body.dataset.routeLoading = "true";
-      document.body.setAttribute("aria-busy", "true");
+    function buildMobileSections() {
+      const root = document.querySelector("[data-mobile-sections]");
+      if (!root) return Promise.resolve(false);
 
-      try {
-        const nextDocument = await fetchPage(destination);
-        const useInlineShell = document.body.classList.contains("landing-page")
-          && window.matchMedia(INLINE_LAYOUT_QUERY).matches;
-        const committed = useInlineShell
-          ? await commitInlineShell(nextDocument, destination, pushState)
-          : commitPage(nextDocument, destination, pushState);
+      return Promise.all(SECTIONS.map(async (name) => [name, await fetchPage(sectionUrl(name))]))
+        .then((sections) => {
+          sections.forEach(([name, sourceDocument]) => {
+            const title = sourceDocument.querySelector(".page-intro h1")?.textContent;
+            const cards = importCards(sourceDocument, sectionUrl(name));
+            if (!title || !cards.length) return;
 
-        if (!committed) {
-          window.location.assign(destination.href);
-        } else if (useInlineShell) {
-          document.body.removeAttribute("aria-busy");
-          delete document.body.dataset.routeLoading;
-        }
-      } catch {
-        window.location.assign(destination.href);
-      }
+            const section = document.createElement("section");
+            section.className = "mobile-tab-section";
+            section.dataset.route = sectionUrl(name).pathname;
+            section.setAttribute("aria-label", title);
+
+            const list = document.createElement("div");
+            list.className = "mobile-tab-section-list";
+            list.append(...cards);
+            section.append(list);
+            root.append(section);
+          });
+
+          const observed = [document.querySelector(".hero[data-route]"), ...root.children];
+          const observer = new IntersectionObserver((entries) => {
+            if (!COMPACT_LAYOUT.matches) return;
+            const visible = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+            if (!visible) return;
+            document.body.classList.toggle("inline-content-active", !isHomePath(visible.target.dataset.route));
+            setCurrent(visible.target.dataset.route);
+          }, { threshold: [.55, .8] });
+          observed.forEach((section) => observer.observe(section));
+
+          emit("site-layout-change");
+          return true;
+        })
+        .catch(() => false);
     }
 
-    function prefetch(link) {
-      const destination = new URL(link.href, window.location.href);
-      if (destination.origin !== window.location.origin) return;
-      if (destination.pathname === window.location.pathname) return;
-      fetchPage(destination).catch(() => {});
-    }
-
-    initializeNavigationIndicator();
-    window.addEventListener("resize", () => {
-      requestAnimationFrame(() => syncNavigationIndicator());
-    }, { passive: true });
-
-    const mobileSectionsReady = initializeMobileSections();
-
-    function scrollToMobileRoute(
-      destination,
-      { pushState = true, behavior = "smooth" } = {}
-    ) {
-      if (!window.matchMedia(COMPACT_LAYOUT_QUERY).matches) return false;
-
-      const hero = document.querySelector(".hero[data-mobile-route]");
-      const sections = [hero, ...document.querySelectorAll(".mobile-tab-section")]
-        .filter(Boolean);
-      const target = sections.find((section) => {
-        return isHomeRoute(destination.pathname)
-          ? isHomeRoute(section.dataset.mobileRoute)
-          : section.dataset.mobileRoute === destination.pathname;
-      });
+    function scrollToMobileSection(pathname, { push = true, behavior = "smooth" } = {}) {
+      const target = [document.querySelector(".hero[data-route]"), ...document.querySelectorAll(".mobile-tab-section")]
+        .find((section) => section && (
+          isHomePath(pathname) ? isHomePath(section.dataset.route) : section.dataset.route === pathname
+        ));
       if (!target) return false;
 
-      const isHome = isHomeRoute(destination.pathname);
-      document.body.classList.toggle("inline-content-active", !isHome);
-      updateMobileNavigation(destination.pathname);
-      if (pushState) {
-        window.history.pushState({}, "", landingHistoryUrl(destination));
-      }
+      document.body.classList.toggle("inline-content-active", !isHomePath(pathname));
+      setCurrent(pathname);
+      if (push) window.history.pushState({}, "", landingUrl(sectionOf(pathname)));
       target.scrollIntoView({ behavior, block: "start" });
       return true;
     }
 
-    // Keep the current section coherent when a window crosses the breakpoint.
-    const compactLayout = window.matchMedia(COMPACT_LAYOUT_QUERY);
-    compactLayout.addEventListener?.("change", () => {
-      const destination = inlineDestinationFromUrl(new URL(window.location.href));
-      if (!destination) return;
+    /* Routing */
 
-      if (compactLayout.matches) {
-        mobileSectionsReady.then(() => scrollToMobileRoute(destination, {
-          pushState: false,
-          behavior: "auto"
-        }));
-      } else {
-        loadPage(destination, { pushState: false });
+    let routing = false;
+
+    async function go(url, { push = true } = {}) {
+      if (routing) return;
+      routing = true;
+      const section = sectionOf(url.pathname) || sectionFromHash(url);
+      const home = !section;
+
+      try {
+        if (isLanding() && COMPACT_LAYOUT.matches) {
+          await mobileSectionsReady;
+          if (scrollToMobileSection(section ? sectionUrl(section).pathname : "/", { push })) return;
+        }
+
+        if (isLanding() && INLINE_LAYOUT.matches) {
+          const nextDocument = section ? await fetchPage(sectionUrl(section)) : null;
+          if (await showInlineSection(section, nextDocument, { push })) return;
+        }
+
+        const target = home ? new URL("/", window.location.origin) : sectionUrl(section);
+        const nextDocument = await fetchPage(target);
+        if (!swapPage(nextDocument, target, { push })) window.location.assign(target.href);
+      } catch {
+        window.location.assign(url.href);
+      } finally {
+        routing = false;
       }
-    });
+    }
 
-    // If an inline desktop route is already active when the window narrows,
-    // promote it to the matching standalone page before the layout gets tight.
-    const inlineLayout = window.matchMedia(INLINE_LAYOUT_QUERY);
-    inlineLayout.addEventListener?.("change", () => {
-      if (!document.body.classList.contains("landing-page")) return;
-      const destination = inlineDestinationFromUrl(new URL(window.location.href));
-      if (destination) loadPage(destination, { pushState: false });
-    });
+    function prefetch(link) {
+      const url = new URL(link.href);
+      if (url.pathname !== window.location.pathname) fetchPage(url).catch(() => {});
+    }
 
-    navigationLinks.forEach((link) => {
+    /* Wiring */
+
+    indicator.className = "site-nav-indicator";
+    indicator.setAttribute("aria-hidden", "true");
+    nav.append(indicator);
+    nav.classList.add("has-motion-indicator");
+    requestAnimationFrame(syncIndicator);
+    window.addEventListener("resize", () => requestAnimationFrame(syncIndicator), { passive: true });
+
+    links.forEach((link) => {
       link.addEventListener("pointerenter", () => prefetch(link), { once: true });
-      link.addEventListener("focus", () => prefetch(link), { once: true });
-      link.addEventListener("touchstart", () => prefetch(link), {
-        once: true,
-        passive: true
-      });
-
       link.addEventListener("click", (event) => {
-        const isModifiedClick = event.metaKey
-          || event.ctrlKey
-          || event.shiftKey
-          || event.altKey;
-
-        if (
-          event.defaultPrevented
-          || event.button !== 0
-          || isModifiedClick
-          || link.getAttribute("aria-current") === "page"
-        ) {
-          return;
-        }
-
-        const destination = new URL(link.href, window.location.href);
-        if (destination.origin !== window.location.origin) return;
-
-        if (
-          document.body.classList.contains("landing-page")
-          && window.matchMedia(COMPACT_LAYOUT_QUERY).matches
-        ) {
+        if (event.defaultPrevented || isModifiedClick(event)) return;
+        if (link.getAttribute("aria-current") === "page") {
           event.preventDefault();
-          mobileSectionsReady.then(() => {
-            if (!scrollToMobileRoute(destination)) loadPage(destination);
-          });
           return;
         }
-
         event.preventDefault();
-        loadPage(destination);
+        go(new URL(link.href));
       });
-
-      // The pages are tiny; warming them here makes every tab switch immediate.
       prefetch(link);
     });
 
-    const initialInlineDestination = inlineDestinationFromUrl(
-      new URL(window.location.href)
-    );
-    if (initialInlineDestination) {
-      mobileSectionsReady.then(() => {
-        if (window.matchMedia(COMPACT_LAYOUT_QUERY).matches) {
-          scrollToMobileRoute(initialInlineDestination, {
-            pushState: false,
-            behavior: "auto"
-          });
-        } else {
-          loadPage(initialInlineDestination, { pushState: false });
-        }
-      });
+    window.addEventListener("popstate", () => go(new URL(window.location.href), { push: false }));
+
+    /* When the window crosses a layout breakpoint, present the current
+       section in the form that layout uses. */
+    const relayout = () => {
+      const url = new URL(window.location.href);
+      const section = sectionOf(url.pathname) || sectionFromHash(url);
+      if (!section) return;
+      if (isLanding() || COMPACT_LAYOUT.matches) go(url, { push: false });
+    };
+    COMPACT_LAYOUT.addEventListener("change", relayout);
+    INLINE_LAYOUT.addEventListener("change", relayout);
+
+    if (isLanding()) {
+      mobileSectionsReady = buildMobileSections();
+      const initial = sectionFromHash(new URL(window.location.href));
+      if (initial) mobileSectionsReady.then(() => go(new URL(window.location.href), { push: false }));
     }
-
-    window.addEventListener("popstate", () => {
-      const destination = new URL(window.location.href);
-      if (document.body.classList.contains("landing-page")) {
-        const inlineDestination = inlineDestinationFromUrl(destination);
-        if (inlineDestination) {
-          if (window.matchMedia(COMPACT_LAYOUT_QUERY).matches) {
-            mobileSectionsReady.then(() => scrollToMobileRoute(
-              inlineDestination,
-              { pushState: false }
-            ));
-          } else {
-            loadPage(inlineDestination, { pushState: false });
-          }
-          return;
-        }
-
-        if (scrollToMobileRoute(destination, { pushState: false })) return;
-      }
-      loadPage(destination, { pushState: false });
-    });
   }
 
-  /* Startup */
+  /* ---- Startup ----------------------------------------------------------- */
 
-  if ("scrollRestoration" in window.history) {
-    window.history.scrollRestoration = "manual";
-  }
+  if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
 
   initializeTheme();
   initializeFieldPicker();
-  initializeFieldGraphics();
   initializeCardLists();
-  initializeSharedArticleTransitions();
-  initializeClientNavigation();
+  initializeArticleTransitions();
+  if (document.querySelector("[data-site-nav]") && !document.body.classList.contains("article-page")) {
+    initializeNavigation();
+  }
 })();

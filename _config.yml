@@ -2,6 +2,9 @@ title: Šimon Šmída
 description: Research, writing, and interactive projects about deep learning, interpretability, and medical AI.
 url: https://simonsmida.github.io
 
+# Bump to invalidate cached CSS, scripts, and icons after a deploy.
+version: 72
+
 author:
   name: Šimon Šmída
 
@@ -9,16 +12,17 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
 
-permalink: /notes/:title/
-
 defaults:
   - scope:
       path: ""
       type: posts
     values:
       layout: article
+      permalink: /notes/:title/
 
 exclude:
   - archive
+  - experiments
+  - vendor
   - _templates
   - README.md

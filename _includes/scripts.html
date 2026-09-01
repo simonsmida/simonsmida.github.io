@@ -1,0 +1,7 @@
+{% if include.field %}
+<script src="/assets/js/fields.js?v={{ site.version }}" defer></script>
+{% endif %}
+<script src="/assets/js/site.js?v={{ site.version }}" defer></script>
+{% if include.field %}
+<script src="/assets/js/field.js?v={{ site.version }}" defer></script>
+{% endif %}
