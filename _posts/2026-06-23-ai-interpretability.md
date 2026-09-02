@@ -9,7 +9,7 @@ thumbnail: /assets/notes/2026-06-23-ai-interpretability/banner-map.png
 thumbnail_alt: "Illustrated map of questions and methods in AI interpretability"
 categories: [notes]
 card_excerpt: "AI interpretability is not one problem, but a family of questions about neural networks and their behavior."
-tldr: "What does it mean to 'understand' a neural network? Interpretability is a young and fragmented field, with few agreed-upon definitions. Different methods answer different questions, from what information a model represents to why it made a prediction or how it computes it internally. Interpretability is not one problem, but a family of questions we have about the model and its behavior."
+tldr: "What does it mean to 'understand' a neural network? Interpretability is a young and fragmented field, with few agreed-upon definitions. **Different methods answer different questions**, from what information a model represents to why it made a prediction or how it computes it internally. **Interpretability is not one problem, but a family of questions** we have about the model and its behavior."
 header:
   teaser: /assets/notes/2026-06-23-ai-interpretability/ai-interp-hero.png
 published: true
@@ -17,39 +17,36 @@ interactive_map: true
 map_src: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactive.svg
 ---
 
-**Note:** Inspiration for this article was based on the recent _[Not All Interpretability is Mechanistic](https://x.com/giangnguyen2412/status/2068743875527844200)_ blog post, which outlined the common misconception that everything related to doing "AI interpretability" automatically implies _mechanistic_ interpretability. Mechinterp is just a one branch of a larger tree, or one region of the interpretability map (above).
+**Note:** Inspiration for this article was based on the _["Not All Interpretability is Mechanistic"](https://x.com/giangnguyen2412/status/2068743875527844200)_ blog post. A common misconception is that everything related to AI interpretability automatically implies _mechanistic_ interpretability. Mechinterp is just one of the multiple existing approaches, each answering different questions.
 
 ---
 
-## What is there to understand about a neural network? and why is it a "black box"?
+## Why we do not understand neural networks?
 
+Neural networks are often described as **black boxes**, but nothing inside them is actually hidden from us. This may seem strange: we build them ourselves, define their architecture and learning objective and can inspect every parameter and internal representation. Why, then, do even expert AI researchers say that we do not understand how they work?
 
-Neural networks are often described as **black boxes**. Not because we do not understand what they are made of; people design the architecture, individual components, even the training procedure and objective. We can inspect every learnable parameter, every activation at any layer of interest.
+The problem is that **having access to every detail does not mean understanding the system**. We design *how* neural networks learn, not *what* they learn. Training a neural network is therefore closer to *growing* something than programming it. We guide the process, but the internal solution emerges through training. What we end up with are millions or billions of learned parameters that produce useful behavior, without a description of the strategy they implement.
 
-The problem is that looking at large amounts of numbers does not tell us _what the network is doing_ and for _what reasons_. It is said that neural networks as a system are not actually _designed_, but rather _grown_. The goal of a neural net is to learn to approximate a function, which is represented by an algorithm which is _unknown_ to us. We can just observe its behavior.
-
-Interpretability and explainability (often used interchangeably) emerged as an attempt to answer what is going on in these models, how they make decisions, and when they can break and why. There is not a single answer to these questions, different subfields offer different perspectives.
+Interpretability and explainability (often used interchangeably) approach this mystery from multiple perspectives. We can ask what a model has learned, how it makes decisions, or when and why it fails.
 
 ---
 
 <section id="map-question0" data-map-section="map-0" markdown="1">
 
-### Question 0: What system are we actually studying?
+### (0) Before the map: **what produced this model?**
 
-Before interpretation, we need to understand the model itself.
+Not everything about a neural network is a mystery. We chose much of what produced the final model:
 
-- What data was it trained on?
-- What objective was optimized?
-- What architecture was used?
-- What assumptions are built into the design?
+- the **data** it learned from
+- the **objective** it was optimized for
+- the **architecture** through which it processes information
+- the **training procedure**, including preprocessing and postprocessing
 
-Many apparent interpretability findings are consequences of these choices. The minimal first step is to ask:
+These choices shape both the model and also its interpretations. A classic demonstration is called the [Clever Hans effect](https://www.gutenberg.org/files/33936/33936-h/33936-h.htm): a model produces the right answer, but for the wrong (not intended) reasons. An animal classifier, may learn that "snow means wolf" if wolves appear more frequently on snowy backgrounds in its training data ([Ribeiro et al., 2016](https://arxiv.org/abs/1602.04938)).
 
-> "What kind of system produced these representations in the first place?"
+![Clever Hans effect illustrated with a husky](/assets/notes/2026-06-23-ai-interpretability/clever-hans.png)
 
-A model trained on biased data may learn biased shortcuts.  
-A model trained with a different objective may learn different internal structure.
-
+Similar findings are often closely tied not just to the data, but also to the objective, architecture and training procedure. They all provide important context for understanding what we can find inside.
 
 </section>
 
