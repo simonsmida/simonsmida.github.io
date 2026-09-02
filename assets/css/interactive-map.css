@@ -87,7 +87,7 @@
 }
 
 [data-map-section] {
-  scroll-margin-top: 5rem;
+  scroll-margin-top: calc(var(--header-height, 88px) + .875rem);
 }
 
 .interactive-map__todo {

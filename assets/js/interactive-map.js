@@ -73,9 +73,19 @@
   }
 
   function scrollToSection(section) {
-    section.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
+    const heading = section.querySelector("h2, h3, h4, h5, h6") || section;
+    const header = document.querySelector(".site-header");
+    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    const breathingRoom = 14;
+    const top = Math.max(
+      0,
+      window.scrollY + heading.getBoundingClientRect().top - headerHeight - breathingRoom
+    );
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    window.scrollTo({
+      top,
+      behavior: reducedMotion ? "auto" : "smooth"
     });
 
     if (section.id) {
