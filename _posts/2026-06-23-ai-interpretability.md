@@ -9,6 +9,7 @@ thumbnail: /assets/notes/2026-06-23-ai-interpretability/banner-map.png
 thumbnail_alt: "Illustrated map of questions and methods in AI interpretability"
 categories: [notes]
 excerpt: "Interpretability is not a single problem. Different methods answer fundamentally different questions about neural networks."
+card_excerpt: "A guide to the different questions answered by attribution, probing, concept-based, prototype, counterfactual, and mechanistic methods."
 tldr: "Most interpretability methods are trying to answer different questions. Attribution explains predictions, probes study representations, concept methods connect models to human concepts, and mechanistic interpretability attempts to recover the underlying computation."
 header:
   teaser: /assets/notes/2026-06-23-ai-interpretability/ai-interp-hero.png
@@ -19,7 +20,7 @@ map_src: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactiv
 
 ## TL;DR
 
-Although it seems that the virtual holy grail of the field of AI interpretability revolves around "understanding the black box" of neural networks, it is **not a single problem**. It is a collection of methods answering different questions about neural networks.
+What does it mean when we say that AI interpretability is about "understanding the black box" of neural networks? Interpretability is a fuzzy and underspecified, lacking aggreed upon definitions and is not a single problem. It is a collection of methods answering different questions about neural networks.
 
 ---
 

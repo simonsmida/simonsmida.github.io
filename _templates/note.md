@@ -5,6 +5,8 @@ layout: article
 read_time: 6
 categories: [notes]
 excerpt: "One sentence summary shown in metadata and previews."
+card_excerpt: "Short sentence shown only on the Writing card."
+tldr: "The main takeaway explained in a little more detail inside the article."
 thumbnail: /assets/notes/YYYY-MM-DD-short-title/thumbnail.png
 thumbnail_alt: "Short description of the card image"
 # thumbnail_width: 1200
