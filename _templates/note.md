@@ -5,6 +5,10 @@ layout: article
 read_time: 6
 categories: [notes]
 excerpt: "One sentence summary shown in metadata and previews."
+thumbnail: /assets/notes/YYYY-MM-DD-short-title/thumbnail.png
+thumbnail_alt: "Short description of the card image"
+# thumbnail_width: 1200
+# thumbnail_height: 800
 # header:
 #   teaser: /assets/notes/YYYY-MM-DD-short-title/your-image.jpg
 published: false

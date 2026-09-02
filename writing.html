@@ -15,45 +15,13 @@ description: Writing by Šimon Šmída about machine learning, interpretability,
       <p>Notes and essays on machine learning, interpretability, and ideas worth understanding clearly.</p>
     </header>
 
-    <!-- Copy a content-card to add another article. -->
+    <!-- Add an article by creating a post in _posts; its thumbnail lives in the front matter. -->
     <div class="content-list-region">
       <section class="card-grid" id="writing-list" data-card-list data-item-label="writing" aria-label="Selected writing">
-        <article class="content-card" id="concept-based-interpretability">
-          <a class="card-media" href="/notes/concept-based-interpretability-in-medical-ai/" aria-label="Read Concept-Based Interpretability in Medical AI" data-view-transition-name="article-concept-based-interpretability-in-medical-ai">
-            <img src="/assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/cxai.png" alt="Concept-based explainable AI diagram for medical imaging" width="1024" height="1024">
-          </a>
-          <div class="card-body">
-            <div class="card-meta"><time datetime="2026-01-27">Jan 27, 2026</time></div>
-            <h2><a href="/notes/concept-based-interpretability-in-medical-ai/">Concept-Based Interpretability in Medical AI</a></h2>
-            <p>A structured guide to concept-based interpretability methods, their representations, evaluation, and role in medical AI.</p>
-          </div>
-        </article>
-
-        <article class="content-card" id="model-scientist">
-          <a class="card-media" href="/notes/model-scientist/" aria-label="Read The Model as Scientist" data-view-transition-name="article-model-scientist">
-            <img src="/assets/notes/2026-01-30-model-scientist/ai-scientist-thumb.png" alt="Illustration of an AI system helping reveal a biological signal" width="1673" height="892" loading="lazy">
-          </a>
-          <div class="card-body">
-            <div class="card-meta"><time datetime="2026-01-30">Jan 30, 2026</time></div>
-            <h2><a href="/notes/model-scientist/">The Model as Scientist</a></h2>
-            <p>How interpretability helped reveal a DNA fragment-length signal for Alzheimer’s detection—and turn a model into a source of scientific hypotheses.</p>
-          </div>
-        </article>
-
-        {% assign interpretability_draft = site.posts | where: "slug", "ai-interpretability" | first %}
-        {% if interpretability_draft %}
-        <!-- Rendered from the post itself, so the card disappears if the post is unpublished. -->
-        <article class="content-card" id="interpretability-map">
-          <a class="card-media" href="{{ interpretability_draft.url | relative_url }}" aria-label="Read A Map of AI Interpretability Research" data-view-transition-name="article-ai-interpretability">
-            <img src="/assets/notes/2026-06-23-ai-interpretability/banner-map.png" alt="Illustrated map of questions and methods in AI interpretability" width="1983" height="793" loading="lazy">
-          </a>
-          <div class="card-body">
-            <div class="card-meta"><time datetime="{{ interpretability_draft.date | date: '%Y-%m-%d' }}">{{ interpretability_draft.date | date: "%b %-d, %Y" }}</time><span>Draft</span></div>
-            <h2><a href="{{ interpretability_draft.url | relative_url }}">A Map of AI Interpretability Research</a></h2>
-            <p>{{ interpretability_draft.excerpt }}</p>
-          </div>
-        </article>
-        {% endif %}
+        {% assign writing_posts = site.posts | sort: "date" %}
+        {% for post in writing_posts %}
+          {% include post-card.html post=post %}
+        {% endfor %}
       </section>
 
       <button class="view-more" type="button" data-view-more aria-controls="writing-list" aria-expanded="false" hidden>

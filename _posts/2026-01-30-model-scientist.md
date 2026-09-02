@@ -6,6 +6,10 @@ read_time: 7
 hero_art: /assets/notes/2026-01-30-model-scientist/model-as-scientist-hero.png?v=1
 hero_art_type: image
 hero_alt: "A dense biological signal resolving into a layered scientific representation"
+thumbnail: /assets/notes/2026-01-30-model-scientist/ai-scientist-thumb.png
+thumbnail_alt: "Illustration of an AI system helping reveal a biological signal"
+thumbnail_width: 1673
+thumbnail_height: 892
 categories: [notes]
 excerpt: "By opening black-box bio foundational model, researchers discovered that AI relies on DNA fragment lengths to detect Alzheimer's, a signal that outperformed traditional biomarkers (methylation) and proved AI can teach us new biology."
 header:

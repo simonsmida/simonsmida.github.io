@@ -34,9 +34,13 @@ lists it automatically.
 ## Add an article
 
 1. Copy `_templates/note.md` to `_posts/YYYY-MM-DD-article-slug.md`.
-2. Update its title, date, read time, excerpt, and content.
+2. Update its title, date, read time, excerpt, thumbnail, and content.
 3. Put local visuals in `assets/notes/YYYY-MM-DD-article-slug/`.
-4. Add one matching card to `writing.html`.
+4. Preview the generated writing card locally; writing posts are listed automatically.
+
+Writing cards are generated from the posts automatically. Set `thumbnail`,
+`thumbnail_alt`, and optional `thumbnail_width`/`thumbnail_height` in the
+post front matter; no card markup is needed for a writing post.
 
 ## Add research or a project
 

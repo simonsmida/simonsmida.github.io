@@ -1,0 +1,21 @@
+{% assign card_title = include.post.title %}
+{% assign card_alt = include.post.thumbnail_alt | default: include.post.hero_alt | default: card_title %}
+{% assign card_excerpt = include.post.excerpt | strip_html | strip_newlines %}
+<article class="content-card" id="{{ include.post.slug }}">
+  <a class="card-media" href="{{ include.post.url | relative_url }}" aria-label="Read {{ card_title }}" data-view-transition-name="article-{{ include.post.slug }}">
+    <img
+      src="{{ include.post.thumbnail | default: include.post.hero_art }}"
+      alt="{{ card_alt }}"
+      {% if include.post.thumbnail_width %}width="{{ include.post.thumbnail_width }}"{% endif %}
+      {% if include.post.thumbnail_height %}height="{{ include.post.thumbnail_height }}"{% endif %}
+      loading="lazy">
+  </a>
+  <div class="card-body">
+    <div class="card-meta">
+      <time datetime="{{ include.post.date | date: '%Y-%m-%d' }}">{{ include.post.date | date: "%b %-d, %Y" }}</time>
+      {% if include.post.published == false %}<span>Draft</span>{% endif %}
+    </div>
+    <h2><a href="{{ include.post.url | relative_url }}">{{ card_title }}</a></h2>
+    <p>{{ card_excerpt }}</p>
+  </div>
+</article>
