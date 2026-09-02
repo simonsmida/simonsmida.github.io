@@ -5,7 +5,7 @@ layout: article
 read_time: 6
 categories: [notes]
 card_excerpt: "Short sentence shown only on the Writing card."
-tldr: "The article’s main takeaway, shown beneath the title and used in metadata."
+tldr: "The article’s main takeaway, shown beneath the title and used in metadata. Use **bold** or _italic_ Markdown when helpful."
 thumbnail: /assets/notes/YYYY-MM-DD-short-title/thumbnail.png
 thumbnail_alt: "Short description of the card image"
 # thumbnail_width: 1200

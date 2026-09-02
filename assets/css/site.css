@@ -986,6 +986,10 @@ footer {
   line-height: 1.55;
 }
 
+.article-lede p {
+  margin: 0;
+}
+
 .article-rule {
   width: min(100%, 420px);
   display: flex;

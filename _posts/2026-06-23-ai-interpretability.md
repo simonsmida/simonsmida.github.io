@@ -8,8 +8,8 @@ hero_alt: "Illustrated map of questions and methods in AI interpretability"
 thumbnail: /assets/notes/2026-06-23-ai-interpretability/banner-map.png
 thumbnail_alt: "Illustrated map of questions and methods in AI interpretability"
 categories: [notes]
-card_excerpt: "A guide to the different questions answered by attribution, probing, concept-based, prototype, counterfactual, and mechanistic methods."
-tldr: "Most interpretability methods are trying to answer different questions. Attribution explains predictions, probes study representations, concept methods connect models to human concepts, and mechanistic interpretability attempts to recover the underlying computation."
+card_excerpt: "AI interpretability is not one problem, but a family of questions about neural networks and their behavior."
+tldr: "What does it mean to 'understand' a neural network? Interpretability is a young and fragmented field, with few agreed-upon definitions. Different methods answer different questions, from what information a model represents to why it made a prediction or how it computes it internally. Interpretability is not one problem, but a family of questions we have about the model and its behavior."
 header:
   teaser: /assets/notes/2026-06-23-ai-interpretability/ai-interp-hero.png
 published: true

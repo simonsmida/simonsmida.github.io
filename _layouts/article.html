@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en" data-theme="slate-blue">
 <head>
-  {% assign summary = page.tldr | default: page.excerpt | strip_html | strip_newlines %}
+  {% assign summary_source = page.tldr | default: page.excerpt %}
+  {% assign summary = summary_source | strip_html | strip_newlines %}
   {% include head.html title=page.title description=summary %}
   <meta property="og:type" content="article">
   <meta property="og:title" content="{{ page.title }}">
@@ -40,7 +41,7 @@
         <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%b %-d, %Y" }}</time>
         {% if page.read_time %}<span aria-hidden="true">·</span><span>{{ page.read_time }} min read</span>{% endif %}
       </p>
-      <p class="article-lede">{{ summary }}</p>
+      <div class="article-lede">{{ summary_source | markdownify }}</div>
       <div class="article-rule" aria-hidden="true">
         <svg class="atom-mark" viewBox="0 0 32 32" focusable="false">
           <circle cx="16" cy="16" r="2.2" fill="currentColor"/>
