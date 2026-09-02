@@ -1108,6 +1108,9 @@ footer {
 .article-content li {
   font-size: 18px;
   line-height: 1.72;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
 }
 
 .article-content ul,
