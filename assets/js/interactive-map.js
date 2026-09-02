@@ -98,6 +98,7 @@
     region.setAttribute("role", "link");
     region.setAttribute("tabindex", "0");
     region.setAttribute("aria-label", "Jump to " + label);
+    region.setAttribute("title", "Jump to " + label);
 
     region.addEventListener("click", function (event) {
       event.preventDefault();
@@ -215,4 +216,3 @@
     document.querySelectorAll("[data-interactive-map]").forEach(hydrateMap);
   });
 })();
-

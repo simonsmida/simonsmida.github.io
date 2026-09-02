@@ -20,6 +20,7 @@
 .interactive-map svg [data-map-region],
 .interactive-map svg [data-map-region] > * {
   cursor: pointer;
+  outline: none;
 }
 
 .interactive-map svg path[data-map-region],
@@ -37,6 +38,9 @@
   transform-box: fill-box;
   transform-origin: center;
   transition:
+    fill 180ms ease,
+    stroke 180ms ease,
+    opacity 180ms ease,
     filter 160ms ease,
     transform 160ms ease;
 }
@@ -65,9 +69,12 @@
 .interactive-map svg [data-map-region]:focus-visible > polygon,
 .interactive-map svg [data-map-region]:hover > polyline,
 .interactive-map svg [data-map-region]:focus-visible > polyline {
-  animation: interactive-map-wiggle 900ms ease-in-out infinite;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.16));
-  transform: scale(1.05);
+  fill: var(--accent, #607e92) !important;
+  stroke: var(--accent, #607e92) !important;
+  stroke-width: 1.5 !important;
+  opacity: .24 !important;
+  filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--accent, #607e92) 35%, transparent));
+  transform: scale(1.012);
 }
 
 .interactive-map svg [data-map-region]:focus-visible {
@@ -96,19 +103,6 @@
   margin-top: 0.75rem;
 }
 
-@keyframes interactive-map-wiggle {
-  0%,
-  100% {
-    transform: scale(1.05) rotate(0deg);
-  }
-  25% {
-    transform: scale(1.05) rotate(0.4deg);
-  }
-  75% {
-    transform: scale(1.05) rotate(-0.4deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .interactive-map svg [data-map-region],
   .interactive-map svg [data-map-region] > * {
@@ -119,7 +113,6 @@
   .interactive-map svg [data-map-region]:focus-visible,
   .interactive-map svg [data-map-region]:hover > * ,
   .interactive-map svg [data-map-region]:focus-visible > * {
-    animation: none;
+    transition: none;
   }
 }
-

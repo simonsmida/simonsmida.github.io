@@ -1016,7 +1016,7 @@ footer {
 }
 
 .article-hero-art {
-  width: min(100%, 760px);
+  width: min(100%, 860px);
   margin: 0 auto clamp(32px, 5vw, 56px);
   color: var(--muted);
 }
@@ -1046,7 +1046,7 @@ footer {
   display: block;
   width: 100%;
   height: auto;
-  max-height: min(34svh, 360px);
+  max-height: min(40svh, 410px);
 }
 
 :root[data-theme="midnight-navy"] .article-hero-art img {
