@@ -2,13 +2,11 @@
 title: "A Map of AI Interpretability Research"
 date: 2026-06-23
 read_time: 12
-hero_art: /assets/notes/2026-06-23-ai-interpretability/ai-interp-hero.png
-hero_art_type: image
+hero_art: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactive.svg
+hero_art_type: interactive
 hero_alt: "Illustrated map of questions and methods in AI interpretability"
 thumbnail: /assets/notes/2026-06-23-ai-interpretability/banner-map.png
 thumbnail_alt: "Illustrated map of questions and methods in AI interpretability"
-thumbnail_width: 1983
-thumbnail_height: 793
 categories: [notes]
 excerpt: "Interpretability is not a single problem. Different methods answer fundamentally different questions about neural networks."
 tldr: "Most interpretability methods are trying to answer different questions. Attribution explains predictions, probes study representations, concept methods connect models to human concepts, and mechanistic interpretability attempts to recover the underlying computation."
@@ -16,18 +14,8 @@ header:
   teaser: /assets/notes/2026-06-23-ai-interpretability/ai-interp-hero.png
 published: true
 interactive_map: true
+map_src: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactive.svg
 ---
-
-<div
-  class="interactive-map"
-  data-interactive-map
-  data-map-src="{{ '/assets/notes/2026-06-23-ai-interpretability/banner-map.svg' | relative_url }}"
-  data-map-ignore="legend"
-  aria-label="Interactive map of AI interpretability research">
-  <p class="interactive-map__fallback">
-    <a href="{{ '/assets/notes/2026-06-23-ai-interpretability/banner-map.svg' | relative_url }}">Open the interpretability map</a>
-  </p>
-</div>
 
 ## TL;DR
 
@@ -50,7 +38,7 @@ Interpretability and explainability (often used interchangeably) emerged as an a
 
 ---
 
-<section id="map-question0" data-map-section="question0" markdown="1">
+<section id="map-question0" data-map-section="map-0" markdown="1">
 
 ### Question 0: What system are we actually studying?
 
@@ -71,7 +59,7 @@ A model trained with a different objective may learn different internal structur
 
 </section>
 
-<section id="map-attribution" data-map-section="attribution" markdown="1">
+<section id="map-attribution" data-map-section="map-1" markdown="1">
 
 ### Question 1: Which parts of the input are assigned credit?
 
@@ -99,7 +87,7 @@ So attribution is useful, but dangerous when treated as proof.
 
 </section>
 
-<section id="map-probing" data-map-section="probing" markdown="1">
+<section id="map-probing" data-map-section="map-2" markdown="1">
 
 ### Question 2: What information is present inside the representations?
 
@@ -130,7 +118,7 @@ It mainly asks:
 
 </section>
 
-<section id="map-concept-based" data-map-section="concept-based" markdown="1">
+<section id="map-concept-based" data-map-section="map-3" markdown="1">
 
 ### Question 3: Can we explain the model using human concepts?
 
@@ -164,7 +152,7 @@ The key question is:
 
 </section>
 
-<section id="map-prototypes" data-map-section="prototypes" markdown="1">
+<section id="map-prototypes" data-map-section="map-4" markdown="1">
 
 ### Question 4: Which examples does the model compare this to?
 
@@ -192,7 +180,7 @@ The central question is:
 
 </section>
 
-<section id="map-counterfactuals" data-map-section="counterfactuals" markdown="1">
+<section id="map-counterfactuals" data-map-section="map-5" markdown="1">
 
 ### Question 5: What would need to change for the output to change?
 
@@ -222,7 +210,7 @@ The central question is:
 
 </section>
 
-<section id="map-mechinterp" data-map-section="mechinterp" markdown="1">
+<section id="map-mechinterp" data-map-section="map-6" markdown="1">
 
 ### Question 6: How does the model actually compute?
 
