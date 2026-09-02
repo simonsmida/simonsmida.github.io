@@ -1,6 +1,6 @@
 {% assign card_title = include.post.title %}
 {% assign card_alt = include.post.thumbnail_alt | default: include.post.hero_alt | default: card_title %}
-{% assign card_excerpt = include.post.card_excerpt | default: include.post.excerpt | strip_html | strip_newlines %}
+{% assign card_excerpt = include.post.card_excerpt | default: include.post.tldr | default: include.post.excerpt | strip_html | strip_newlines %}
 <article class="content-card" id="{{ include.post.slug }}">
   <a class="card-media" href="{{ include.post.url | relative_url }}" aria-label="Read {{ card_title }}" data-view-transition-name="article-{{ include.post.slug }}">
     <img

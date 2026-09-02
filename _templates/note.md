@@ -4,9 +4,8 @@ date: YYYY-MM-DD
 layout: article
 read_time: 6
 categories: [notes]
-excerpt: "One sentence summary shown in metadata and previews."
 card_excerpt: "Short sentence shown only on the Writing card."
-tldr: "The main takeaway explained in a little more detail inside the article."
+tldr: "The article’s main takeaway, shown beneath the title and used in metadata."
 thumbnail: /assets/notes/YYYY-MM-DD-short-title/thumbnail.png
 thumbnail_alt: "Short description of the card image"
 # thumbnail_width: 1200
@@ -20,7 +19,7 @@ published: false
 Use this file as a starting point:
 
 1. Copy it to `_posts/YYYY-MM-DD-short-title.md`.
-2. Replace the title, date, read time, and excerpt.
+2. Replace the title, date, read time, card excerpt, and TL;DR.
 3. Keep `published: false` while drafting.
 4. Remove `published: false` or set it to true when the note is ready.
 5. Put local note images in `assets/notes/YYYY-MM-DD-short-title/` and reference them with that full path.

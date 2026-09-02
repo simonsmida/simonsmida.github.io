@@ -8,7 +8,6 @@ hero_alt: "Illustrated map of questions and methods in AI interpretability"
 thumbnail: /assets/notes/2026-06-23-ai-interpretability/banner-map.png
 thumbnail_alt: "Illustrated map of questions and methods in AI interpretability"
 categories: [notes]
-excerpt: "Interpretability is not a single problem. Different methods answer fundamentally different questions about neural networks."
 card_excerpt: "A guide to the different questions answered by attribution, probing, concept-based, prototype, counterfactual, and mechanistic methods."
 tldr: "Most interpretability methods are trying to answer different questions. Attribution explains predictions, probes study representations, concept methods connect models to human concepts, and mechanistic interpretability attempts to recover the underlying computation."
 header:
@@ -16,12 +15,6 @@ header:
 published: true
 interactive_map: true
 map_src: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactive.svg
----
-
-## TL;DR
-
-What does it mean when we say that AI interpretability is about "understanding the black box" of neural networks? Interpretability is a fuzzy and underspecified, lacking aggreed upon definitions and is not a single problem. It is a collection of methods answering different questions about neural networks.
-
 ---
 
 **Note:** Inspiration for this article was based on the recent _[Not All Interpretability is Mechanistic](https://x.com/giangnguyen2412/status/2068743875527844200)_ blog post, which outlined the common misconception that everything related to doing "AI interpretability" automatically implies _mechanistic_ interpretability. Mechinterp is just a one branch of a larger tree, or one region of the interpretability map (above).

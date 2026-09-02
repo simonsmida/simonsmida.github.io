@@ -11,7 +11,6 @@ thumbnail_alt: "Concept-based explainable AI diagram for medical imaging"
 thumbnail_width: 1024
 thumbnail_height: 1024
 categories: [notes]
-excerpt: "A structured outline for a comprehensive survey on concept-based interpretability methods in medical AI."
 card_excerpt: "A structured guide to concept-based interpretability methods, their representations, evaluation, and role in medical AI."
 header:
   teaser: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/concept-based-interpretability-hero.png

@@ -34,17 +34,16 @@ lists it automatically.
 ## Add an article
 
 1. Copy `_templates/note.md` to `_posts/YYYY-MM-DD-article-slug.md`.
-2. Update its title, date, read time, excerpt, card excerpt, thumbnail, and content.
+2. Update its title, date, read time, TL;DR, card excerpt, thumbnail, and content.
 3. Put local visuals in `assets/notes/YYYY-MM-DD-article-slug/`.
 4. Preview the generated writing card locally; writing posts are listed automatically.
 
 Writing cards are generated from the posts automatically. Set `thumbnail`,
 `thumbnail_alt`, optional `thumbnail_width`/`thumbnail_height`, and
 `card_excerpt` in the post front matter; no card markup is needed for a writing
-post. `excerpt` is used for the article lede and metadata, `card_excerpt` is
-used only on the Writing card, and `tldr` is the longer article takeaway. The
-article body may also include a visible `## TL;DR` section when you want it in
-the reading flow.
+post. `tldr` is the canonical article summary shown beneath the title and used
+for metadata/social descriptions. `card_excerpt` is used only on the Writing
+card, so it can be shorter and more index-friendly.
 
 ## Add research or a project
 
