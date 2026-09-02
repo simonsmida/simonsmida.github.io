@@ -1,6 +1,7 @@
 ---
 title: "Concept-Based Interpretability in Medical AI"
 date: 2026-01-27
+last_updated: 2026-09-02
 layout: article
 read_time: 8
 hero_art: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/hero-v1.png

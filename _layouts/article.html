@@ -55,6 +55,12 @@
     <article class="article-content">
       {{ content }}
     </article>
+
+    <div class="article-dates" aria-label="Article dates">
+      <span>Published <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%b %-d, %Y" }}</time></span>
+      <span aria-hidden="true">·</span>
+      <span>Updated <time datetime="{{ page.last_updated | default: page.date | date: '%Y-%m-%d' }}">{{ page.last_updated | default: page.date | date: "%b %-d, %Y" }}</time></span>
+    </div>
   </main>
 
   <footer>

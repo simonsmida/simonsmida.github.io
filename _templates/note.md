@@ -1,6 +1,7 @@
 ---
 title: "New Note Title"
 date: YYYY-MM-DD
+last_updated: YYYY-MM-DD
 layout: article
 read_time: 6
 categories: [notes]

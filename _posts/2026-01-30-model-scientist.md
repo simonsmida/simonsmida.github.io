@@ -1,6 +1,7 @@
 ---
 title: "The Model as a Scientist"
 date: 2026-01-30
+last_updated: 2026-09-02
 layout: article
 read_time: 7
 hero_art: /assets/notes/2026-01-30-model-scientist/model-as-scientist-hero.png?v=1

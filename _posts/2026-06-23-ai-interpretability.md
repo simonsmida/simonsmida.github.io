@@ -1,6 +1,7 @@
 ---
 title: "A Map of AI Interpretability Research"
 date: 2026-06-23
+last_updated: 2026-09-02
 read_time: 12
 hero_art: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactive.svg
 hero_art_type: interactive
@@ -33,7 +34,7 @@ Interpretability and explainability (often used interchangeably) approach this m
 
 <section id="map-question0" data-map-section="map-0" markdown="1">
 
-### (0) Before the map: **what produced this model?**
+### (0) Before the map: **model setup matters**
 
 Not everything about a neural network is a mystery. We chose much of what produced the final model:
 
@@ -42,9 +43,13 @@ Not everything about a neural network is a mystery. We chose much of what produc
 - the **architecture** through which it processes information
 - the **training procedure**, including preprocessing and postprocessing
 
-These choices shape both the model and also its interpretations. A classic demonstration is called the [Clever Hans effect](https://www.gutenberg.org/files/33936/33936-h/33936-h.htm): a model produces the right answer, but for the wrong (not intended) reasons. An animal classifier, may learn that "snow means wolf" if wolves appear more frequently on snowy backgrounds in its training data ([Ribeiro et al., 2016](https://arxiv.org/abs/1602.04938)).
+These choices shape what the model learns, and thus also matter for interpretation. A classic demonstration is called the [Clever Hans effect](https://www.gutenberg.org/files/33936/33936-h/33936-h.htm): a model produces the answer for the wrong reasons. In the well-known wolf-husky example, a classifier learned to **associate snow with wolves** because wolves appeared more frequently on snowy backgrounds in the training data. Such a model can perform well on the test data too, but may fail when these spurious correlations are broken.
 
 ![Clever Hans effect illustrated with a husky](/assets/notes/2026-06-23-ai-interpretability/clever-hans.png)
+
+**Figure 1: Clever Hans effect in the "Husky vs Wolf" experiment.** The model misclassifies a husky as a wolf because it relies on snow as an unintended shortcut rather than the animal itself. The table shows how revealing 'snow' as a potential shortcut changed participants' trust in the model ([Ribeiro et al., 2016](https://arxiv.org/abs/1602.04938)).
+
+Now, there might be questions on what does it mean to meaningfully "remove snow" from an image, or how can we be sure model focused just on the snow. We will discuss these in Section TBD.
 
 Similar findings are often closely tied not just to the data, but also to the objective, architecture and training procedure. They all provide important context for understanding what we can find inside.
 

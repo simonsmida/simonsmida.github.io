@@ -1068,6 +1068,18 @@ footer {
   margin-inline: auto;
 }
 
+.article-dates {
+  width: min(calc(100% - 48px), 780px);
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin: 64px auto 0;
+  color: var(--subtle);
+  font: 600 10px/1.4 var(--sans);
+  letter-spacing: .075em;
+  text-transform: uppercase;
+}
+
 .article-content h2 {
   margin: 2.4em 0 .65em;
   font-size: clamp(28px, 3vw, 36px);
