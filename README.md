@@ -41,8 +41,10 @@ lists it automatically.
 Writing cards are generated from the posts automatically. Set `thumbnail`,
 `thumbnail_alt`, optional `thumbnail_width`/`thumbnail_height`, and
 `card_excerpt` in the post front matter; no card markup is needed for a writing
-post. `excerpt` is used for the article lede and metadata, while `tldr` is the
-longer takeaway used inside the article.
+post. `excerpt` is used for the article lede and metadata, `card_excerpt` is
+used only on the Writing card, and `tldr` is the longer article takeaway. The
+article body may also include a visible `## TL;DR` section when you want it in
+the reading flow.
 
 ## Add research or a project
 
