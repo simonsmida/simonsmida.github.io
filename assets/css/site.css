@@ -1070,14 +1070,23 @@ footer {
 
 .article-dates {
   width: min(calc(100% - 48px), 780px);
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   gap: 9px;
   margin: 64px auto 0;
   color: var(--subtle);
   font: 600 10px/1.4 var(--sans);
   letter-spacing: .075em;
   text-transform: uppercase;
+}
+
+.article-dates > span:first-child {
+  justify-self: end;
+}
+
+.article-dates > span:last-child {
+  justify-self: start;
 }
 
 .article-content h2 {
