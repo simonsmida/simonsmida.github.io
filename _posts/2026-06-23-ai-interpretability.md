@@ -6,13 +6,14 @@ read_time: 12
 hero_art: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactive.svg
 hero_art_type: interactive
 hero_alt: "Illustrated map of questions and methods in AI interpretability"
-thumbnail: /assets/notes/2026-06-23-ai-interpretability/banner-map.png
+thumbnail: /assets/notes/2026-06-23-ai-interpretability/banner-map.webp
 thumbnail_alt: "Illustrated map of questions and methods in AI interpretability"
+thumbnail_width: 641
+thumbnail_height: 256
 categories: [notes]
 card_excerpt: "AI interpretability is not one problem, but a family of questions about neural networks and their behavior."
 tldr: "What does it mean to 'understand' a neural network? Interpretability is a young and fragmented field, with few agreed-upon definitions. **Different methods answer different questions**, from what information a model represents to why it made a prediction or how it computes it internally. **Interpretability is not one problem, but a family of questions** we have about the model and its behavior."
-header:
-  teaser: /assets/notes/2026-06-23-ai-interpretability/ai-interp-hero.png
+social_image: /assets/notes/2026-06-23-ai-interpretability/social.jpg
 published: true
 interactive_map: true
 map_src: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactive.svg
@@ -45,7 +46,7 @@ Not everything about a neural network is a mystery. We chose much of what produc
 
 These choices shape what the model learns, and thus also matter for interpretation. A classic demonstration is called the [Clever Hans effect](https://www.gutenberg.org/files/33936/33936-h/33936-h.htm): a model produces the answer for the wrong reasons. In the well-known wolf-husky example, a classifier learned to **associate snow with wolves** because wolves appeared more frequently on snowy backgrounds in the training data. Such a model can perform well on the test data too, but may fail when these spurious correlations are broken.
 
-![Clever Hans effect illustrated with a husky](/assets/notes/2026-06-23-ai-interpretability/clever-hans.png)
+![Clever Hans effect illustrated with a husky](/assets/notes/2026-06-23-ai-interpretability/clever-hans.webp)
 
 **Figure 1: Clever Hans effect in the "Husky vs Wolf" experiment.** The model misclassifies a husky as a wolf because it relies on snow as an unintended shortcut rather than the animal itself. The table shows how revealing 'snow' as a potential shortcut changed participants' trust in the model ([Ribeiro et al., 2016](https://arxiv.org/abs/1602.04938)).
 

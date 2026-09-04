@@ -4,13 +4,8 @@
   {% assign summary_source = page.tldr | default: page.excerpt %}
   {% assign summary = summary_source | strip_html | strip_newlines %}
   {% include head.html title=page.title description=summary %}
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="{{ page.title }}">
-  <meta property="og:description" content="{{ summary }}">
-  <meta property="og:url" content="{{ page.url | absolute_url }}">
-  {% if page.header.teaser %}<meta property="og:image" content="{{ page.header.teaser | absolute_url }}">{% endif %}
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
+  <meta property="article:modified_time" content="{{ page.last_updated | default: page.date | date_to_xmlschema }}">
   {% if page.interactive_map %}<link rel="stylesheet" href="/assets/css/interactive-map.css?v={{ site.version }}">{% endif %}
 </head>
 <body class="article-page">
@@ -23,7 +18,7 @@
         <div
           class="interactive-map"
           data-interactive-map
-          data-map-src="{{ page.map_src | relative_url }}"
+          data-map-src="{{ page.map_src | relative_url }}?v={{ site.version }}"
           data-map-ignore="legend"
           aria-label="{{ page.hero_alt | default: 'Interactive map' }}">
           <p class="interactive-map__fallback">
@@ -42,14 +37,7 @@
         {% if page.read_time %}<span aria-hidden="true">·</span><span>{{ page.read_time }} min read</span>{% endif %}
       </p>
       <div class="article-lede">{{ summary_source | markdownify }}</div>
-      <div class="article-rule" aria-hidden="true">
-        <svg class="atom-mark" viewBox="0 0 32 32" focusable="false">
-          <circle cx="16" cy="16" r="2.2" fill="currentColor"/>
-          <ellipse cx="16" cy="16" rx="13" ry="5.2"/>
-          <ellipse cx="16" cy="16" rx="13" ry="5.2" transform="rotate(60 16 16)"/>
-          <ellipse cx="16" cy="16" rx="13" ry="5.2" transform="rotate(120 16 16)"/>
-        </svg>
-      </div>
+      <div class="article-rule" aria-hidden="true">{% include atom-mark.html %}</div>
     </header>
 
     <article class="article-content">
@@ -64,14 +52,7 @@
   </main>
 
   <footer>
-    <span class="article-rule" aria-hidden="true">
-      <svg class="atom-mark" viewBox="0 0 32 32" focusable="false">
-        <circle cx="16" cy="16" r="2.2" fill="currentColor"/>
-        <ellipse cx="16" cy="16" rx="13" ry="5.2"/>
-        <ellipse cx="16" cy="16" rx="13" ry="5.2" transform="rotate(60 16 16)"/>
-        <ellipse cx="16" cy="16" rx="13" ry="5.2" transform="rotate(120 16 16)"/>
-      </svg>
-    </span>
+    <span class="article-rule" aria-hidden="true">{% include atom-mark.html %}</span>
     <a class="footer-home-link" href="/">© 2026 Šimon Šmída</a>
   </footer>
 

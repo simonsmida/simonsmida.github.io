@@ -18,7 +18,7 @@ description: Writing by Šimon Šmída about machine learning, interpretability,
     <!-- Add an article by creating a post in _posts; its thumbnail lives in the front matter. -->
     <div class="content-list-region">
       <section class="card-grid" id="writing-list" data-card-list data-item-label="writing" aria-label="Selected writing">
-        {% assign writing_posts = site.posts | sort: "date" %}
+        {% assign writing_posts = site.posts | sort: "date" | reverse %}
         {% for post in writing_posts %}
           {% include post-card.html post=post %}
         {% endfor %}

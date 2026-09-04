@@ -1,8 +1,31 @@
+{% comment %}
+  Shared document head. `include.title` names the page; `include.description`
+  overrides the page's own description. Social metadata is derived here so no
+  page has to repeat it: `page.social_image` wins, then the site default.
+{% endcomment %}
+{% assign page_title = include.title | default: page.title %}
+{% assign full_title = page_title | default: site.title %}
+{% if page_title and page_title != site.title %}{% assign full_title = page_title | append: " — " | append: site.title %}{% endif %}
+{% assign page_description = include.description | default: page.description | default: site.description %}
+{% assign social_image = page.social_image | default: "/assets/icons/social-default.jpg" %}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="{{ include.description | default: page.description | default: site.description }}">
+<meta name="description" content="{{ page_description }}">
 <meta name="theme-color" content="#eef2f3">
-<title>{% if include.title %}{{ include.title }} — {% endif %}Šimon Šmída</title>
+<title>{{ full_title }}</title>
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+
+<meta property="og:type" content="{% if page.layout == 'article' %}article{% else %}website{% endif %}">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:title" content="{{ full_title }}">
+<meta property="og:description" content="{{ page_description }}">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:image" content="{{ social_image | absolute_url }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+{% feed_meta %}
+
 <link rel="icon" href="/assets/icons/favicon.svg?v={{ site.version }}" type="image/svg+xml" data-theme-icon data-light="/assets/icons/favicon.svg?v={{ site.version }}" data-dark="/assets/icons/favicon-dark.svg?v={{ site.version }}">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png?v={{ site.version }}">
 <script>

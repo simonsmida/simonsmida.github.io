@@ -195,7 +195,7 @@
     const links = [...nav.querySelectorAll("a[href]")];
     const pages = new Map();
     const indicator = document.createElement("span");
-    let mobileSectionsReady = Promise.resolve(false);
+    let mobileSectionsReady = null;
     let mobileScrollFrame = 0;
     let mobileScrollTarget = null;
     let mobileScrollTimer = 0;
@@ -264,7 +264,6 @@
             }
           }
         });
-        card.querySelectorAll("img").forEach((image) => { image.loading = "eager"; });
         return card;
       });
     }
@@ -339,12 +338,23 @@
       if (push) window.history.pushState({}, "", url.href);
       window.scrollTo({ top: 0, behavior: "auto" });
       initializeCardLists(document);
-      if (isLanding()) mobileSectionsReady = buildMobileSections();
+      /* `main` was replaced, so any previously built sections went with it. */
+      mobileSectionsReady = null;
+      ensureMobileSections();
       emit("site-layout-change");
       return true;
     }
 
     /* Compact About: every section is stacked below the biography. */
+
+    /* These sections only exist below the compact breakpoint, so they are built
+       on demand. Building them on a wide screen would download every card image
+       for a layout that is `display: none`. */
+    function ensureMobileSections() {
+      if (!isLanding() || !COMPACT_LAYOUT.matches) return Promise.resolve(false);
+      if (!mobileSectionsReady) mobileSectionsReady = buildMobileSections();
+      return mobileSectionsReady;
+    }
 
     function buildMobileSections() {
       const root = document.querySelector("[data-mobile-sections]");
@@ -459,9 +469,20 @@
     let routing = false;
     let queuedNavigation = null;
 
-    async function go(url, { push = true } = {}) {
+    /* A swapped view is a new page as far as the reader is concerned, so move
+       focus to it. Without this a screen reader or keyboard user stays on the
+       nav link and is never told the content changed. */
+    function focusView() {
+      const target = document.querySelector("[data-inline-panel]:not([hidden]) [data-inline-title]")
+        || document.querySelector("main");
+      if (!target) return;
+      target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+    }
+
+    async function go(url, { push = true, focus = false } = {}) {
       if (routing) {
-        queuedNavigation = { url, push };
+        queuedNavigation = { url, push, focus };
         return;
       }
       routing = true;
@@ -470,19 +491,26 @@
 
       try {
         if (isLanding() && COMPACT_LAYOUT.matches) {
-          await mobileSectionsReady;
+          await ensureMobileSections();
           if (queuedNavigation) return;
           if (scrollToMobileSection(section ? sectionUrl(section).pathname : "/", { push })) return;
         }
 
         if (isLanding() && INLINE_LAYOUT.matches) {
           const nextDocument = section ? await fetchPage(sectionUrl(section)) : null;
-          if (await showInlineSection(section, nextDocument, { push })) return;
+          if (await showInlineSection(section, nextDocument, { push })) {
+            if (focus) focusView();
+            return;
+          }
         }
 
         const target = home ? new URL("/", window.location.origin) : sectionUrl(section);
         const nextDocument = await fetchPage(target);
-        if (!swapPage(nextDocument, target, { push })) window.location.assign(target.href);
+        if (swapPage(nextDocument, target, { push })) {
+          if (focus) focusView();
+        } else {
+          window.location.assign(target.href);
+        }
       } catch {
         window.location.assign(url.href);
       } finally {
@@ -490,7 +518,7 @@
         if (queuedNavigation) {
           const next = queuedNavigation;
           queuedNavigation = null;
-          go(next.url, { push: next.push });
+          go(next.url, next);
         }
       }
     }
@@ -519,12 +547,12 @@
           return;
         }
         event.preventDefault();
-        go(new URL(link.href));
+        go(new URL(link.href), { focus: true });
       });
       prefetch(link);
     });
 
-    window.addEventListener("popstate", () => go(new URL(window.location.href), { push: false }));
+    window.addEventListener("popstate", () => go(new URL(window.location.href), { push: false, focus: true }));
     window.addEventListener("scroll", queueMobileScrollSync, { passive: true });
     window.addEventListener("resize", queueMobileScrollSync, { passive: true });
     window.addEventListener("pointerdown", () => {
@@ -536,6 +564,7 @@
     /* When the window crosses a layout breakpoint, present the current
        section in the form that layout uses. */
     const relayout = () => {
+      ensureMobileSections();
       const url = new URL(window.location.href);
       const section = sectionOf(url.pathname) || sectionFromHash(url);
       if (!section) return;
@@ -545,21 +574,24 @@
     INLINE_LAYOUT.addEventListener("change", relayout);
 
     if (isLanding()) {
-      mobileSectionsReady = buildMobileSections();
       const initial = sectionFromHash(new URL(window.location.href));
-      if (initial) mobileSectionsReady.then(() => go(new URL(window.location.href), { push: false }));
+      ensureMobileSections().then(() => {
+        if (initial) go(new URL(window.location.href), { push: false });
+      });
     }
   }
 
   /* ---- Startup ----------------------------------------------------------- */
-
-  if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
 
   initializeTheme();
   initializeFieldPicker();
   initializeCardLists();
   initializeArticleTransitions();
   if (document.querySelector("[data-site-nav]") && !document.body.classList.contains("article-page")) {
+    /* Only the routed views manage their own scroll offsets. Articles are
+       ordinary documents and must keep the browser's scroll restoration, so a
+       reader returning to one lands where they left off. */
+    if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
     initializeNavigation();
   }
 })();

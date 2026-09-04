@@ -719,28 +719,27 @@ footer {
   overflow: hidden;
 }
 
+/* Fills exactly the band between the fixed header and footer. `.content-page`
+   is already inset by the header, so only the footer is subtracted here — the
+   card region below is then the only thing that scrolls, and the list can
+   never run underneath the footer however long it gets. */
 .page-main {
-  position: fixed;
-  top: var(--header-height);
-  bottom: var(--footer-height);
-  left: 50%;
+  height: calc(100% - var(--footer-height));
   width: min(calc(100% - 48px), var(--list-width));
+  margin-inline: auto;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
-  padding: clamp(46px, 5.5vw, 70px) 0 16px;
-  transform: translateX(-50%);
+  padding: clamp(24px, 3vw, 44px) 0 12px;
 }
 
 .page-intro {
-  min-height: 146px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 26px;
-  padding: 18px 0;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  text-align: center;
 }
 
 .page-intro h1 {
@@ -748,7 +747,7 @@ footer {
 }
 
 .page-intro > p {
-  max-width: 42rem;
+  max-width: 46ch;
   margin: 0;
   color: var(--muted);
   font-size: 16.5px;
@@ -1420,7 +1419,9 @@ footer {
     letter-spacing: .055em;
   }
 
-  .site-header nav a:first-child {
+  /* About is the top of the compact landing page itself, so the link would
+     only scroll in place. Section pages still need it to get home. */
+  .landing-page .site-header nav a:first-child {
     display: none;
   }
 

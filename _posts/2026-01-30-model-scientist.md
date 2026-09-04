@@ -4,17 +4,16 @@ date: 2026-01-30
 last_updated: 2026-09-02
 layout: article
 read_time: 7
-hero_art: /assets/notes/2026-01-30-model-scientist/model-as-scientist-hero.png?v=1
+hero_art: /assets/notes/2026-01-30-model-scientist/model-as-scientist-hero.webp
 hero_art_type: image
 hero_alt: "A dense biological signal resolving into a layered scientific representation"
-thumbnail: /assets/notes/2026-01-30-model-scientist/ai-scientist-thumb.png
+thumbnail: /assets/notes/2026-01-30-model-scientist/ai-scientist-thumb.webp
 thumbnail_alt: "Illustration of an AI system helping reveal a biological signal"
-thumbnail_width: 1673
-thumbnail_height: 892
+thumbnail_width: 481
+thumbnail_height: 256
 categories: [notes]
 card_excerpt: "How interpretability helped reveal a DNA fragment-length signal for Alzheimer’s detection—and turn a model into a source of scientific hypotheses."
-header:
-  teaser: /assets/notes/2026-01-30-model-scientist/model-as-scientist-hero.png
+social_image: /assets/notes/2026-01-30-model-scientist/social.jpg
 tldr: "By opening black-box bio foundational model, researchers discovered that AI relies on DNA fragment lengths to detect Alzheimer's, a signal that outperformed traditional biomarkers (methylation) and proved AI can teach us new biology."
 ---
 
@@ -81,7 +80,7 @@ Result: Yes, they showed evidence that the model encodes both methylation and fr
 - the **top 9 features** from SAE were related to the specific lengths of the DNA fragments
 
 
-![gradient-attribution-A](/assets/notes/2026-01-30-model-scientist/unsupervised-interpretability.png)
+![gradient-attribution-A](/assets/notes/2026-01-30-model-scientist/unsupervised-interpretability.webp)
 
 Taking both _supervised_ and _unsupervised_ interpretability approaches together, the researchers found that methylation and fragmentomics signals are both accessible in the model. However, fragment length had a particularly prominent role in the model's AD predictions.
 

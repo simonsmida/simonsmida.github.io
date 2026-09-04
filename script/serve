@@ -1,0 +1,24 @@
+#!/bin/sh
+# Preview the site at http://127.0.0.1:4000/ with live reload.
+#
+# Two things have to be set up before Jekyll will run here:
+#   - the Ruby the vendored bundle was installed against, because macOS still
+#     puts its own 2.6 first on PATH and bundler refuses to load against it
+#   - a UTF-8 locale, because Jekyll reads the theme's SCSS as US-ASCII under
+#     a POSIX one and dies on the first non-ASCII byte
+set -e
+
+RUBY_PREFIX="/opt/homebrew/opt/ruby@$(cat "$(dirname "$0")/../.ruby-version" | cut -d. -f1,2)"
+if [ -d "$RUBY_PREFIX/bin" ]; then
+  PATH="$RUBY_PREFIX/bin:$PATH"
+  export PATH
+else
+  echo "warning: $RUBY_PREFIX not found — falling back to $(ruby -v)" >&2
+fi
+
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+export LANG LC_ALL
+
+cd "$(dirname "$0")/.."
+exec bundle exec jekyll serve --livereload "$@"

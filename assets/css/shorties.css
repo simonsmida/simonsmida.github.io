@@ -8,6 +8,15 @@ body {
     font-family: 'Cinzel', serif;
 }
 
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 .card-hover:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px -10px rgba(251, 191, 36, 0.1);

@@ -4,17 +4,16 @@ date: 2026-01-27
 last_updated: 2026-09-02
 layout: article
 read_time: 8
-hero_art: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/hero-v1.png
+hero_art: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/hero-v1.webp
 hero_art_type: image
 hero_alt: "A layered representation field resolving into distinct concept structures"
-thumbnail: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/cxai.png
+thumbnail: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/cxai.webp
 thumbnail_alt: "Concept-based explainable AI diagram for medical imaging"
-thumbnail_width: 1024
-thumbnail_height: 1024
+thumbnail_width: 256
+thumbnail_height: 256
 categories: [notes]
 card_excerpt: "A structured guide to concept-based interpretability methods, their representations, evaluation, and role in medical AI."
-header:
-  teaser: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/concept-based-interpretability-hero.png
+social_image: /assets/notes/2026-01-27-concept-based-interpretability-in-medical-ai/social.jpg
 tldr: "A structured outline for a comprehensive survey on concept-based interpretability methods in medical AI."
 ---
 
