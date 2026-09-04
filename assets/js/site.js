@@ -469,20 +469,9 @@
     let routing = false;
     let queuedNavigation = null;
 
-    /* A swapped view is a new page as far as the reader is concerned, so move
-       focus to it. Without this a screen reader or keyboard user stays on the
-       nav link and is never told the content changed. */
-    function focusView() {
-      const target = document.querySelector("[data-inline-panel]:not([hidden]) [data-inline-title]")
-        || document.querySelector("main");
-      if (!target) return;
-      target.setAttribute("tabindex", "-1");
-      target.focus({ preventScroll: true });
-    }
-
-    async function go(url, { push = true, focus = false } = {}) {
+    async function go(url, { push = true } = {}) {
       if (routing) {
-        queuedNavigation = { url, push, focus };
+        queuedNavigation = { url, push };
         return;
       }
       routing = true;
@@ -498,19 +487,12 @@
 
         if (isLanding() && INLINE_LAYOUT.matches) {
           const nextDocument = section ? await fetchPage(sectionUrl(section)) : null;
-          if (await showInlineSection(section, nextDocument, { push })) {
-            if (focus) focusView();
-            return;
-          }
+          if (await showInlineSection(section, nextDocument, { push })) return;
         }
 
         const target = home ? new URL("/", window.location.origin) : sectionUrl(section);
         const nextDocument = await fetchPage(target);
-        if (swapPage(nextDocument, target, { push })) {
-          if (focus) focusView();
-        } else {
-          window.location.assign(target.href);
-        }
+        if (!swapPage(nextDocument, target, { push })) window.location.assign(target.href);
       } catch {
         window.location.assign(url.href);
       } finally {
@@ -518,7 +500,7 @@
         if (queuedNavigation) {
           const next = queuedNavigation;
           queuedNavigation = null;
-          go(next.url, next);
+          go(next.url, { push: next.push });
         }
       }
     }
@@ -547,12 +529,12 @@
           return;
         }
         event.preventDefault();
-        go(new URL(link.href), { focus: true });
+        go(new URL(link.href));
       });
       prefetch(link);
     });
 
-    window.addEventListener("popstate", () => go(new URL(window.location.href), { push: false, focus: true }));
+    window.addEventListener("popstate", () => go(new URL(window.location.href), { push: false }));
     window.addEventListener("scroll", queueMobileScrollSync, { passive: true });
     window.addEventListener("resize", queueMobileScrollSync, { passive: true });
     window.addEventListener("pointerdown", () => {
