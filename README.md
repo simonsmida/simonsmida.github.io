@@ -13,8 +13,9 @@ the article layout.
 - `_includes/` — Shared head, header, footer, and script tags.
 - `_templates/note.md` — Starting point for a new article.
 - `assets/css/site.css` — Layout, themes, cards, and article typography.
-- `assets/js/site.js` — Theme, field picker, card lists, and client-side navigation.
-- `assets/js/fields.js` — The background field variants (pure sampling functions).
+- `assets/backgrounds/` — Theme-specific static landscape backdrops.
+- `assets/js/site.js` — Theme, card lists, and client-side navigation.
+- `assets/js/fields.js` — Experimental background field variants (pure sampling functions).
 - `assets/js/field.js` — The field renderer: glyph atlas, dithering, readability zones, card streams.
 - `archive/` — Historical drafts and prototype snapshots; excluded from the build.
 - `experiments/` — Local visual studies; excluded from the build.
@@ -22,7 +23,14 @@ the article layout.
 - `assets/**/_originals/` — Full-resolution masters. Jekyll skips any directory
   starting with `_`, so these stay in Git without being deployed.
 
-## Background field
+## Background artwork
+
+The main pages use matching light and dark WebP landscapes from
+`assets/backgrounds/`. CSS selects the appropriate asset from the current
+theme and crops it from the bottom centre with `background-size: cover`.
+Readability gradients soften the artwork beneath the About-page biography.
+
+## Experimental background field
 
 `fields.js` defines each variant as a `sample(x, y, t, out, i, aspect)` function
 writing an ink `value` and a `relief` height per cell. `field.js` samples the

@@ -1,8 +1,10 @@
 {% comment %}
-  Shared page chrome. `include.nav` names the current section; `include.field`
-  adds the background field picker on pages that render the field.
+  Shared page chrome. `include.nav` names the current section;
+  `include.background` adds the static, theme-aware landscape backdrop, while
+  `include.field` remains available for local field experiments.
 {% endcomment %}
 <a class="skip-link" href="#main-content">Skip to main content</a>
+{% if include.background %}<div class="site-backdrop" aria-hidden="true"></div>{% endif %}
 {% if include.field %}<canvas class="field-canvas" data-field-canvas aria-hidden="true"></canvas>{% endif %}
 
 <header class="site-header">

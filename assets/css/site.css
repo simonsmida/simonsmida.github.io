@@ -33,6 +33,8 @@
   --field-tone: 104 132 152;
   --field-light: 58 84 104;
   --field-opacity: .9;
+  --backdrop-image: url("/assets/backgrounds/mountain-dither-light.webp");
+  --backdrop-sky: 249 246 237;
 }
 
 :root[data-theme="midnight-navy"] {
@@ -49,6 +51,8 @@
   --field-tone: 104 146 182;
   --field-light: 196 222 240;
   --field-opacity: .95;
+  --backdrop-image: url("/assets/backgrounds/mountain-dither-dark.webp");
+  --backdrop-sky: 15 27 42;
 }
 
 /* ==========================================================================
@@ -152,8 +156,36 @@ h1 {
 }
 
 /* ==========================================================================
-   Background field
+   Background artwork and field experiments
    ========================================================================== */
+
+.site-backdrop {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--paper);
+  background-image: var(--backdrop-image);
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  pointer-events: none;
+}
+
+/* Quiet the artwork behind the biography while preserving the mountain's
+   stronger contrast across the open right-hand side of the composition. */
+.landing-page .site-backdrop::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--backdrop-sky) / .9) 0%,
+    rgb(var(--backdrop-sky) / .7) 30%,
+    rgb(var(--backdrop-sky) / .18) 55%,
+    transparent 72%
+  );
+  content: "";
+}
 
 .field-canvas {
   position: fixed;
@@ -1348,6 +1380,20 @@ footer {
   }
 
   /* A phone screen is mostly text, so the field sits further back. */
+  .site-backdrop {
+    background-position: 48% bottom;
+  }
+
+  .landing-page .site-backdrop::after {
+    background: linear-gradient(
+      180deg,
+      rgb(var(--backdrop-sky) / .94) 0%,
+      rgb(var(--backdrop-sky) / .78) 42%,
+      rgb(var(--backdrop-sky) / .18) 72%,
+      transparent 100%
+    );
+  }
+
   .field-canvas {
     opacity: calc(var(--field-opacity) * .8);
   }
@@ -1407,7 +1453,7 @@ footer {
     justify-content: center;
   }
 
-  .article-page .site-mark {
+  .site-header .site-mark {
     position: absolute;
     left: var(--wide-gutter);
   }
