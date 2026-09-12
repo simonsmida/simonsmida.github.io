@@ -1229,6 +1229,12 @@ footer {
   width: min(calc(100vw - 32px), 420px);
 }
 
+.article-main > .back-to-top {
+  display: flex;
+  width: fit-content;
+  margin: 26px auto 0;
+}
+
 .back-to-top {
   display: inline-flex;
   flex-direction: column;

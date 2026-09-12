@@ -48,13 +48,14 @@
       <span class="article-date">Published <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%b %-d, %Y" }}</time></span>
       <span class="article-date">Updated <time datetime="{{ page.last_updated | default: page.date | date: '%Y-%m-%d' }}">{{ page.last_updated | default: page.date | date: "%b %-d, %Y" }}</time></span>
     </div>
-  </main>
 
-  <footer>
     <a class="back-to-top" href="#main-content">
       <span aria-hidden="true">↑</span>
       <span>Back to top</span>
     </a>
+  </main>
+
+  <footer>
     <span class="article-rule" aria-hidden="true">{% include atom-mark.html %}</span>
     <a class="footer-home-link" href="/">© 2026 Šimon Šmída</a>
   </footer>
