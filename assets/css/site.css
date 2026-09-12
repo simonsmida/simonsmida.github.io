@@ -1231,19 +1231,22 @@ footer {
 
 .back-to-top {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 7px;
+  gap: 4px;
   color: var(--muted);
   font: 600 10px/1 var(--sans);
   letter-spacing: .075em;
+  text-align: center;
   text-transform: uppercase;
   transition: color 160ms ease;
 }
 
-.back-to-top > span:last-child {
+.back-to-top > span:first-child {
   color: var(--accent);
   font-size: 16px;
   line-height: .8;
+  animation: back-to-top-bounce 2.8s ease-in-out infinite;
   transition: transform 160ms var(--ease-out);
 }
 
@@ -1252,9 +1255,17 @@ footer {
   color: var(--ink);
 }
 
-.back-to-top:hover > span:last-child,
-.back-to-top:focus-visible > span:last-child {
+.back-to-top:hover > span:first-child,
+.back-to-top:focus-visible > span:first-child {
   transform: translateY(-2px);
+}
+
+@keyframes back-to-top-bounce {
+  0%, 70%, 100% { transform: translateY(0); }
+  77% { transform: translateY(-3px); }
+  84% { transform: translateY(0); }
+  90% { transform: translateY(-1px); }
+  96% { transform: translateY(0); }
 }
 
 /* Cross-document View Transitions morph a card thumbnail into the article hero. */
