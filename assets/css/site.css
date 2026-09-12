@@ -1221,7 +1221,7 @@ footer {
   z-index: 2;
   min-height: 88px;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   padding-block: 14px 18px;
 }
 
@@ -1229,22 +1229,14 @@ footer {
   width: min(calc(100vw - 32px), 420px);
 }
 
-.article-footer-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  width: 100%;
-  font: 600 10px/1 var(--sans);
-  letter-spacing: .075em;
-  text-transform: uppercase;
-}
-
 .back-to-top {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   color: var(--muted);
+  font: 600 10px/1 var(--sans);
+  letter-spacing: .075em;
+  text-transform: uppercase;
   transition: color 160ms ease;
 }
 
