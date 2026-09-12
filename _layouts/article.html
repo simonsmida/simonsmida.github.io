@@ -45,15 +45,20 @@
     </article>
 
     <div class="article-dates" aria-label="Article dates">
-      <span>Published <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%b %-d, %Y" }}</time></span>
-      <span aria-hidden="true">·</span>
-      <span>Updated <time datetime="{{ page.last_updated | default: page.date | date: '%Y-%m-%d' }}">{{ page.last_updated | default: page.date | date: "%b %-d, %Y" }}</time></span>
+      <span class="article-date">Published <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%b %-d, %Y" }}</time></span>
+      <span class="article-date">Updated <time datetime="{{ page.last_updated | default: page.date | date: '%Y-%m-%d' }}">{{ page.last_updated | default: page.date | date: "%b %-d, %Y" }}</time></span>
     </div>
   </main>
 
   <footer>
     <span class="article-rule" aria-hidden="true">{% include atom-mark.html %}</span>
-    <a class="footer-home-link" href="/">© 2026 Šimon Šmída</a>
+    <div class="article-footer-actions">
+      <a class="back-to-top" href="#main-content">
+        <span>Back to top</span>
+        <span aria-hidden="true">↑</span>
+      </a>
+      <a class="footer-home-link" href="/">© 2026 Šimon Šmída</a>
+    </div>
   </footer>
 
   {% include scripts.html %}
