@@ -9,3 +9,5 @@ Built with:
 - HTML, CSS, and JavaScript for the site
 - Markdown for writings
 - [MathJax](https://www.mathjax.org/) for mathematical notation
+
+A shoutout to [OpenAI Codex](https://openai.com/codex/) and [Claude](https://www.anthropic.com/claude) for helping build and refine it.
