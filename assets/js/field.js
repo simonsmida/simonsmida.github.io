@@ -32,7 +32,7 @@
 
   /* Text that must stay legible, with how much of the field survives beneath. */
   const ZONES = {
-    "landing-page": [[".hero-copy", .14], [".hero-tab-panel-head", .2], [".hero-tab-more", .2]],
+    "landing-page": [[".hero-copy", .14], [".hero-tab-panel-head", .04], [".hero-tab-more", .04]],
     "content-page": [[".page-intro", .14], [".view-more", .25]]
   };
   const CARD_SELECTOR = ".content-card";
