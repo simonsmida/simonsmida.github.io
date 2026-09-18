@@ -63,6 +63,7 @@ html {
   overflow-x: hidden;
   background: var(--paper);
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
   scrollbar-color: color-mix(in srgb, var(--line) 58%, transparent) transparent;
 }
 
