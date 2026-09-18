@@ -7,11 +7,27 @@
   <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
   <meta property="article:modified_time" content="{{ page.last_updated | default: page.date | date_to_xmlschema }}">
   {% if page.interactive_map %}<link rel="stylesheet" href="/assets/css/interactive-map.css?v={{ site.version }}">{% endif %}
+  {% if page.math %}
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]],
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  {% endif %}
 </head>
 <body class="article-page">
   {% include site-header.html nav="writing" %}
 
   <main class="article-main" id="main-content">
+    <span class="back-to-top-sentinel" aria-hidden="true"></span>
     <header class="article-header">
       {% if page.interactive_map and page.map_src %}
       <figure class="article-hero-art article-hero-map" aria-label="{{ page.hero_alt | default: 'Interactive map' }}">
@@ -30,6 +46,10 @@
       <figure class="article-hero-art{% if page.hero_art_type == 'image' %} article-hero-art-image{% endif %}" style="view-transition-name: article-{{ page.slug }}">
         <img src="{{ page.hero_art }}" alt="{{ page.hero_alt | default: 'Abstract conceptual illustration' }}">
       </figure>
+      {% elsif page.published == false %}
+      <figure class="article-hero-art article-hero-placeholder" aria-label="Draft placeholder: add a hero image">
+        <span>Hero image<br>to come</span>
+      </figure>
       {% endif %}
       <h1>{{ page.title }}</h1>
       <p class="article-meta">
@@ -44,15 +64,24 @@
       {{ content }}
     </article>
 
-    <div class="article-dates" aria-label="Article dates">
-      <span>Published <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%b %-d, %Y" }}</time></span>
-      <span aria-hidden="true">·</span>
-      <span>Updated <time datetime="{{ page.last_updated | default: page.date | date: '%Y-%m-%d' }}">{{ page.last_updated | default: page.date | date: "%b %-d, %Y" }}</time></span>
+    <div class="article-endmatter">
+      <div class="back-to-top-wrap">
+        <button class="back-to-top" type="button" data-back-to-top aria-label="Move to top">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 19V5m-5.5 5.5L12 5l5.5 5.5" />
+          </svg>
+        </button>
+        <span class="back-to-top-label" aria-hidden="true">Move to top</span>
+      </div>
+      <div class="article-dates" aria-label="Article dates">
+        <span>Published <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%b %-d, %Y" }}</time></span>
+        <span>Updated <time datetime="{{ page.last_updated | default: page.date | date: '%Y-%m-%d' }}">{{ page.last_updated | default: page.date | date: "%b %-d, %Y" }}</time></span>
+      </div>
+      <div class="article-rule" aria-hidden="true">{% include atom-mark.html %}</div>
     </div>
   </main>
 
   <footer>
-    <span class="article-rule" aria-hidden="true">{% include atom-mark.html %}</span>
     <a class="footer-home-link" href="/">© 2026 Šimon Šmída</a>
   </footer>
 

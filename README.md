@@ -87,6 +87,12 @@ fetch the new files, then push to `main`.
 
 Open `http://127.0.0.1:4000/`. The page reloads on save.
 
+To include private posts marked `published: false` in the local preview, run:
+
+```sh
+./script/serve --unpublished
+```
+
 The script exists because two things have to be set before Jekyll will run:
 the Ruby named in `.ruby-version` (macOS puts its own 2.6 first on `PATH`, and
 bundler refuses to load against it) and a UTF-8 locale (under a POSIX one

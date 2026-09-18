@@ -1,14 +1,19 @@
 {% assign card_title = include.post.title %}
 {% assign card_alt = include.post.thumbnail_alt | default: include.post.hero_alt | default: card_title %}
 {% assign card_excerpt = include.post.card_excerpt | default: include.post.tldr | default: include.post.excerpt | strip_html | strip_newlines %}
+{% assign card_media = include.post.thumbnail | default: include.post.hero_art %}
 <article class="content-card" id="{{ include.post.slug }}">
   <a class="card-media" href="{{ include.post.url | relative_url }}" aria-label="Read {{ card_title }}" data-view-transition-name="article-{{ include.post.slug }}">
+    {% if card_media %}
     <img
-      src="{{ include.post.thumbnail | default: include.post.hero_art }}"
+      src="{{ card_media }}"
       alt="{{ card_alt }}"
       {% if include.post.thumbnail_width %}width="{{ include.post.thumbnail_width }}"{% endif %}
       {% if include.post.thumbnail_height %}height="{{ include.post.thumbnail_height }}"{% endif %}
       loading="lazy">
+    {% else %}
+    <span class="card-media-placeholder" aria-hidden="true">Add image</span>
+    {% endif %}
   </a>
   <div class="card-body">
     <div class="card-meta">

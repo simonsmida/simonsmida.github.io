@@ -59,6 +59,40 @@
     });
   }
 
+  /* ---- Article back-to-top control -------------------------------------- */
+
+  function initializeBackToTop() {
+    const button = document.querySelector("[data-back-to-top]");
+    if (!button) return;
+    const control = button.closest(".back-to-top-wrap") || button;
+
+    const updateVisibility = () => {
+      control.classList.toggle("is-visible", window.scrollY > window.innerHeight * .65);
+    };
+
+    button.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: REDUCED_MOTION.matches ? "auto" : "smooth"
+      });
+    });
+
+    const sentinel = document.querySelector(".back-to-top-sentinel");
+    if (sentinel && "IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(([entry]) => {
+        control.classList.toggle("is-visible", !entry.isIntersecting);
+      });
+      observer.observe(sentinel);
+    } else {
+      window.addEventListener("scroll", updateVisibility, { passive: true });
+      document.addEventListener("scroll", updateVisibility, { passive: true, capture: true });
+      updateVisibility();
+      window.setInterval(updateVisibility, 250);
+    }
+    window.addEventListener("hashchange", updateVisibility);
+    window.addEventListener("pageshow", updateVisibility);
+  }
+
   /* ---- Background field picker ------------------------------------------- */
 
   function initializeFieldPicker() {
@@ -566,6 +600,7 @@
   /* ---- Startup ----------------------------------------------------------- */
 
   initializeTheme();
+  initializeBackToTop();
   initializeFieldPicker();
   initializeCardLists();
   initializeArticleTransitions();
