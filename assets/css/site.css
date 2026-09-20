@@ -1089,24 +1089,26 @@ footer {
 
 .article-header {
   min-height: calc(100svh - var(--header-height));
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: clamp(76px, 9vw, 116px) var(--wide-gutter) clamp(64px, 8vw, 104px);
+  justify-content: flex-start;
+  padding: clamp(18px, 2vw, 30px) var(--wide-gutter) clamp(24px, 3vw, 40px);
   text-align: center;
 }
 
 .article-header h1 {
   max-width: 22ch;
   margin-inline: auto;
-  font-size: clamp(42px, 6vw, 72px);
+  font-size: clamp(40px, 5.4vw, 66px);
+  line-height: 1.16;
 }
 
 .article-meta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 26px auto 0;
+  margin: 32px auto 0;
   color: var(--subtle);
   font: 600 11px var(--sans);
   letter-spacing: .075em;
@@ -1115,10 +1117,11 @@ footer {
 
 .article-lede {
   max-width: 650px;
-  margin: 24px auto 0;
+  margin: 36px auto 0;
   color: var(--muted);
   font-size: clamp(18px, 2vw, 21px);
   line-height: 1.55;
+  text-align: center;
 }
 
 .article-lede p {
@@ -1134,7 +1137,7 @@ footer {
 }
 
 .article-header .article-rule {
-  margin: clamp(28px, 4vw, 42px) auto 0;
+  margin: clamp(30px, 4vw, 42px) auto 0;
 }
 
 .article-rule::before,
@@ -1156,7 +1159,7 @@ footer {
 
 .article-hero-art {
   width: min(100%, 860px);
-  margin: 0 auto clamp(32px, 5vw, 56px);
+  margin: 0 auto clamp(10px, 1.5vw, 18px);
   color: var(--muted);
 }
 
@@ -1190,6 +1193,8 @@ footer {
 }
 
 .article-hero-art-image img {
+  max-height: min(34svh, 360px);
+  object-fit: contain;
   opacity: 1;
 }
 
@@ -1201,7 +1206,7 @@ footer {
   display: block;
   width: 100%;
   height: auto;
-  max-height: min(40svh, 410px);
+  max-height: min(36svh, 360px);
 }
 
 :root[data-theme="midnight-navy"] .article-hero-art img {
@@ -1732,15 +1737,24 @@ footer {
   }
 
   .article-header {
-    padding: 76px 16px 56px;
+    padding: 28px 16px 32px;
   }
 
   .article-hero-art {
-    margin-bottom: 28px;
+    margin-bottom: 12px;
   }
 
   .article-header h1 {
-    font-size: clamp(38px, 12vw, 52px);
+    font-size: clamp(36px, 10vw, 48px);
+    line-height: 1.16;
+  }
+
+  .article-lede {
+    margin-top: 32px;
+  }
+
+  .article-header .article-rule {
+    margin-top: 30px;
   }
 
   .article-content {
@@ -1777,32 +1791,41 @@ footer {
 /* Short desktop viewports keep the whole article introduction in frame. */
 @media (min-width: 861px) and (max-height: 960px) {
   .article-header {
-    padding-top: 38px;
+    padding-top: 24px;
     padding-bottom: 24px;
   }
 
   .article-hero-art {
     width: min(100%, 680px);
-    margin-bottom: 18px;
+    margin-bottom: 10px;
+  }
+
+  .article-hero-map .interactive-map svg {
+    max-height: min(34svh, 340px);
+  }
+
+  .article-hero-map {
+    width: min(100%, 860px);
   }
 
   .article-header h1 {
-    font-size: clamp(36px, 5vw, 60px);
+    font-size: clamp(36px, 4.8vw, 56px);
+    line-height: 1.16;
   }
 
   .article-meta {
-    margin-top: 18px;
+    margin-top: 24px;
   }
 
   .article-lede {
     max-width: 600px;
-    margin-top: 12px;
+    margin-top: 26px;
     font-size: clamp(15px, 1.5vw, 18px);
     line-height: 1.4;
   }
 
   .article-header .article-rule {
-    margin-top: 24px;
+    margin-top: 26px;
   }
 }
 
