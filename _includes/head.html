@@ -11,7 +11,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{{ page_description }}">
-<meta name="theme-color" content="#eef2f3">
+<meta name="theme-color" content="#FAF9F6">
 <title>{{ full_title }}</title>
 <link rel="canonical" href="{{ page.url | absolute_url }}">
 
@@ -33,7 +33,7 @@
   (() => {
     const root = document.documentElement;
     let theme = "slate-blue";
-    let field = "manifold";
+    let field = "wind";
     try {
       if (localStorage.getItem("site-theme") === "midnight-navy") theme = "midnight-navy";
       field = localStorage.getItem("site-field") || field;
@@ -42,7 +42,7 @@
     root.dataset.field = field;
     const icon = document.querySelector("[data-theme-icon]");
     icon.href = theme === "midnight-navy" ? icon.dataset.dark : icon.dataset.light;
-    document.querySelector('meta[name="theme-color"]').content = theme === "midnight-navy" ? "#101d27" : "#eef2f3";
+    document.querySelector('meta[name="theme-color"]').content = theme === "midnight-navy" ? "#111111" : "#FAF9F6";
   })();
 </script>
-<link rel="stylesheet" href="/assets/css/site.css?v={{ site.version }}">
+<link rel="stylesheet" href="/assets/css/site.css?v={{ site.version }}-bg5">

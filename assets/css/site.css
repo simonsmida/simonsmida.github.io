@@ -21,7 +21,7 @@
 :root,
 :root[data-theme="slate-blue"] {
   color-scheme: light;
-  --paper: #eef2f3;
+  --paper: #FAF9F6;
   --surface: #f7f9f9;
   --ink: #273139;
   --muted: #56636c;
@@ -37,7 +37,7 @@
 
 :root[data-theme="midnight-navy"] {
   color-scheme: dark;
-  --paper: #101d27;
+  --paper: #111111;
   --surface: #142630;
   --ink: #edf3f6;
   --muted: #b0c0ca;
@@ -1844,3 +1844,11 @@ footer {
     transition-duration: .01ms !important;
   }
 }
+
+/* The GPU field has its own soft, content-aware mask in the shader. */
+.field-canvas.glyph-wind { opacity: 1; mask-image: none; -webkit-mask-image: none; }
+:root[data-field="wind"] .field-canvas:not(.glyph-wind) { visibility: hidden; }
+:root:not([data-field="wind"]) .glyph-wind { visibility: hidden; }
+
+/* Readability now follows individual text lines, rather than a column mask. */
+.landing-page .field-canvas { mask-image: none; -webkit-mask-image: none; }

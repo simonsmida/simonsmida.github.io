@@ -34,7 +34,7 @@
     const isDark = theme === DARK_THEME;
     const label = isDark ? "Switch to light mode" : "Switch to dark mode";
     document.documentElement.dataset.theme = theme;
-    document.querySelector('meta[name="theme-color"]').content = isDark ? "#101d27" : "#eef2f3";
+    document.querySelector('meta[name="theme-color"]').content = isDark ? "#111111" : "#FAF9F6";
 
     const button = document.querySelector("[data-theme-trigger]");
     button.setAttribute("aria-pressed", String(isDark));

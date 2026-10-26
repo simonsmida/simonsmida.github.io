@@ -73,7 +73,7 @@
     glyphs: ["·", ":", "-", "=", "+", "*", "#", "%", "@"],
     lightGain: 3.2,
     sample(x, y, t, out, i) {
-      const height = fbm(x * 1.25 + 3.1, y * 1.25 + 1.7, t * .04);
+      const height = fbm(x * 1.25 + 3.1, y * 1.25 + 1.7, t * .04) + (out.impulse || 0) * .16;
       const bands = contour(height * 7 - t * .03, 22);
       const summits = smoothstep(.45, .95, height);
       out.value[i] = .05 + height * .2 + bands * (.5 + summits * .4);
@@ -81,28 +81,30 @@
     }
   };
 
-  /*
-   * Latent manifold. A folded sheet described by two warped coordinate
-   * families; the mesh lines bend with the surface and the relief lights it.
-   */
+  /* Glyph strata: fine symbols trace layered, slowly advecting ridges.
+     The stored key remains manifold so existing preferences migrate naturally. */
   const manifold = {
-    label: "Latent manifold",
-    mark: "∿",
-    glyphs: ["·", "∙", ":", "+", "=", "*", "x", "#", "@"],
+    label: "Glyph strata",
+    mark: "≋",
+    cellCss: 8,
+    glyphs: ["·", ":", ";", "+", "<", ">", "λ", "{", "}", "0", "1"],
+    symbolic: true,
     lightGain: 2.6,
     sample(x, y, t, out, i) {
-      const u = x + .22 * Math.sin(y * 2.6 + t * .2) + .05 * Math.sin(y * 8.1 - t * .17);
-      const v = y + .18 * Math.sin(x * 1.9 - t * .17) + .04 * Math.cos(x * 5.7 + t * .13);
-      const relief = .5
-        + .32 * Math.sin(u * 2.7 + .4) * Math.cos(v * 2.3 + t * .15)
-        + .14 * Math.sin(u * 5.6 + v * 1.7 - t * .24);
-      const mesh = Math.max(contour(u * 3.1, 34), contour(v * 2.6, 34));
-      const sheet = smoothstep(.15, .7, relief);
-      /* Openings thin the sheet without ever clearing the page: the floor
-         keeps a base texture everywhere as the field drifts. */
-      const envelope = .5 + .5 * smoothstep(.2, .68, fbm(x * .55 + 2, y * .55 + 6, t * .03));
-      out.value[i] = (sheet * .3 + mesh * (.45 + sheet * .45)) * envelope;
-      out.relief[i] = relief;
+      // Two slow currents braid into contour ribbons, with fine luminous
+      // seams and quiet valleys. No global flicker or synchronized glyph jumps.
+      const drift = fbm(x * .7 + 7, y * .7 + 2, t * .018);
+      const u = x + .28 * Math.sin(y * 3.6 + drift * 2 - t * .055);
+      const v = y + .22 * Math.sin(x * 2.4 + drift * 2.5 + t * .04);
+      const h = fbm(u * .9 + 3.1, v * .9 + 1.7, t * .018);
+      const braid = Math.sin(u * 4.1 + v * 2.2 - t * .08) * .09;
+      const height = h + braid + (out.impulse || 0) * .12;
+      const layers = contour(height * 6 - t * .018, 3);
+      const seam = contour(height * 12 + v * .15 - t * .036, 12);
+      const silk = .5 + .5 * Math.sin(u * 5 - v * 3 + t * .07);
+      const mist = smoothstep(.22, .75, drift);
+      out.value[i] = .035 + layers * (.24 + mist * .35) + seam * .18 + silk * mist * .08;
+      out.relief[i] = height + layers * .10 + seam * .025;
     }
   };
 
@@ -130,35 +132,29 @@
     }
   };
 
-  /*
-   * Representation vortex. Rotating spiral arms wind a sparse stream into a
-   * bright core, while faint rippling contours keep the surrounding fabric alive.
-   */
+  /* Integer arm counts keep the polar seam continuous. Broad spiral ridges
+     and a single coherent depth surface give the vortex its sculpted shading. */
   const vortex = {
-    label: "Representation vortex",
-    mark: "◌",
-    glyphs: ["·", "∙", ":", "+", "*", "x", "#", "@"],
-    lightGain: 2.4,
+    label: "Representation vortex", mark: "◌", cellCss: 8,
+    glyphs: ["·", "∙", ":", "+", "*", "x", "#", "@"], lightGain: 4,
     sample(x, y, t, out, i, aspect) {
-      const dx = (x - aspect * .72 - Math.cos(t * .21) * .012) * .95;
-      const dy = (y - .47 - Math.sin(t * .17) * .012) * 1.35;
-      const radius = Math.hypot(dx, dy);
-      const angle = Math.atan2(dy, dx);
-      const swirl = angle - t * .4 + Math.sin(radius * 7 - t * .2) * .16;
-      /* Wide, high-contrast arms so the swirl still reads when the middle of
-         the page is occupied by content. */
-      const arms = Math.pow(.5 + .5 * Math.cos(radius * 17 - swirl * 3.4), 4)
-        * gauss(radius - .3, .34);
-      const inner = Math.pow(.5 + .5 * Math.cos(radius * 30 - swirl * 2.4 + 1.2), 6)
-        * gauss(radius - .12, .16);
-      const ring = gauss(radius - .24 - Math.sin(swirl * 3) * .025, .05);
-      const core = gauss(radius, .06);
-      const fabric = contour(fbm(x * 1.1 + 4, y * 1.1 + 8, t * .05) * 4.5 + t * .05, 10)
-        * smoothstep(.3, .8, radius) * .3;
-      out.value[i] = .04 + arms * .78 + inner * .4 + ring * .5 + core * .9 + fabric;
-      out.relief[i] = .4 + arms * .45 + inner * .3 + core * .6 - radius * .3;
+      const dx = x - aspect * .70, dy = (y - .48) * 1.06;
+      const r = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
+      const twist = 9 * Math.log(1 + r * 4.5);
+      const phase = a * 3 + twist - t * .32 + (out.impulse || 0) * 1.6;
+      const curl = Math.sin(a * 2 - r * 8 + t * .075) * .38 * smoothstep(.06, .25, r);
+      const ridge = Math.pow(.5 + .5 * Math.cos(phase + curl), 2);
+      const filaments = Math.pow(.5 + .5 * Math.cos(phase * 3 + r * 9), 6);
+      const backflow = Math.pow(.5 + .5 * Math.cos(a * 5 + twist * 1.55 - t * .22), 7);
+      const envelope = Math.exp(-Math.pow(r / .53, 3));
+      const eye = smoothstep(.025, .07, r);
+      const shade = .72 + .28 * Math.cos(a - 2.2 + r * 4);
+      const rim = gauss(r - .075, .025) * .3;
+      out.value[i] = .025 + envelope * eye * (.10 + ridge * .62 + filaments * .23 + backflow * .14 + rim) * shade;
+      out.relief[i] = envelope * eye * (.24 + Math.sin(phase + curl + .6) * .26 + ridge * .22)
+        - gauss(r, .045) * .3;
     }
   };
 
-  window.SITE_FIELDS = { terrain, manifold, flow, vortex };
+  window.SITE_FIELDS = { wind: { ...flow, label: "Glyph wind", mark: "≋" }, terrain, manifold, flow, vortex };
 })();
