@@ -4,6 +4,7 @@
   {% assign summary_source = page.tldr | default: page.excerpt %}
   {% assign summary = summary_source | strip_html | strip_newlines %}
   {% include head.html title=page.title description=summary %}
+  <link rel="stylesheet" href="/assets/css/article-reader.css?v={{ site.version }}">
   <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
   <meta property="article:modified_time" content="{{ page.last_updated | default: page.date | date_to_xmlschema }}">
   {% if page.interactive_map %}<link rel="stylesheet" href="/assets/css/interactive-map.css?v={{ site.version }}">{% endif %}
@@ -60,6 +61,14 @@
       <div class="article-rule" aria-hidden="true">{% include atom-mark.html %}</div>
     </header>
 
+    <details class="article-reader" data-article-reader>
+      <summary>Contents</summary>
+      <nav aria-label="Article contents" class="article-reader__navigation">
+        <div class="article-reader__progress" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+        <ol></ol>
+      </nav>
+    </details>
+
     <article class="article-content">
       {{ content }}
     </article>
@@ -86,6 +95,7 @@
   </footer>
 
   {% include scripts.html %}
+  <script src="/assets/js/article-reader.js?v={{ site.version }}" defer></script>
   {% if page.interactive_map %}<script src="/assets/js/interactive-map.js?v={{ site.version }}" defer></script>{% endif %}
 </body>
 </html>

@@ -1,0 +1,74 @@
+/* Quiet article navigation: no change to the centered reading measure. */
+.article-reader {
+  --reading-progress: 0;
+  width: min(calc(100% - 48px), 780px);
+  margin: 0 auto 32px;
+  color: var(--subtle);
+}
+.article-reader:not(:has(li)) { display: none; }
+.article-reader summary {
+  width: fit-content;
+  cursor: pointer;
+  color: var(--muted);
+  font: 500 10px/1.5 var(--sans);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.article-reader__navigation { position: relative; margin-top: 16px; }
+.article-reader ol { list-style: none; padding: 0 0 0 15px; margin: 0; }
+.article-reader li { margin: 0 0 10px; padding: 0; }
+.article-reader li:last-child { margin-bottom: 0; }
+.article-reader a {
+  display: block;
+  font: 400 13px/1.45 var(--serif);
+  color: var(--subtle);
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+.article-reader a:hover,
+.article-reader a[aria-current="location"] { color: var(--ink); }
+.article-reader .article-reader__subsection { padding-left: 12px; }
+.article-reader__progress {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--line) 65%, transparent);
+}
+.article-reader__progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleY(var(--reading-progress));
+  transform-origin: top;
+}
+.article-content :is(h2, h3) { scroll-margin-top: calc(var(--header-height) + 32px); }
+.article-content :is(h2, h3):focus { outline: none; }
+@media (min-width: 1280px) {
+  .article-reader {
+    position: fixed;
+    top: var(--reader-top, 112px);
+    left: max(24px, calc((100vw - 1440px) / 2));
+    width: min(230px, calc((100vw - 780px) / 2 - 64px));
+    max-height: calc(100dvh - var(--reader-top, 112px) - 32px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: 0 8px 2px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 220ms ease, transform 220ms ease, visibility 220ms;
+  }
+  .article-reader.is-reading { opacity: 1; visibility: visible; transform: none; }
+  .article-reader summary { cursor: default; list-style: none; }
+  .article-reader summary::-webkit-details-marker { display: none; }
+}
+@media (max-width: 640px) {
+  .article-reader { width: calc(100% - 32px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .article-reader, .article-reader a { transition: none; }
+}
