@@ -79,7 +79,7 @@
       "author": { "@id": {{ seo_person_id | jsonify }} },
       "publisher": { "@id": {{ seo_person_id | jsonify }} },
       "datePublished": {{ page.date | date_to_xmlschema | jsonify }},
-      "dateModified": {{ page.last_updated | default: page.date | date_to_xmlschema | jsonify }},
+      "dateModified": {{ page.last_modified_at | default: page.last_updated | default: page.date | date_to_xmlschema | jsonify }},
       "inLanguage": {{ site.lang | jsonify }}
       {% if page.social_image or page.hero_art_type == 'image' %}, "image": {{ page.social_image | default: page.hero_art | absolute_url | jsonify }}{% endif %}
     }

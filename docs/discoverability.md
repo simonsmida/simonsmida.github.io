@@ -10,6 +10,9 @@ site's CSS or JavaScript.
 - Notes in `_posts` inherit the article layout, author identity, metadata,
   structured data, canonical URL, and sitemap entry automatically. Existing
   `tldr` text supplies the description; Markdown is removed from metadata.
+- Set `last_modified_at` to the actual update date when revising a note. Both
+  visible article dates and sitemap/structured-data dates use that same field.
+  Older drafts using `last_updated` remain supported by the article layout.
 - Keep `published: false` while drafting. Drafts are not included in production.
 - Standalone HTML needs Jekyll front matter (`layout: null`, `title`, and a
   `description` reflecting the existing content) and `{% include seo.html %}`

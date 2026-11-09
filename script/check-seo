@@ -46,8 +46,10 @@ class Metadata(HTMLParser):
 
 
 def check(destination):
-    urls = [node.text for node in ET.parse(destination / "sitemap.xml").iter(
-        "{http://www.sitemaps.org/schemas/sitemap/0.9}loc")]
+    namespace = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+    entries = list(ET.parse(destination / "sitemap.xml").iter(namespace + "url"))
+    urls = [entry.findtext(namespace + "loc") for entry in entries]
+    last_modified = {entry.findtext(namespace + "loc"): entry.findtext(namespace + "lastmod") for entry in entries}
     assert urls, "Sitemap is empty"
     assert len(urls) == len(set(urls)), "Duplicate sitemap URLs"
     titles = set()
@@ -73,6 +75,7 @@ def check(destination):
             article = next(node for node in graph if node["@type"] == "BlogPosting")
             assert article["datePublished"] and article["dateModified"], url
             assert article["author"]["@id"].endswith("/#person"), url
+            assert article["dateModified"] == last_modified[url], f"Sitemap/article update dates disagree: {url}"
     print(f"PASS: {len(urls)} published pages have unique titles, descriptions, canonical/social URLs, and valid structured data.")
 
 

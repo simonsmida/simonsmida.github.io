@@ -1,7 +1,7 @@
 ---
 title: "A Map of AI Interpretability Research"
 date: 2026-06-23
-last_updated: 2026-09-02
+last_modified_at: 2026-09-02
 read_time: 12
 hero_art: /assets/notes/2026-06-23-ai-interpretability/map-interp-hero-interactive.svg
 hero_art_type: interactive
