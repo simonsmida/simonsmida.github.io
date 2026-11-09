@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""Check the generated public pages, not the Jekyll source templates."""
+import json
+import sys
+import xml.etree.ElementTree as ET
+from html.parser import HTMLParser
+from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+
+class Metadata(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.canonicals = []
+        self.meta = {}
+        self.title = ""
+        self.in_title = False
+        self.json_text = None
+        self.schemas = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "title":
+            self.in_title = True
+        if tag == "link" and attrs.get("rel") == "canonical":
+            self.canonicals.append(attrs.get("href"))
+        if tag == "meta":
+            key = attrs.get("name") or attrs.get("property")
+            self.meta[key] = attrs.get("content", "")
+        if tag == "script" and attrs.get("type") == "application/ld+json":
+            self.json_text = ""
+
+    def handle_data(self, data):
+        if self.in_title:
+            self.title += data
+        if self.json_text is not None:
+            self.json_text += data
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self.in_title = False
+        if tag == "script" and self.json_text is not None:
+            assert "<" not in self.json_text, "Unescaped HTML in JSON-LD"
+            self.schemas.append(json.loads(self.json_text))
+            self.json_text = None
+
+
+def check(destination):
+    urls = [node.text for node in ET.parse(destination / "sitemap.xml").iter(
+        "{http://www.sitemaps.org/schemas/sitemap/0.9}loc")]
+    assert urls, "Sitemap is empty"
+    assert len(urls) == len(set(urls)), "Duplicate sitemap URLs"
+    titles = set()
+    for url in urls:
+        parts = urlsplit(url)
+        assert parts.scheme == "https" and not parts.fragment, url
+        target = destination / unquote(parts.path).lstrip("/")
+        if parts.path.endswith("/"):
+            target /= "index.html"
+        page = Metadata()
+        page.feed(target.read_text())
+        assert page.canonicals == [url], f"Canonical differs from sitemap: {url}"
+        assert page.title and page.title not in titles, f"Missing/duplicate title: {url}"
+        titles.add(page.title)
+        assert page.meta.get("description"), f"Missing description: {url}"
+        assert "noindex" not in page.meta.get("robots", ""), f"Sitemap contains noindex page: {url}"
+        assert page.meta.get("og:url") == url, f"Wrong social URL: {url}"
+        assert page.meta.get("og:title") == page.title, f"Wrong social title: {url}"
+        assert page.schemas, f"Missing structured data: {url}"
+        graph = page.schemas[0]["@graph"]
+        assert any(node.get("@id") == url + "#webpage" for node in graph), url
+        if "/notes/" in parts.path:
+            article = next(node for node in graph if node["@type"] == "BlogPosting")
+            assert article["datePublished"] and article["dateModified"], url
+            assert article["author"]["@id"].endswith("/#person"), url
+    print(f"PASS: {len(urls)} published pages have unique titles, descriptions, canonical/social URLs, and valid structured data.")
+
+
+if __name__ == "__main__":
+    check(Path(sys.argv[1] if len(sys.argv) > 1 else "_site"))

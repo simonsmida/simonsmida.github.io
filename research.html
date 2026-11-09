@@ -1,4 +1,5 @@
 ---
+schema_type: CollectionPage
 description: Research by Šimon Šmída on interpretability, representation learning, and medical AI.
 ---
 <!doctype html>
@@ -18,16 +19,7 @@ description: Research by Šimon Šmída on interpretability, representation lear
     <!-- Copy a content-card to add another paper. -->
     <div class="content-list-region">
       <section class="card-grid" id="research-list" data-card-list data-item-label="research" aria-label="Selected research">
-        <article class="content-card" id="sparse-autoencoders">
-          <a class="card-media" href="#sparse-autoencoders" aria-label="Sparse Autoencoders for Histopathology Foundation Models">
-            <img src="/assets/notes/2026-06-23-ai-interpretability/thumbnail.webp" alt="A visual map connecting different areas of AI interpretability" width="256" height="256" loading="lazy">
-          </a>
-          <div class="card-body">
-            <div class="card-meta"><time datetime="2026">2026</time></div>
-            <h2><a href="#sparse-autoencoders">Sparse Autoencoders for Expert-Assisted Interpretation of Histopathology Foundation Model Embeddings</a></h2>
-            <p>We investigate whether sparse features can expose clinically meaningful concepts encoded in pathology foundation-model embeddings.</p>
-          </div>
-        </article>
+        {% include research-cards.html %}
       </section>
 
       <button class="view-more" type="button" data-view-more aria-controls="research-list" aria-expanded="false" hidden>

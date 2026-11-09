@@ -2,6 +2,10 @@
 
 Personal website of Šimon Šmída.
 
+**Website:** [simonsmida.github.io](https://simonsmida.github.io/) — research,
+writing, and interactive projects about deep learning, interpretability, and
+medical AI.
+
 Built with:
 
 - [Jekyll](https://jekyllrb.com/) for site generation

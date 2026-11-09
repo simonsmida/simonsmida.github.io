@@ -302,11 +302,19 @@
       });
     }
 
-    function applyMetadata(nextDocument) {
+    function applyMetadata(nextDocument, { identity = true } = {}) {
       document.title = nextDocument.title;
       document.querySelector('meta[name="description"]').content = (
         nextDocument.querySelector('meta[name="description"]')?.content || ""
       );
+      // A hash opens a view of the current page. A document swap changes the
+      // page identity too, including its canonical, social tags, and schema.
+      if (!identity) return;
+      const selector = 'link[rel="canonical"], meta[property^="og:"], meta[name^="twitter:"], script[data-site-schema]';
+      document.head.querySelectorAll(selector).forEach((element) => element.remove());
+      nextDocument.head.querySelectorAll(selector).forEach((element) => {
+        document.head.append(document.importNode(element, true));
+      });
     }
 
     function landingUrl(name) {
@@ -336,10 +344,11 @@
         const more = panel.querySelector("[data-inline-more]");
         more.href = sectionUrl(name).pathname;
         more.textContent = `View all ${title.toLowerCase()} ↗`;
-        applyMetadata(nextDocument);
+        applyMetadata(nextDocument, { identity: false });
       } else {
         list.replaceChildren();
-        document.title = "Šimon Šmída";
+        const homeDocument = await fetchPage(new URL("/", window.location.origin));
+        applyMetadata(homeDocument);
       }
 
       document.body.classList.toggle("inline-content-active", willOpen);
@@ -393,6 +402,12 @@
     function buildMobileSections() {
       const root = document.querySelector("[data-mobile-sections]");
       if (!root) return Promise.resolve(false);
+
+      if (root.querySelector(".mobile-tab-section")) {
+        requestAnimationFrame(syncMobileSectionFromScroll);
+        emit("site-layout-change");
+        return Promise.resolve(true);
+      }
 
       root.replaceChildren();
 

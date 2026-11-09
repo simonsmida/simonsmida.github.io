@@ -3,10 +3,21 @@ description: Research, writing, and interactive projects about deep learning, in
 url: https://simonsmida.github.io
 
 # Bump to invalidate cached CSS, scripts, and icons after a deploy.
-version: 91
+version: 92
 
 author:
   name: Šimon Šmída
+  alternate_names: [Simon Smida, simonsmida]
+  same_as:
+    - https://github.com/simonsmida
+    - https://fit.cvut.cz/en/faculty/people/23657-simon-smida
+    - https://orcid.org/0009-0002-2820-960X
+    - https://www.linkedin.com/in/šimon-šmída-4b78b19b/
+    - https://x.com/kailash_init1
+
+lang: en
+# Search Console's HTML-tag verification token, when configured.
+google_site_verification: MEoZVBedCym_k6DO86u23vN3vhXOStwT4LD7rthZykE
 
 # The site ships its own CSS; without this the github-pages default theme
 # (Primer) is applied and its unused stylesheet is built into every deploy.
@@ -30,3 +41,7 @@ exclude:
   - vendor
   - _templates
   - README.md
+  - script
+  - docs
+  - Gemfile
+  - Gemfile.lock

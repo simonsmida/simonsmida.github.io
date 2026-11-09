@@ -1,0 +1,15 @@
+{% comment %}The existing mobile cards, rendered by Jekyll rather than fetched after load.{% endcomment %}
+{% assign mobile_section_names = 'research,writing,projects' | split: ',' %}
+{% for section_name in mobile_section_names %}
+<section class="mobile-tab-section" data-route="/{{ section_name }}.html" aria-label="{{ section_name | capitalize }}">
+  <div class="mobile-tab-section-list">
+    {% case section_name %}
+      {% when 'research' %}{% include research-cards.html %}
+      {% when 'projects' %}{% include project-cards.html %}
+      {% when 'writing' %}
+        {% assign writing_posts = site.posts | sort: 'date' | reverse %}
+        {% for post in writing_posts %}{% include post-card.html post=post %}{% endfor %}
+    {% endcase %}
+  </div>
+</section>
+{% endfor %}
