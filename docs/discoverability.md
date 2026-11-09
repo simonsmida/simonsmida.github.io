@@ -18,6 +18,8 @@ site's CSS or JavaScript.
   are shared between their index pages and the homepage's existing mobile view.
 - Keep the existing `.html` and tool URLs stable. Hashes represent views of the
   homepage; standalone section URLs are the independently indexable pages.
+- The old `/notes/` index redirects to `/writing.html`; individual note URLs
+  remain unchanged. Search Console had reported that old index as a 404.
 - Do not add keywords or text hidden only for crawlers, artificial publication
   dates, or structured data claiming content or authorship that is not present.
 

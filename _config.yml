@@ -26,6 +26,7 @@ theme: null
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+  - jekyll-redirect-from
 
 defaults:
   - scope:
